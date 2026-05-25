@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WRITEBACKJOURNALDRAFT — QA Test Plan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style-eva.css" />
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-eyebrow">// SYSTEM: ACTIVE</div>
+    <div class="sidebar-logo">QA Test Plan</div>
+  </div>
+  <div class="nav-section">:: Navigation</div>
+  <a href="index.html" class="nav-link active">
+    <span class="nav-icon">◈</span> Overview
+  </a>
+  <a href="test-cases.html" class="nav-link">
+    <span class="nav-icon">◉</span> Test Cases
+  </a>
+  <a href="gaps.html" class="nav-link">
+    <span class="nav-icon">◎</span> Spec Gaps
+  </a>
+  <a href="ai-reflection.html" class="nav-link">
+    <span class="nav-icon">◇</span> AI Reflection
+  </a>
+  <div class="theme-toggle">
+    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">◑ &nbsp;SWITCH THEME</button>
+  </div>
+  <div class="sidebar-footer">
+    VELIXO :: QA ASSESSMENT<br/>
+    VERSION 1.0.0 :: MAY 2026
+  </div>
+</aside>
+
+<main class="main">
+  <div class="page-header">
+    <div class="breadcrumb">QA_PLAN / OVERVIEW</div>
+    <div class="page-title">WRITEBACKJOURNALDRAFT</div>
+    <div class="page-desc">Manual testing assessment · Velixo · May 2026</div>
+  </div>
+
+  <div class="content">
+
+    <div class="stats">
+      <div class="stat-card"><div class="stat-num">31</div><div class="stat-label">Total cases</div></div>
+      <div class="stat-card"><div class="stat-num">07</div><div class="stat-label">Positive</div></div>
+      <div class="stat-card"><div class="stat-num">15</div><div class="stat-label">Negative</div></div>
+      <div class="stat-card"><div class="stat-num">09</div><div class="stat-label">Edge cases</div></div>
+      <div class="stat-card"><div class="stat-num">08</div><div class="stat-label">Spec gaps</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">◈</span> Function Overview</div>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.75;margin-bottom:14px;">
+        <code>WRITEBACKJOURNALDRAFT</code> is a custom Excel function that creates <strong style="color:var(--text)">draft GL (General Ledger) journal batches</strong> in an ERP system directly from a spreadsheet. Each function call defines a single journal line. Multiple calls on the same worksheet together form one <strong style="color:var(--text)">batch</strong>. The function never posts — it always lands in <strong style="color:var(--accent)">On Hold</strong> status, requiring manual review inside the ERP.
+      </p>
+      <div class="callout callout-info">
+        <strong>Key invariant:</strong> Total debits across all lines must equal total credits. An imbalanced batch is rejected before creation.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">◉</span> Function Signature</div>
+      <pre>=WRITEBACKJOURNALDRAFT(
+  connectionName,   -- ERP connection name              [required]
+  transactionDate,  -- Date of the journal batch        [required]
+  postPeriod,       -- Financial period, e.g. "05-2026" [required]
+  batchDescription, -- Batch-level description          [optional]
+  branch,           -- Branch identifier                [optional]
+  ledger,           -- Target ledger                    [required]
+  currency,         -- Currency code (defaults to ledger currency) [optional]
+  account,          -- GL account per line              [required]
+  debit,            -- Debit amount per line            [optional]
+  credit,           -- Credit amount per line           [optional]
+  lineDescription   -- Line description                 [optional]
+)</pre>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">◎</span> Parameters</div>
+      <div class="table-wrap">
+        <table class="param-table">
+          <thead><tr><th>Parameter</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+          <tbody>
+            <tr><td><span class="param-name">connectionName</span></td><td>string</td><td><span class="badge badge-required">Yes</span></td><td>ERP connection name</td></tr>
+            <tr><td><span class="param-name">transactionDate</span></td><td>date</td><td><span class="badge badge-required">Yes</span></td><td>Date of the journal batch</td></tr>
+            <tr><td><span class="param-name">postPeriod</span></td><td>string</td><td><span class="badge badge-required">Yes</span></td><td>Financial period, e.g. <code>"05-2026"</code></td></tr>
+            <tr><td><span class="param-name">batchDescription</span></td><td>string</td><td><span class="badge badge-scripted">No</span></td><td>Batch-level description</td></tr>
+            <tr><td><span class="param-name">branch</span></td><td>string</td><td><span class="badge badge-scripted">No</span></td><td>Branch identifier</td></tr>
+            <tr><td><span class="param-name">ledger</span></td><td>string</td><td><span class="badge badge-required">Yes</span></td><td>Target ledger in the ERP</td></tr>
+            <tr><td><span class="param-name">currency</span></td><td>string</td><td><span class="badge badge-scripted">No</span></td><td>Currency code; defaults to ledger's base currency</td></tr>
+            <tr><td><span class="param-name">account</span></td><td>string</td><td><span class="badge badge-required">Yes</span></td><td>GL account number for this line</td></tr>
+            <tr><td><span class="param-name">debit</span></td><td>number</td><td><span class="badge badge-scripted">No</span></td><td>Debit amount for this line</td></tr>
+            <tr><td><span class="param-name">credit</span></td><td>number</td><td><span class="badge badge-scripted">No</span></td><td>Credit amount for this line</td></tr>
+            <tr><td><span class="param-name">lineDescription</span></td><td>string</td><td><span class="badge badge-scripted">No</span></td><td>Description for this specific line</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">◇</span> Acceptance Criteria</div>
+      <div class="ac-grid">
+        <div class="ac-item">
+          <div class="ac-title" style="color:var(--ok);">✓ On Hold Status</div>
+          <div class="ac-body">Created batch always has status <strong style="color:var(--text)">On Hold</strong> — no release or post action triggered.</div>
+        </div>
+        <div class="ac-item">
+          <div class="ac-title" style="color:var(--accent2);">⊖ Balance Validation</div>
+          <div class="ac-body">Total debits = total credits. Error: <code>"Journal is not balanced: debits X.XX ≠ credits Y.YY"</code></div>
+        </div>
+        <div class="ac-item">
+          <div class="ac-title" style="color:var(--yellow);">≥1 Line Required</div>
+          <div class="ac-body">Empty range returns <code>"At least one transaction line is required"</code>.</div>
+        </div>
+        <div class="ac-item">
+          <div class="ac-title" style="color:var(--purple);">↩ Return Value</div>
+          <div class="ac-body">On success: <code>"Draft batch #JE-00087 created"</code> (batch ID varies).</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">◻</span> Glossary</div>
+      <dl style="font-size:14px;line-height:1.8;">
+        <dt>Batch</dt>
+        <dd>A group of journal lines sharing the same transaction date, ledger, and batch description.</dd>
+        <dt>Reporting Period</dt>
+        <dd>A predefined accounting period the transaction date falls within — e.g. "Month Ending 31 March 2027".</dd>
+        <dt>On Hold</dt>
+        <dd>A batch status — saved but not yet reviewed or posted. Posting is done manually inside the ERP.</dd>
+      </dl>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  const saved = localStorage.getItem('eva-theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  const btn = document.getElementById('theme-btn');
+  function updateBtn() {
+    const d = document.documentElement.getAttribute('data-theme');
+    btn.textContent = d === 'light' ? '◑  SWITCH TO DARK' : '◑  SWITCH TO LIGHT';
+  }
+  function toggleTheme() {
+    const d = document.documentElement.getAttribute('data-theme');
+    const next = d === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('eva-theme', next);
+    updateBtn();
+  }
+  updateBtn();
+</script>
+</body>
+</html>

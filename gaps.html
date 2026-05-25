@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spec Gaps — WRITEBACKJOURNALDRAFT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style-eva.css" />
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-eyebrow">// SYSTEM: ACTIVE</div>
+    <div class="sidebar-logo">QA Test Plan</div>
+  </div>
+  <div class="nav-section">:: Navigation</div>
+  <a href="index.html" class="nav-link"><span class="nav-icon">◈</span> Overview</a>
+  <a href="test-cases.html" class="nav-link"><span class="nav-icon">◉</span> Test Cases</a>
+  <a href="gaps.html" class="nav-link active"><span class="nav-icon">◎</span> Spec Gaps</a>
+  <a href="ai-reflection.html" class="nav-link"><span class="nav-icon">◇</span> AI Reflection</a>
+  <div class="theme-toggle">
+    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">◑ &nbsp;SWITCH THEME</button>
+  </div>
+  <div class="sidebar-footer">
+    VELIXO :: QA ASSESSMENT<br/>
+    VERSION 1.0.0 :: MAY 2026
+  </div>
+</aside>
+
+<main class="main">
+  <div class="page-header">
+    <div class="breadcrumb">QA_PLAN / SPEC_GAPS</div>
+    <div class="page-title">Spec Gaps &amp; Assumptions</div>
+    <div class="page-desc">8 ambiguities identified — each with stated assumption and reasoning</div>
+  </div>
+
+  <div class="content">
+
+    <div class="callout callout-warn" style="margin-bottom:24px;">
+      <strong>Why this matters:</strong> Every untested assumption is a potential hidden defect. Making these explicit lets the team confirm with dev/BA before scripting — or add targeted test cases to probe each boundary.
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">GAP-001</div>
+      <div class="gap-title">Parameter name mismatch between signature and parameter table</div>
+      <div class="gap-body">
+        The function signature uses <code>date</code> and <code>reportingPeriod</code>, but the parameter table names the same arguments <code>transactionDate</code> and <code>postPeriod</code>. It is unclear which names are canonical — particularly relevant in error messages and documentation.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        The parameter table names (<code>transactionDate</code>, <code>postPeriod</code>) are authoritative. The signature likely reflects an earlier draft. All test cases in this plan use the table names.
+        <br/><br/>
+        <strong>Why:</strong> The parameter table is more detailed and structured — more likely to represent the final spec.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">GAP-002</div>
+      <div class="gap-title">"Empty line range" is undefined for a per-line function</div>
+      <div class="gap-body">
+        The acceptance criteria state: <em>"An empty line range returns 'At least one transaction line is required'."</em> But each <code>WRITEBACKJOURNALDRAFT</code> call defines exactly one line — the function has no range parameter. It is unclear how zero lines would be represented, or what triggers this error.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        This error is triggered by a batch-level orchestration mechanism — e.g. when a user invokes a "create batch" action with no function calls present, or when all cells in the designated batch range are empty. TC-023 is marked as pending clarification on the trigger mechanism.
+        <br/><br/>
+        <strong>Why:</strong> The spec describes batch-level behaviour alongside per-line calls, so a separate batch-creation trigger likely exists.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">GAP-003</div>
+      <div class="gap-title">Batch grouping logic is not specified</div>
+      <div class="gap-body">
+        The glossary says a batch is lines sharing the same date, ledger, and batch description. But what happens when two calls on the same sheet have <em>different</em> batch descriptions or dates? Do they form separate batches in one execution, or is only one batch allowed per execution?
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        All calls sharing identical <code>transactionDate</code>, <code>ledger</code>, and <code>batchDescription</code> are grouped into one batch. Calls with different combinations create separate batches. Balance validation applies independently per group.
+        <br/><br/>
+        <strong>Why:</strong> The glossary definition directly implies grouping by these three fields, consistent with standard ERP batch logic.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">GAP-004</div>
+      <div class="gap-title">Behaviour when both debit and credit are non-zero on the same line</div>
+      <div class="gap-body">
+        Both <code>debit</code> and <code>credit</code> are optional. The spec does not state whether a single line can carry both a non-zero debit and a non-zero credit simultaneously. Standard double-entry accounting places only one side on each line.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        Providing both non-zero debit and credit on the same line is rejected with a validation error. If accepted, only one value is used. This needs explicit verification (TC-024).
+        <br/><br/>
+        <strong>Why:</strong> Standard GL conventions prohibit dual-sided lines. An ERP would likely enforce this, but the spec must state it clearly.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">GAP-005</div>
+      <div class="gap-title">Zero-value lines — are they valid?</div>
+      <div class="gap-body">
+        The spec does not define what happens when both <code>debit</code> and <code>credit</code> are 0 (or omitted entirely). A zero-amount line is technically valid in some ERPs but meaningless in practice.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        A line with debit=0 and credit=0 is accepted (contributes 0 to the balance sum) but may produce a warning in the ERP UI noting no financial impact.
+        <br/><br/>
+        <strong>Why:</strong> Strict rejection would frustrate users with placeholder lines. A warning is the safer, more user-friendly approach.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">GAP-006</div>
+      <div class="gap-title">Negative debit/credit values — no definition</div>
+      <div class="gap-body">
+        <code>debit</code> and <code>credit</code> are typed as <code>number</code>, but the spec does not state whether negative values are valid. Negative amounts are sometimes used for reversal entries in accounting.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        Negative values are rejected with a validation error (e.g. "Debit amount must be a positive number"). If reversals are a supported use case, this must be explicitly documented.
+        <br/><br/>
+        <strong>Why:</strong> Without explicit support, accepting negatives could silently produce incorrect entries. Failing loudly is safer.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">GAP-007</div>
+      <div class="gap-title">No validation rule for transactionDate vs. postPeriod mismatch</div>
+      <div class="gap-body">
+        The spec requires both a <code>transactionDate</code> and a <code>postPeriod</code>. It does not state what happens when the date falls outside the given period — e.g. date=2026-03-15 but postPeriod="05-2026".
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        If <code>transactionDate</code> does not fall within the <code>postPeriod</code> range, the function returns a validation error. This is standard ERP behaviour preventing misclassified entries.
+        <br/><br/>
+        <strong>Why:</strong> Posting a March transaction into a May period is a common accountant mistake — the ERP and function should both guard against it.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">GAP-008</div>
+      <div class="gap-title">Return value scope: does every line cell show the batch ID?</div>
+      <div class="gap-body">
+        The spec says the function "returns 'Draft batch #JE-00087 created'". Since each call is a separate Excel cell, it is unclear whether <em>every</em> cell returns this value, or only one (e.g. the first or last line evaluated).
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        All cells belonging to the same batch return the same success message with the same batch ID. Uniformity avoids confusing UX where only some cells show a result.
+        <br/><br/>
+        <strong>Why:</strong> If only one cell returned the ID, the user would have no visual confirmation for the other lines — a poor and error-prone experience.
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  const saved = localStorage.getItem('eva-theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  const btn = document.getElementById('theme-btn');
+  function updateBtn() {
+    btn.textContent = document.documentElement.getAttribute('data-theme') === 'light'
+      ? '◑  SWITCH TO DARK' : '◑  SWITCH TO LIGHT';
+  }
+  function toggleTheme() {
+    const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('eva-theme', next);
+    updateBtn();
+  }
+  updateBtn();
+</script>
+</body>
+</html>

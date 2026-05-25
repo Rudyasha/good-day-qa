@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Cases — WRITEBACKJOURNALDRAFT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style-eva.css" />
+</head>
+<body>
+
+<!-- ── NAV SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-eyebrow">// SYSTEM: ACTIVE</div>
+    <div class="sidebar-logo">QA TEST<br/>PLAN</div>
+  </div>
+  <div class="nav-section">:: Navigation</div>
+  <a href="index.html" class="nav-link"><span class="nav-icon">◈</span> Overview</a>
+  <a href="test-cases.html" class="nav-link active"><span class="nav-icon">◉</span> Test Cases</a>
+  <a href="gaps.html" class="nav-link"><span class="nav-icon">◎</span> Spec Gaps</a>
+  <a href="ai-reflection.html" class="nav-link"><span class="nav-icon">◇</span> AI Reflection</a>
+  <div class="theme-toggle">
+    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">◑ SWITCH THEME</button>
+  </div>
+  <div class="sidebar-footer">
+    NERV :: QA DIVISION<br/>
+    VELIXO ASSESSMENT<br/>
+    MAY 2026
+  </div>
+</aside>
+
+<!-- ── SPLIT LAYOUT ── -->
+<div class="split-layout">
+
+  <!-- LIST PANEL -->
+  <div class="list-panel">
+    <div class="list-header">
+      <div class="list-title">TEST CASES <span style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);font-weight:400;letter-spacing:0.06em;">31 TOTAL</span></div>
+      <div class="list-tabs">
+        <button class="list-tab active" onclick="filterList('all',this)">ALL</button>
+        <button class="list-tab" onclick="filterList('positive',this)">POS</button>
+        <button class="list-tab" onclick="filterList('negative',this)">NEG</button>
+        <button class="list-tab" onclick="filterList('balance',this)">BAL</button>
+        <button class="list-tab" onclick="filterList('edge',this)">EDGE</button>
+      </div>
+    </div>
+    <div class="list-scroll" id="list-scroll"></div>
+  </div>
+
+  <!-- DETAIL PANEL -->
+  <div class="detail-panel" id="detail-panel">
+    <div class="detail-empty" id="detail-empty">
+      <div class="detail-empty-en">SELECT A TEST CASE</div>
+    </div>
+    <div class="detail-content" id="detail-content" style="display:none;"></div>
+  </div>
+
+</div>
+
+<script>
+/* ── Theme ── */
+const savedTheme = localStorage.getItem('eva-theme');
+if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+function updateThemeBtn() {
+  const t = document.documentElement.getAttribute('data-theme');
+  document.getElementById('theme-btn').textContent =
+    t === 'light' ? '◑ SWITCH TO DARK' : '◑ SWITCH TO LIGHT';
+}
+function toggleTheme() {
+  const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('eva-theme', next);
+  updateThemeBtn();
+}
+updateThemeBtn();
+
+/* ── Test Case Data ── */
+const cases = [
+  // ─── POSITIVE ───
+  { id:'TC-001', cat:'positive', catLabel:'POSITIVE', pri:'high', priLabel:'HIGH',
+    title:'Balanced 2-line batch, all required fields',
+    pre:'ERP "DEMO-ERP" valid; ledger "GL" exists; accounts "10100" and "20100" are active',
+    steps:[
+      'In A1: =WRITEBACKJOURNALDRAFT("DEMO-ERP","2026-05-15","05-2026","Payroll","HQ","GL","USD","10100",1000,0,"Payroll expense")',
+      'In A2: same function with credit=1000, account="20100", lineDescription="Payroll payable"',
+      'Calculate the sheet',
+      'Open ERP and locate the created batch'
+    ],
+    exp:'Both cells return "Draft batch #JE-XXXXX created" with the same batch ID. Batch status in ERP = "On Hold".',
+    expType:'ok', gap:null },
+
+  { id:'TC-002', cat:'positive', catLabel:'POSITIVE', pri:'high', priLabel:'HIGH',
+    title:'Required fields only, all optional params omitted',
+    pre:'ERP connected; ledger and accounts valid',
+    steps:[
+      'Enter two balanced lines providing only required params: connectionName, transactionDate, postPeriod, ledger, account, and one of debit/credit',
+      'Leave all optional params (batchDescription, branch, currency, lineDescription) empty',
+      'Calculate'
+    ],
+    exp:'Batch created successfully. Return: "Draft batch #JE-XXXXX created". Optional fields stored as empty/null in ERP.',
+    expType:'ok', gap:null },
+
+  { id:'TC-003', cat:'positive', catLabel:'POSITIVE', pri:'high', priLabel:'HIGH',
+    title:'All 11 fields provided including all optional',
+    pre:'Branch "HQ" exists; currency "USD" supported by ledger',
+    steps:[
+      'Enter two balanced lines with ALL 11 params filled: connectionName, transactionDate, postPeriod, batchDescription, branch, ledger, currency, account, debit/credit, lineDescription',
+      'Calculate',
+      'Open ERP batch record and check all fields'
+    ],
+    exp:'Batch created. All optional fields (batchDescription, branch, currency, lineDescription) visible and correct in ERP.',
+    expType:'ok', gap:null },
+
+  { id:'TC-004', cat:'positive', catLabel:'POSITIVE', pri:'high', priLabel:'HIGH',
+    title:'Verify batch status is "On Hold" in ERP',
+    pre:'Valid balanced batch created (TC-001 as prerequisite)',
+    steps:[
+      'Execute a valid balanced batch (TC-001)',
+      'Navigate to the journal batch list in ERP',
+      'Open the created batch and inspect its status field'
+    ],
+    exp:'Status = "On Hold". NOT "Posted", "Released", or "Approved".',
+    expType:'ok', gap:null },
+
+  { id:'TC-005', cat:'positive', catLabel:'POSITIVE', pri:'high', priLabel:'HIGH',
+    title:'Return value matches spec format',
+    pre:'Valid balanced batch executable',
+    steps:[
+      'Execute a valid balanced 2-line batch',
+      'Note the exact return value string in each formula cell',
+      'Compare the batch ID in the return value with the batch ID visible in ERP'
+    ],
+    exp:'Return value matches pattern "Draft batch #JE-XXXXX created". The batch ID in the string matches the ERP batch record.',
+    expType:'ok', gap:null },
+
+  { id:'TC-006', cat:'positive', catLabel:'POSITIVE', pri:'medium', priLabel:'MED',
+    title:'Multi-line batch (4 lines) balanced in aggregate',
+    pre:'4 different GL accounts available; ERP connected',
+    steps:[
+      'Enter 2 debit lines: 300 + 200 = 500',
+      'Enter 2 credit lines: 400 + 100 = 500',
+      'All lines share same connectionName, transactionDate, postPeriod, ledger',
+      'Calculate'
+    ],
+    exp:'All 4 cells return the same batch ID. Batch on Hold. Total debits (500) = total credits (500).',
+    expType:'ok', gap:null },
+
+  { id:'TC-007', cat:'positive', catLabel:'POSITIVE', pri:'medium', priLabel:'MED',
+    title:'Currency defaults to ledger base currency when omitted',
+    pre:'Ledger "GL" has base currency USD; currency param omitted',
+    steps:[
+      'Create a balanced 2-line batch without providing the currency parameter',
+      'Calculate',
+      'Open ERP batch and check the currency field'
+    ],
+    exp:'Currency in ERP = "USD" (ledger default). Not empty or null.',
+    expType:'ok', gap:null },
+
+  // ─── NEGATIVE — REQUIRED FIELDS ───
+  { id:'TC-008', cat:'negative', catLabel:'NEGATIVE', pri:'high', priLabel:'HIGH',
+    title:'connectionName is null / missing',
+    pre:'—',
+    steps:['Enter function with connectionName omitted or null','Calculate'],
+    exp:'Error: required field missing. No batch created in ERP.',
+    expType:'err', gap:null },
+
+  { id:'TC-009', cat:'negative', catLabel:'NEGATIVE', pri:'high', priLabel:'HIGH',
+    title:'connectionName is empty string ""',
+    pre:'—',
+    steps:['Enter function with connectionName=""','Calculate'],
+    exp:'Error: empty string is not a valid connection name. No batch created.',
+    expType:'err', gap:null },
+
+  { id:'TC-010', cat:'negative', catLabel:'NEGATIVE', pri:'high', priLabel:'HIGH',
+    title:'connectionName refers to non-existent connection',
+    pre:'Connection "FAKE-ERP" does not exist',
+    steps:['Enter function with connectionName="FAKE-ERP"','Calculate'],
+    exp:'Error: connection not found or unreachable. No batch created.',
+    expType:'err', gap:null },
+
+  { id:'TC-011', cat:'negative', catLabel:'NEGATIVE', pri:'high', priLabel:'HIGH',
+    title:'transactionDate is null / missing',
+    pre:'—',
+    steps:['Enter function with transactionDate omitted','Calculate'],
+    exp:'Error: required field missing. No batch created.',
+    expType:'err', gap:null },
+
+  { id:'TC-012', cat:'negative', catLabel:'NEGATIVE', pri:'medium', priLabel:'MED',
+    title:'transactionDate — invalid format',
+    pre:'—',
+    steps:['Test with "not-a-date"','Test with "32-13-2026"','Calculate each'],
+    exp:'Error: invalid date value. Function does not create a batch.',
+    expType:'err', gap:null },
+
+  { id:'TC-013', cat:'negative', catLabel:'NEGATIVE', pri:'high', priLabel:'HIGH',
+    title:'postPeriod is null / missing',
+    pre:'—',
+    steps:['Enter function with postPeriod omitted','Calculate'],
+    exp:'Error: required field missing. No batch created.',
+    expType:'err', gap:null },
+
+  { id:'TC-014', cat:'negative', catLabel:'NEGATIVE', pri:'medium', priLabel:'MED',
+    title:'postPeriod — invalid format',
+    pre:'—',
+    steps:['Test "May 2026" (wrong format)','Test "2026-05" (reversed)','Test "abc"','Calculate each'],
+    exp:'Error for each invalid format. Only "MM-YYYY" (e.g. "05-2026") is valid.',
+    expType:'err', gap:null },
+
+  { id:'TC-015', cat:'negative', catLabel:'NEGATIVE', pri:'high', priLabel:'HIGH',
+    title:'ledger is null / missing',
+    pre:'—',
+    steps:['Enter function with ledger omitted','Calculate'],
+    exp:'Error: required field missing. No batch created.',
+    expType:'err', gap:null },
+
+  { id:'TC-016', cat:'negative', catLabel:'NEGATIVE', pri:'high', priLabel:'HIGH',
+    title:'ledger refers to non-existent ledger',
+    pre:'Ledger "NONEXISTENT" does not exist in ERP',
+    steps:['Enter function with ledger="NONEXISTENT"','Calculate'],
+    exp:'Error: ledger not found in ERP. No batch created.',
+    expType:'err', gap:null },
+
+  { id:'TC-017', cat:'negative', catLabel:'NEGATIVE', pri:'high', priLabel:'HIGH',
+    title:'account is null / missing on a line',
+    pre:'ERP connected; other params valid',
+    steps:['Enter function with account omitted or null','Calculate'],
+    exp:'Error: account is required per line. No batch created.',
+    expType:'err', gap:null },
+
+  // ─── BALANCE ───
+  { id:'TC-018', cat:'balance', catLabel:'BALANCE', pri:'high', priLabel:'HIGH',
+    title:'Single line — debit only, no credit',
+    pre:'ERP connected; all required fields valid',
+    steps:['Enter single function call with debit=500, credit=0','Calculate'],
+    exp:'"Journal is not balanced: debits 500.00 ≠ credits 0.00". No batch created.',
+    expType:'err', gap:null },
+
+  { id:'TC-019', cat:'balance', catLabel:'BALANCE', pri:'high', priLabel:'HIGH',
+    title:'Single line — credit only, no debit',
+    pre:'ERP connected',
+    steps:['Enter single function call with debit=0, credit=500','Calculate'],
+    exp:'"Journal is not balanced: debits 0.00 ≠ credits 500.00". No batch created.',
+    expType:'err', gap:null },
+
+  { id:'TC-020', cat:'balance', catLabel:'BALANCE', pri:'high', priLabel:'HIGH',
+    title:'Multiple lines — Σ debit > Σ credit',
+    pre:'ERP connected',
+    steps:['Line 1: debit=1000, credit=0','Line 2: debit=0, credit=900','Calculate (Σ debit=1000, Σ credit=900)'],
+    exp:'"Journal is not balanced: debits 1000.00 ≠ credits 900.00". No batch created.',
+    expType:'err', gap:null },
+
+  { id:'TC-021', cat:'balance', catLabel:'BALANCE', pri:'high', priLabel:'HIGH',
+    title:'Multiple lines — Σ credit > Σ debit',
+    pre:'ERP connected',
+    steps:['Line 1: debit=900, credit=0','Line 2: debit=0, credit=1000','Calculate (Σ debit=900, Σ credit=1000)'],
+    exp:'"Journal is not balanced: debits 900.00 ≠ credits 1000.00". No batch created.',
+    expType:'err', gap:null },
+
+  { id:'TC-022', cat:'balance', catLabel:'BALANCE', pri:'medium', priLabel:'MED',
+    title:'Error message shows exactly 2 decimal places',
+    pre:'ERP connected',
+    steps:['Line 1: debit=100.5, credit=0','Line 2: debit=0, credit=100.49 (imbalanced by 0.01)','Calculate','Read the exact error message'],
+    exp:'"Journal is not balanced: debits 100.50 ≠ credits 100.49" — both amounts shown with exactly 2 decimal places.',
+    expType:'err', gap:null },
+
+  // ─── EDGE CASES ───
+  { id:'TC-023', cat:'edge', catLabel:'EDGE', pri:'high', priLabel:'HIGH',
+    title:'No lines — empty range',
+    pre:'—',
+    steps:['Trigger function with zero line data / empty range (exact mechanism — see GAP-002)','Calculate'],
+    exp:'"At least one transaction line is required". No batch created.',
+    expType:'err', gap:'GAP-002' },
+
+  { id:'TC-024', cat:'edge', catLabel:'EDGE', pri:'medium', priLabel:'MED',
+    title:'Both debit and credit non-zero on same line',
+    pre:'ERP connected',
+    steps:['Enter function with debit=500, credit=500 in one call','Calculate'],
+    exp:'Spec does not define this case (GAP-004). Expected: error, or line treated as self-balancing. Verify actual behavior.',
+    expType:'note', gap:'GAP-004' },
+
+  { id:'TC-025', cat:'edge', catLabel:'EDGE', pri:'medium', priLabel:'MED',
+    title:'Both debit and credit are zero',
+    pre:'ERP connected',
+    steps:['Enter function with debit=0, credit=0','Also enter a second balanced line with same zeros','Calculate'],
+    exp:'Spec does not address zero-value lines (GAP-005). Expected: accepted as zero-amount line, or error/warning returned.',
+    expType:'note', gap:'GAP-005' },
+
+  { id:'TC-026', cat:'edge', catLabel:'EDGE', pri:'medium', priLabel:'MED',
+    title:'Negative value in debit field',
+    pre:'ERP connected',
+    steps:['Enter function with debit=−500','Pair with a balancing line','Calculate'],
+    exp:'Spec does not define negative amounts (GAP-006). Expected: validation error rejecting negative debit. Verify.',
+    expType:'note', gap:'GAP-006' },
+
+  { id:'TC-027', cat:'edge', catLabel:'EDGE', pri:'medium', priLabel:'MED',
+    title:'Negative value in credit field',
+    pre:'ERP connected',
+    steps:['Enter function with credit=−500','Pair with a balancing line','Calculate'],
+    exp:'Spec does not define negative amounts (GAP-006). Expected: validation error. Verify actual behavior.',
+    expType:'note', gap:'GAP-006' },
+
+  { id:'TC-028', cat:'edge', catLabel:'EDGE', pri:'low', priLabel:'LOW',
+    title:'Very large amounts — upper boundary',
+    pre:'ERP connected; ledger supports large numbers',
+    steps:['Create balanced batch with debit=credit=999,999,999.99','Calculate'],
+    exp:'Batch created if ERP supports the value; or a clear error if the amount exceeds ERP numeric limits.',
+    expType:'ok', gap:null },
+
+  { id:'TC-029', cat:'edge', catLabel:'EDGE', pri:'medium', priLabel:'MED',
+    title:'Floating-point sum balanced across 3 lines',
+    pre:'ERP connected',
+    steps:['Line 1: debit=100.01, credit=0','Line 2: debit=99.99, credit=0','Line 3: debit=0, credit=200.00','Calculate (Σ debit=200.00, Σ credit=200.00)'],
+    exp:'Batch created. Verifies correct decimal summation across multiple lines without floating-point drift.',
+    expType:'ok', gap:null },
+
+  { id:'TC-030', cat:'edge', catLabel:'EDGE', pri:'medium', priLabel:'MED',
+    title:'transactionDate falls outside postPeriod range',
+    pre:'Period "03-2026" covers March 2026; ERP connected',
+    steps:['Set transactionDate=2026-05-15 but postPeriod="03-2026"','Create a balanced 2-line batch','Calculate'],
+    exp:'Spec does not define this (GAP-007). Expected: error stating date does not belong to the given period. Verify.',
+    expType:'note', gap:'GAP-007' },
+
+  { id:'TC-031', cat:'edge', catLabel:'EDGE', pri:'medium', priLabel:'MED',
+    title:'Invalid currency code',
+    pre:'Ledger supports USD and EUR; ERP connected',
+    steps:['Enter function with currency="INVALID" or currency="XYZ"','Calculate'],
+    exp:'Error: unrecognized currency code. No batch created.',
+    expType:'err', gap:null },
+];
+
+/* ── Render list ── */
+const catOrder = ['positive','negative','balance','edge'];
+const catLabels = { positive:'POSITIVE — HAPPY PATH', negative:'NEGATIVE — REQUIRED FIELDS', balance:'NEGATIVE — BALANCE', edge:'EDGE CASES' };
+let activeFilter = 'all';
+
+function filterList(cat, btn) {
+  activeFilter = cat;
+  document.querySelectorAll('.list-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderList();
+}
+
+function renderList() {
+  const el = document.getElementById('list-scroll');
+  const filtered = activeFilter === 'all' ? cases : cases.filter(c => c.cat === activeFilter);
+  let html = '';
+  let lastCat = '';
+  filtered.forEach(tc => {
+    if (activeFilter === 'all' && tc.cat !== lastCat) {
+      lastCat = tc.cat;
+      html += `<div class="list-cat-label">${catLabels[tc.cat]}</div>`;
+    }
+    const priBadge = `<span class="badge badge-${tc.pri}">${tc.priLabel}</span>`;
+    const catBadge = `<span class="badge badge-${tc.cat}">${tc.catLabel}</span>`;
+    html += `
+      <div class="tc-item" id="item-${tc.id}" onclick="openDetail('${tc.id}')">
+        <div class="tc-item-row1">
+          <span class="tc-item-id">${tc.id}</span>
+          <span class="tc-item-title">${tc.title}</span>
+        </div>
+        <div class="tc-item-badges">${catBadge}${priBadge}</div>
+      </div>`;
+  });
+  el.innerHTML = html;
+}
+
+/* ── Open detail ── */
+function openDetail(id) {
+  const tc = cases.find(c => c.id === id);
+  if (!tc) return;
+
+  // Highlight selected item
+  document.querySelectorAll('.tc-item').forEach(i => i.classList.remove('active'));
+  const el = document.getElementById('item-' + id);
+  if (el) el.classList.add('active');
+
+  document.getElementById('detail-empty').style.display = 'none';
+  const content = document.getElementById('detail-content');
+  content.style.display = 'block';
+
+  const catBadge = `<span class="badge badge-${tc.cat}">${tc.catLabel}</span>`;
+  const priBadge = `<span class="badge badge-${tc.pri}">${tc.priLabel}</span>`;
+
+  const stepsHtml = tc.steps.map((s, i) => `
+    <li class="detail-step">
+      <span class="step-num">${String(i+1).padStart(2,'0')}.</span>
+      <span class="step-text">${escHtml(s)}</span>
+    </li>`).join('');
+
+  const gapNote = tc.gap
+    ? `<div class="detail-gap-ref">→ See <a href="gaps.html" style="color:var(--yellow);text-decoration:none;">${tc.gap}</a> in Spec Gaps</div>`
+    : '';
+
+  content.innerHTML = `
+    <div class="detail-tc-meta">
+      <span class="detail-tc-id">${tc.id}</span>
+      ${catBadge}${priBadge}
+    </div>
+    <div class="detail-title">${tc.title}</div>
+    <div class="detail-divider"></div>
+
+    <div class="detail-section-label">Preconditions</div>
+    <div class="detail-preconditions">${escHtml(tc.pre)}</div>
+
+    <div class="detail-divider"></div>
+    <div class="detail-section-label">Test Steps</div>
+    <ol class="detail-steps">${stepsHtml}</ol>
+
+    <div class="detail-divider"></div>
+    <div class="detail-section-label">Expected Result</div>
+    <div class="detail-expected expected-${tc.expType}">${escHtml(tc.exp)}</div>
+    ${gapNote}
+  `;
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+renderList();
+</script>
+</body>
+</html>

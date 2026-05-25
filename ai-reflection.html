@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Reflection — WRITEBACKJOURNALDRAFT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style-eva.css" />
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-eyebrow">// SYSTEM: ACTIVE</div>
+    <div class="sidebar-logo">QA Test Plan</div>
+  </div>
+  <div class="nav-section">:: Navigation</div>
+  <a href="index.html" class="nav-link"><span class="nav-icon">◈</span> Overview</a>
+  <a href="test-cases.html" class="nav-link"><span class="nav-icon">◉</span> Test Cases</a>
+  <a href="gaps.html" class="nav-link"><span class="nav-icon">◎</span> Spec Gaps</a>
+  <a href="ai-reflection.html" class="nav-link active"><span class="nav-icon">◇</span> AI Reflection</a>
+  <div class="theme-toggle">
+    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">◑ &nbsp;SWITCH THEME</button>
+  </div>
+  <div class="sidebar-footer">
+    VELIXO :: QA ASSESSMENT<br/>
+    VERSION 1.0.0 :: MAY 2026
+  </div>
+</aside>
+
+<main class="main">
+  <div class="page-header">
+    <div class="breadcrumb">QA_PLAN / AI_REFLECTION</div>
+    <div class="page-title">AI Tool Reflection</div>
+    <div class="page-desc">Tool used: Claude (Anthropic) · Honest assessment of what worked and what didn't</div>
+  </div>
+
+  <div class="content">
+
+    <div class="callout callout-info" style="margin-bottom:24px;">
+      AI was used as a thinking partner and first-draft generator — not as the final author. Every test case, assumption, and gap was reviewed, restructured, or rewritten by me. This section documents that process transparently.
+    </div>
+
+    <div class="ai-block">
+      <h3>Prompt 1 — Initial brainstorm</h3>
+      <pre>I'm a QA engineer writing test cases for a custom Excel function called
+WRITEBACKJOURNALDRAFT. It creates draft GL journal batches in an ERP from
+a spreadsheet. Each function call defines one line; multiple calls form
+one batch. The batch always lands in "On Hold" status.
+
+Here is the full spec:
+[pasted entire spec text]
+
+Give me a complete list of test categories I should cover, and flag any
+ambiguities or gaps you see in the spec.</pre>
+
+      <p><strong>What AI did well:</strong></p>
+      <ul>
+        <li>Immediately identified the main test areas — happy path, required field validation, balance validation, edge cases — matching what an experienced QA engineer reaches for first.</li>
+        <li>Spotted the parameter name mismatch (<code>date</code> vs <code>transactionDate</code>) without me pointing it out.</li>
+        <li>Suggested testing floating-point precision for the balance check — a subtle but real risk that's easy to deprioritise.</li>
+      </ul>
+
+      <p><strong>What AI missed or handled poorly:</strong></p>
+      <ul>
+        <li><strong>GAP-002 (empty line range) was not questioned.</strong> The AI accepted the acceptance criteria at face value and wrote a test case for it without asking how zero lines are even possible for a per-line function. I had to notice this myself.</li>
+        <li><strong>GAP-003 (batch grouping) was skipped entirely.</strong> The AI never asked: "what if two calls have different batch descriptions — do they form one batch or two?" This is a core behavioural question.</li>
+        <li><strong>GAP-008 (return value scope) was assumed, not questioned.</strong> The AI wrote "all cells return the batch ID" without flagging that the spec only says the function returns a value — it never says all cells return the same one.</li>
+        <li>The initial test case format was inconsistent — some had preconditions, some didn't; steps mixed numbered lists and prose.</li>
+      </ul>
+    </div>
+
+    <div class="ai-block">
+      <h3>Prompt 2 — Formalising test cases</h3>
+      <pre>Now write these as formal test cases using this structure:
+TC-ID | Category | Priority | Title | Preconditions | Steps | Expected Result
+
+Use High/Medium/Low priority. Mark edge cases where the spec is silent
+with a note instead of a definitive expected result. Group by:
+Positive, Required Fields, Balance Validation, Edge Cases.</pre>
+
+      <p><strong>What AI did well:</strong></p>
+      <ul>
+        <li>Produced a clean, structured table quickly — column layout, priority labelling, and grouping required minimal reformatting.</li>
+        <li>Correctly marked TC-024 through TC-027 (negative amounts, both-sides-populated) as "spec does not define this" rather than asserting pass/fail — the right call for undefined behaviour.</li>
+        <li>TC-022 (error message decimal precision) was a good catch — verifying that the error shows exactly 2 decimal places is easy to overlook.</li>
+      </ul>
+
+      <p><strong>What AI missed or handled poorly:</strong></p>
+      <ul>
+        <li><strong>TC-002 used placeholder syntax</strong> that wouldn't work in a real Excel formula. AI wrote omitted params as <code>,,</code> — valid in concept but the exact syntax varies by Excel version. I rewrote those steps explicitly.</li>
+        <li><strong>Preconditions were vague</strong> — e.g. "ERP connected" without specifying account IDs or ledger names needed. I added those specifics.</li>
+        <li>TC-007 (currency defaulting to ledger currency) was missing until I asked separately — it's an explicit spec requirement that AI overlooked.</li>
+        <li>Priority was inconsistent: AI marked TC-028 (large numbers) as High; I downgraded it to Low — it's a boundary case, not a core flow.</li>
+      </ul>
+    </div>
+
+    <div class="ai-block">
+      <h3>What I would change about the prompts</h3>
+      <ul>
+        <li><strong>Separate gap analysis from test case generation.</strong> Asking for both at once made AI rush the gaps to get to the test cases. Next time: a dedicated "find every ambiguity" prompt first, then a separate "write test cases" prompt.</li>
+        <li><strong>Give AI a sceptical persona.</strong> Something like: "You are a QA engineer who has been burned by spec assumptions before. Flag anything the spec assumes but doesn't prove." This produces more critical output.</li>
+        <li><strong>Ask it to challenge acceptance criteria, not just test against them.</strong> The "at least one line required" criterion was accepted uncritically. A prompt like "question whether each AC is testable as written" would surface issues like GAP-002 automatically.</li>
+        <li><strong>Request explicit test data upfront.</strong> "Give me concrete input values for each test case" would have prevented the vague preconditions I fixed manually.</li>
+      </ul>
+    </div>
+
+    <div class="ai-block">
+      <h3>Overall assessment</h3>
+      <p>
+        AI was most valuable as a <strong>speed multiplier for structure</strong> — turning a mental list of ideas into a formatted table in seconds. It saved roughly 30–40 minutes of boilerplate work.
+      </p>
+      <p>
+        AI was least useful for <strong>critical thinking about spec coherence</strong>. It reads specifications charitably and fills gaps with plausible assumptions rather than surfacing them as risks. The most valuable part of this task — identifying GAP-002, GAP-003, and GAP-008 — required me to read the spec carefully and ask "does this actually make sense?"
+      </p>
+      <p>
+        The practical lesson: use AI to generate the first 80%, then apply domain knowledge and scepticism to the remaining 20% — which is often where the real testing value lives.
+      </p>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  const saved = localStorage.getItem('eva-theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  const btn = document.getElementById('theme-btn');
+  function updateBtn() {
+    btn.textContent = document.documentElement.getAttribute('data-theme') === 'light'
+      ? '◑  SWITCH TO DARK' : '◑  SWITCH TO LIGHT';
+  }
+  function toggleTheme() {
+    const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('eva-theme', next);
+    updateBtn();
+  }
+  updateBtn();
+</script>
+</body>
+</html>

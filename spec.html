@@ -96,6 +96,126 @@
     }
     .spec-table tr:last-child td { border-bottom: none; }
     .spec-table td:first-child { color: var(--cyan); font-family: 'Share Tech Mono', monospace; font-size: 11.5px; white-space: nowrap; }
+    .field-model {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 20px 0 18px;
+    }
+    .field-layer {
+      padding: 15px 16px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--bg2);
+    }
+    .field-layer-num {
+      display: block;
+      margin-bottom: 9px;
+      color: var(--cyan);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .12em;
+    }
+    .field-layer-title {
+      margin-bottom: 8px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .field-layer-text {
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .qa-assessment {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 22px;
+      margin: 19px 0 18px;
+      padding: 17px 19px;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--cyan);
+      border-radius: 6px;
+      background: var(--bg2);
+    }
+    .qa-verdict {
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+    .qa-verdict span {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--cyan);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9px;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    .qa-needs {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px 17px;
+    }
+    .qa-needs li {
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .qa-needs strong {
+      display: block;
+      color: var(--text);
+      font-weight: 500;
+    }
+    .spec-origin-note {
+      margin: 14px 0 17px;
+      padding: 12px 14px;
+      border-radius: 6px;
+      background: rgba(25,180,184,.07);
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .contract-list {
+      margin: 20px 0 0;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+    .contract-list-title {
+      margin-bottom: 12px;
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .contract-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .contract-item {
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+    .contract-item strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--cyan);
+      font-size: 12.5px;
+    }
+    .contract-item div {
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    @media (max-width: 1020px) {
+      .field-model, .contract-grid, .qa-needs { grid-template-columns: 1fr; }
+      .qa-assessment { grid-template-columns: 1fr; }
+    }
     .risk-row { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); }
     .risk-row:last-child { border-bottom: none; }
     .risk-pri { flex-shrink: 0; width: 16px; padding-top: 5px; display: flex; justify-content: center; }
@@ -221,8 +341,41 @@
     <div class="card">
       <div class="card-title"><span class="icon">◻</span> Ideal Field Specification</div>
       <p style="font-size:12.5px;color:var(--text-muted);line-height:1.6;margin-bottom:14px;">
-        Extended field table: how each parameter should be specified in a complete, production-ready TZ. Includes Excel format, normalised API format, ERP mapping target, validation rules, default values, and recommended limits.
+        Proposed field contract: how each parameter should be defined in a complete, production-ready feature specification. It connects Excel input, normalised API data, ERP mapping, validation, defaults, and limits.
       </p>
+      <div class="field-model" aria-label="Proposed specification structure">
+        <div class="field-layer">
+          <span class="field-layer-num">01 / INPUT</span>
+          <div class="field-layer-title">Spreadsheet values</div>
+          <div class="field-layer-text">Fields entered by the user: dates, ledger, account, currency, descriptions and debit/credit amounts.</div>
+        </div>
+        <div class="field-layer">
+          <span class="field-layer-num">02 / CONTROL</span>
+          <div class="field-layer-title">Safe processing</div>
+          <div class="field-layer-text">System-generated operation and line identifiers used for duplicate prevention, tracing and safe retry.</div>
+        </div>
+        <div class="field-layer">
+          <span class="field-layer-num">03 / OUTPUT</span>
+          <div class="field-layer-title">Observable result</div>
+          <div class="field-layer-text">Success/error response, batch status, ERP lookup and audit evidence needed to confirm the writeback result.</div>
+        </div>
+      </div>
+      <div class="qa-assessment">
+        <div class="qa-verdict">
+          <span>Senior QA review</span>
+          Good foundation, but not sufficient for test execution without clarification.
+        </div>
+        <ul class="qa-needs">
+          <li><strong>Source / status</strong>Mark each rule as original requirement, agreed clarification, or proposed control.</li>
+          <li><strong>Validation ownership</strong>State whether Excel add-in, API or ERP rejects each invalid value.</li>
+          <li><strong>Error contract</strong>Define code, message, affected row/field/group and validation order.</li>
+          <li><strong>Processing rules</strong>Identify grouping-key fields, idempotency scope and audit/security handling.</li>
+        </ul>
+      </div>
+      <div class="spec-origin-note">
+        <strong>Requirement boundary:</strong> the user-input rows represent fields described in the task.
+        <code>externalLineId</code>, <code>idempotencyKey</code> and <code>correlationId</code> are proposed reliability controls, not confirmed source requirements.
+      </div>
       <div class="table-wrap" style="overflow-x:auto;">
         <table class="spec-table" style="min-width:900px;">
           <thead>
@@ -395,6 +548,15 @@
             </tr>
           </tbody>
         </table>
+      </div>
+      <div class="contract-list">
+        <div class="contract-list-title">Contracts still needed before QA sign-off</div>
+        <div class="contract-grid">
+          <div class="contract-item"><strong>Response contract</strong><div>Specify success payload and visible result, for example batch number, <code>On Hold</code> status and correlation ID.</div></div>
+          <div class="contract-item"><strong>Error catalogue</strong><div>Specify messages/codes for required fields, balance, invalid master data, permissions and timeout states.</div></div>
+          <div class="contract-item"><strong>Grouping and atomicity</strong><div>List the full batch key and whether one invalid group blocks all groups or only that group.</div></div>
+          <div class="contract-item"><strong>Retry and audit evidence</strong><div>Define duplicate protection, safe retry outcome and what evidence is available in ERP/logs.</div></div>
+        </div>
       </div>
     </div>
 

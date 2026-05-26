@@ -1785,15 +1785,11 @@ body::before {
 [data-theme="light"] .gaps-page .gap-title {
   max-width: 800px;
   margin: 15px 0 21px;
+  color: #172337;
   font-family: 'Inter', sans-serif;
   font-size: 22px;
   font-weight: 700;
   letter-spacing: -.022em;
-  background: linear-gradient(120deg, #0b7a80 0%, #1a3348 65%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
 }
 [data-theme="light"] .gaps-page .gap-sections {
   grid-template-columns: 1fr 1fr;
@@ -1805,10 +1801,14 @@ body::before {
 }
 [data-theme="light"] .gaps-page .gap-sec-label {
   margin-bottom: 8px;
-  color: #708095;
   font-size: 9px;
   letter-spacing: .17em;
+  /* colors per section type are set below */
 }
+[data-theme="light"] .gap-sec-unclear  .gap-sec-label { color: #c82040; }
+[data-theme="light"] .gap-sec-assume   .gap-sec-label { color: #1a8c5a; }
+[data-theme="light"] .gap-sec-why      .gap-sec-label { color: #8a6010; }
+[data-theme="light"] .gap-sec-coverage .gap-sec-label { color: #0a8490; }
 [data-theme="light"] .gaps-page .gap-sec-text {
   color: #465466;
   line-height: 1.62;

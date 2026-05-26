@@ -227,17 +227,22 @@
     <!-- ── Field Spec Table ── -->
     <div class="card">
       <div class="card-title"><span class="icon">◻</span> Ideal Field Specification</div>
-      <div class="table-wrap">
-        <table class="spec-table">
+      <p style="font-size:12.5px;color:var(--text-muted);line-height:1.6;margin-bottom:14px;">
+        Extended field table: how each parameter should be specified in a complete, production-ready TZ. Includes Excel format, normalised API format, ERP mapping target, validation rules, default values, and recommended limits.
+      </p>
+      <div class="table-wrap" style="overflow-x:auto;">
+        <table class="spec-table" style="min-width:900px;">
           <thead>
             <tr>
               <th>Field</th>
               <th>Scope</th>
               <th>Required</th>
+              <th>Excel Format</th>
               <th>API Format</th>
-              <th>Validation</th>
+              <th>ERP Mapping</th>
+              <th>Validation Rule</th>
               <th>Default</th>
-              <th>Limit (example)</th>
+              <th>Limit</th>
             </tr>
           </thead>
           <tbody>
@@ -245,7 +250,9 @@
               <td>connectionName</td>
               <td>Input / system</td>
               <td><span class="badge badge-p0">Yes</span></td>
+              <td>Text — connection name</td>
               <td>string</td>
+              <td>ERP connection selector</td>
               <td>Must exist and be accessible</td>
               <td>none</td>
               <td>255 chars</td>
@@ -254,7 +261,9 @@
               <td>transactionDate</td>
               <td>Batch</td>
               <td><span class="badge badge-p0">Yes</span></td>
+              <td>Excel date or <code>DATE(Y,M,D)</code></td>
               <td>YYYY-MM-DD</td>
+              <td>Transaction Date</td>
               <td>Valid date; must belong to postPeriod</td>
               <td>none</td>
               <td>ISO date</td>
@@ -263,16 +272,20 @@
               <td>postPeriod</td>
               <td>Batch</td>
               <td><span class="badge badge-p0">Yes</span></td>
-              <td>MM-YYYY</td>
-              <td>Exists in ERP and is open (not closed)</td>
+              <td>Text period code, e.g. <code>05-2026</code></td>
+              <td>string / periodId</td>
+              <td>Financial Period</td>
+              <td>Exists in ERP and is open (not closed/locked)</td>
               <td>none</td>
-              <td>ERP period code</td>
+              <td>Format defined by ERP</td>
             </tr>
             <tr>
               <td>batchDescription</td>
               <td>Batch</td>
               <td><span class="badge badge-p2">No</span></td>
+              <td>Text</td>
               <td>string</td>
+              <td>Batch Description</td>
               <td>Safe text; part of grouping key</td>
               <td>empty / null</td>
               <td>255 chars</td>
@@ -280,9 +293,11 @@
             <tr>
               <td>branch</td>
               <td>Batch</td>
-              <td><span class="badge badge-p2">No</span></td>
+              <td><span class="badge badge-p2">No / Depends</span></td>
+              <td>Branch code</td>
               <td>branch code / id</td>
-              <td>If provided: exists and is accessible; part of grouping key</td>
+              <td>Branch</td>
+              <td>If provided: exists and accessible; part of grouping key</td>
               <td>default / empty</td>
               <td>30–50 chars</td>
             </tr>
@@ -290,7 +305,9 @@
               <td>ledger</td>
               <td>Batch</td>
               <td><span class="badge badge-p0">Yes</span></td>
+              <td>Ledger code / name / ID — must be specified</td>
               <td>ledger code / id</td>
+              <td>Ledger</td>
               <td>Active and accessible ERP ledger</td>
               <td>none</td>
               <td>30–50 chars</td>
@@ -299,16 +316,20 @@
               <td>currency</td>
               <td>Batch / Line</td>
               <td><span class="badge badge-p2">No</span></td>
-              <td>ISO 4217 code</td>
-              <td>Supported by ledger; consistent across all lines</td>
+              <td>Currency code</td>
+              <td>currency code</td>
+              <td>Currency</td>
+              <td>Supported by ledger; consistent across all lines in batch</td>
               <td>ledger base currency</td>
-              <td>3 chars</td>
+              <td>3 chars (ISO 4217)</td>
             </tr>
             <tr>
               <td>account</td>
               <td>Line</td>
               <td><span class="badge badge-p0">Yes</span></td>
+              <td>Account code</td>
               <td>account code / id</td>
+              <td>GL Account</td>
               <td>Active and accessible in chart of accounts</td>
               <td>none</td>
               <td>30–50 chars</td>
@@ -317,7 +338,9 @@
               <td>debit</td>
               <td>Line</td>
               <td>Conditional</td>
+              <td>Excel number</td>
               <td>decimal</td>
+              <td>Debit Amount</td>
               <td>&gt; 0; valid precision; only if credit is empty</td>
               <td>null</td>
               <td>decimal(19,4)</td>
@@ -326,7 +349,9 @@
               <td>credit</td>
               <td>Line</td>
               <td>Conditional</td>
+              <td>Excel number</td>
               <td>decimal</td>
+              <td>Credit Amount</td>
               <td>&gt; 0; valid precision; only if debit is empty</td>
               <td>null</td>
               <td>decimal(19,4)</td>
@@ -335,17 +360,32 @@
               <td>lineDescription</td>
               <td>Line</td>
               <td><span class="badge badge-p2">No</span></td>
+              <td>Text</td>
               <td>string</td>
+              <td>Line Description</td>
               <td>Safe text; no script or markup execution</td>
               <td>empty / null</td>
               <td>255 chars</td>
             </tr>
             <tr>
+              <td>externalLineId</td>
+              <td>Line / system</td>
+              <td>Generated</td>
+              <td>Hidden / generated</td>
+              <td>string</td>
+              <td>Trace / source line</td>
+              <td>Unique within operation; links ERP line back to Excel row</td>
+              <td>auto-generated</td>
+              <td>36–255 chars</td>
+            </tr>
+            <tr>
               <td>idempotencyKey</td>
               <td>Operation / system</td>
               <td>Generated</td>
+              <td>Hidden / sent as request header</td>
               <td>string / uuid</td>
-              <td>Unique per Writeback operation; prevents duplicate batches on retry</td>
+              <td>Writeback operation</td>
+              <td>Unique per operation; prevents duplicate batches on retry</td>
               <td>auto-generated</td>
               <td>36–255 chars</td>
             </tr>
@@ -353,8 +393,10 @@
               <td>correlationId</td>
               <td>Operation / system</td>
               <td>Generated</td>
+              <td>Hidden / generated</td>
               <td>string / uuid</td>
-              <td>Unique trace ID linking Excel, API logs, telemetry, and ERP audit</td>
+              <td>Trace / audit</td>
+              <td>Unique per operation; links Excel, API logs, telemetry, ERP audit</td>
               <td>auto-generated</td>
               <td>36–255 chars</td>
             </tr>

@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-eva.css?v=20260526-allure5" />
+  <link rel="stylesheet" href="style-eva.css?v=20260526-allure6" />
   <script src="theme.js?v=20260526-allure2"></script>
 </head>
 <body class="reflection-page">
@@ -42,86 +42,178 @@
 
   <div class="content">
 
-    <div class="callout callout-info" style="margin-bottom:24px;">
-      AI was used as a thinking partner and first-draft generator — not as the final author. Every test case, assumption, and gap was reviewed, restructured, or rewritten by me. This section documents that process transparently.
+    <div class="reflection-hero">
+      <div class="reflection-kicker">Disclosure / Review Log</div>
+      <h2>AI assisted the draft.<br>I owned the analysis.</h2>
+      <p>AI was used as a thinking partner and first-draft generator, not as the final author. Every test case, assumption, and gap was reviewed, restructured, or rewritten by me. This section documents that process transparently.</p>
+      <div class="reflection-summary">
+        <div><strong>2</strong><span>Prompts documented</span></div>
+        <div><strong>3</strong><span>Critical gaps found manually</span></div>
+        <div><strong>30–40</strong><span>Minutes saved on structure</span></div>
+      </div>
     </div>
 
-    <div class="ai-block">
-      <h3>Prompt 1 — Initial brainstorm</h3>
-      <pre>I'm a QA engineer writing test cases for a custom Excel function called
+    <section class="prompt-card">
+      <div class="prompt-heading">
+        <div class="prompt-index">01</div>
+        <div>
+          <h2>Initial brainstorm</h2>
+          <p>Goal: discover coverage areas and surface ambiguities before writing cases.</p>
+        </div>
+      </div>
+      <details class="prompt-source">
+        <summary>View exact prompt and full specification context</summary>
+        <pre>I'm a QA engineer writing test cases for a custom Excel function called
 WRITEBACKJOURNALDRAFT. It creates draft GL journal batches in an ERP from
 a spreadsheet. Each function call defines one line; multiple calls form
 one batch. The batch always lands in "On Hold" status.
 
 Here is the full spec:
-[pasted entire spec text]
+
+Task: Write test cases for the custom Excel function WRITEBACKJOURNALDRAFT
+
+Glossary
+A batch is a group of journal lines (transactions) that have the same
+transaction date, ledger, and batch description.
+
+A reporting period is a predefined accounting period where the transaction
+date belongs (i.e. "Month Ending 31 March 2027").
+
+Custom Function Description
+As an ERP user, I want to create draft GL journal entries from Excel so that
+I can prepare transactions for manual review and posting by an accountant.
+
+WRITEBACKJOURNALDRAFT is an Excel custom function for creating draft GL journal
+batches in the ERP directly from a spreadsheet range. Each function defines a
+single line. Several of those functions placed together on a worksheet can
+define one GL journal batch. The function never posts the batch — it always
+lands in the On Hold status, and must be reviewed and posted manually inside
+the ERP system.
+
+Function Signature
+=WRITEBACKJOURNALDRAFT(
+  // batch properties
+  connectionName,
+  date,
+  reportingPeriod,
+  batchDescription,
+  branch,
+  Ledger,
+  // line properties
+  currency,
+  account,
+  debit,
+  credit,
+  lineDescription
+)
+
+Parameters
+connectionName     string   Required: Yes  ERP connection name
+transactionDate    date     Required: Yes  Date of the journal batch
+postPeriod         string   Required: Yes  Financial period (e.g. "05-2026")
+batchDescription   string   Required: No   Batch-level description
+branch             string   Required: No   Branch identifier
+ledger             string   Required: Yes  Target ledger
+currency           string   Required: No   Currency code; defaults to ledger currency
+account            string   Required: Yes  GL account per line
+debit              number   Required: No   Debit amount per line
+credit             number   Required: No   Credit amount per line
+lineDescription    string   Required: No   Line description
+
+Acceptance Criteria
+Batch created on hold — The resulting batch in the ERP always has status
+On Hold; no release or post action is triggered.
+
+Balance validation — Total debits must equal total credits across all lines;
+imbalanced input returns "Journal is not balanced: debits X.XX ≠ credits Y.YY"
+error.
+
+At least one line required — An empty line range returns
+"At least one transaction line is required".
+
+Return value — Returns "Draft batch #JE-00087 created" on success.
 
 Give me a complete list of test categories I should cover, and flag any
 ambiguities or gaps you see in the spec.</pre>
+      </details>
+      <div class="evaluation-grid">
+        <div class="evaluation good">
+          <h3>Handled well</h3>
+          <ul>
+            <li>Identified happy path, required fields, balance validation and edge cases immediately.</li>
+            <li>Spotted the parameter-name mismatch: <code>date</code> vs <code>transactionDate</code>.</li>
+            <li>Suggested floating-point precision checks for balance validation.</li>
+          </ul>
+        </div>
+        <div class="evaluation missed">
+          <h3>Missed or assumed</h3>
+          <ul>
+            <li><strong>GAP-002:</strong> did not question how an empty range exists for a per-line function.</li>
+            <li><strong>GAP-003:</strong> did not identify undefined batch-grouping behavior.</li>
+            <li><strong>GAP-008:</strong> assumed all cells return the same batch ID without specification support.</li>
+            <li>Produced inconsistent formatting across early cases.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
-      <p><strong>What AI did well:</strong></p>
-      <ul>
-        <li>Immediately identified the main test areas — happy path, required field validation, balance validation, edge cases — matching what an experienced QA engineer reaches for first.</li>
-        <li>Spotted the parameter name mismatch (<code>date</code> vs <code>transactionDate</code>) without me pointing it out.</li>
-        <li>Suggested testing floating-point precision for the balance check — a subtle but real risk that's easy to deprioritise.</li>
-      </ul>
-
-      <p><strong>What AI missed or handled poorly:</strong></p>
-      <ul>
-        <li><strong>GAP-002 (empty line range) was not questioned.</strong> The AI accepted the acceptance criteria at face value and wrote a test case for it without asking how zero lines are even possible for a per-line function. I had to notice this myself.</li>
-        <li><strong>GAP-003 (batch grouping) was skipped entirely.</strong> The AI never asked: "what if two calls have different batch descriptions — do they form one batch or two?" This is a core behavioural question.</li>
-        <li><strong>GAP-008 (return value scope) was assumed, not questioned.</strong> The AI wrote "all cells return the batch ID" without flagging that the spec only says the function returns a value — it never says all cells return the same one.</li>
-        <li>The initial test case format was inconsistent — some had preconditions, some didn't; steps mixed numbered lists and prose.</li>
-      </ul>
-    </div>
-
-    <div class="ai-block">
-      <h3>Prompt 2 — Formalising test cases</h3>
-      <pre>Now write these as formal test cases using this structure:
+    <section class="prompt-card">
+      <div class="prompt-heading">
+        <div class="prompt-index">02</div>
+        <div>
+          <h2>Formalising test cases</h2>
+          <p>Goal: turn identified scenarios into a maintainable test-case format.</p>
+        </div>
+      </div>
+      <details class="prompt-source">
+        <summary>View exact prompt</summary>
+        <pre>Now write these as formal test cases using this structure:
 TC-ID | Category | Priority | Title | Preconditions | Steps | Expected Result
 
 Use High/Medium/Low priority. Mark edge cases where the spec is silent
 with a note instead of a definitive expected result. Group by:
 Positive, Required Fields, Balance Validation, Edge Cases.</pre>
+      </details>
+      <div class="evaluation-grid">
+        <div class="evaluation good">
+          <h3>Handled well</h3>
+          <ul>
+            <li>Generated a structured test table quickly with usable grouping and labels.</li>
+            <li>Marked undefined negative/both-sides amount behavior as requiring clarification.</li>
+            <li>Suggested checking exactly two decimal places in the balance error.</li>
+          </ul>
+        </div>
+        <div class="evaluation missed">
+          <h3>Required my correction</h3>
+          <ul>
+            <li><strong>TC-002:</strong> omitted-parameter syntax was conceptual rather than execution-ready Excel syntax.</li>
+            <li>Preconditions lacked concrete account, ledger and connection data.</li>
+            <li>Currency defaulting was missed despite being an explicit requirement.</li>
+            <li>Priority for large-number boundaries was overstated.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
-      <p><strong>What AI did well:</strong></p>
-      <ul>
-        <li>Produced a clean, structured table quickly — column layout, priority labelling, and grouping required minimal reformatting.</li>
-        <li>Correctly marked TC-024 through TC-027 (negative amounts, both-sides-populated) as "spec does not define this" rather than asserting pass/fail — the right call for undefined behaviour.</li>
-        <li>TC-022 (error message decimal precision) was a good catch — verifying that the error shows exactly 2 decimal places is easy to overlook.</li>
-      </ul>
+    <section class="reflection-lessons">
+      <div class="lesson-title">Prompt improvements</div>
+      <div class="lesson-grid">
+        <div class="lesson"><span>01</span><h3>Separate analysis and generation</h3><p>Run a dedicated ambiguity review before asking for test cases, so gaps are not rushed.</p></div>
+        <div class="lesson"><span>02</span><h3>Demand scepticism</h3><p>Ask the AI to challenge anything the specification assumes but does not prove.</p></div>
+        <div class="lesson"><span>03</span><h3>Challenge acceptance criteria</h3><p>Ask whether every criterion is testable as written, especially the empty-range requirement.</p></div>
+        <div class="lesson"><span>04</span><h3>Require concrete data</h3><p>Request runnable input values, setup and ERP assertions in the first case draft.</p></div>
+      </div>
+    </section>
 
-      <p><strong>What AI missed or handled poorly:</strong></p>
-      <ul>
-        <li><strong>TC-002 used placeholder syntax</strong> that wouldn't work in a real Excel formula. AI wrote omitted params as <code>,,</code> — valid in concept but the exact syntax varies by Excel version. I rewrote those steps explicitly.</li>
-        <li><strong>Preconditions were vague</strong> — e.g. "ERP connected" without specifying account IDs or ledger names needed. I added those specifics.</li>
-        <li>TC-007 (currency defaulting to ledger currency) was missing until I asked separately — it's an explicit spec requirement that AI overlooked.</li>
-        <li>Priority was inconsistent: AI marked TC-028 (large numbers) as High; I downgraded it to Low — it's a boundary case, not a core flow.</li>
-      </ul>
-    </div>
-
-    <div class="ai-block">
-      <h3>What I would change about the prompts</h3>
-      <ul>
-        <li><strong>Separate gap analysis from test case generation.</strong> Asking for both at once made AI rush the gaps to get to the test cases. Next time: a dedicated "find every ambiguity" prompt first, then a separate "write test cases" prompt.</li>
-        <li><strong>Give AI a sceptical persona.</strong> Something like: "You are a QA engineer who has been burned by spec assumptions before. Flag anything the spec assumes but doesn't prove." This produces more critical output.</li>
-        <li><strong>Ask it to challenge acceptance criteria, not just test against them.</strong> The "at least one line required" criterion was accepted uncritically. A prompt like "question whether each AC is testable as written" would surface issues like GAP-002 automatically.</li>
-        <li><strong>Request explicit test data upfront.</strong> "Give me concrete input values for each test case" would have prevented the vague preconditions I fixed manually.</li>
-      </ul>
-    </div>
-
-    <div class="ai-block">
-      <h3>Overall assessment</h3>
-      <p>
-        AI was most valuable as a <strong>speed multiplier for structure</strong> — turning a mental list of ideas into a formatted table in seconds. It saved roughly 30–40 minutes of boilerplate work.
-      </p>
-      <p>
-        AI was least useful for <strong>critical thinking about spec coherence</strong>. It reads specifications charitably and fills gaps with plausible assumptions rather than surfacing them as risks. The most valuable part of this task — identifying GAP-002, GAP-003, and GAP-008 — required me to read the spec carefully and ask "does this actually make sense?"
-      </p>
-      <p>
-        The practical lesson: use AI to generate the first 80%, then apply domain knowledge and scepticism to the remaining 20% — which is often where the real testing value lives.
-      </p>
-    </div>
+    <section class="assessment-final">
+      <div class="assessment-label">Overall assessment</div>
+      <h2>Useful for velocity. Not a substitute for scepticism.</h2>
+      <div class="assessment-columns">
+        <p>AI was most valuable as a <strong>speed multiplier for structure</strong>: it converted a mental coverage list into a formatted draft quickly and saved roughly <strong>30–40 minutes</strong> of boilerplate work.</p>
+        <p>AI was least valuable for <strong>specification coherence</strong>: the key gaps concerning empty range, grouping and return-value scope required a human reviewer to ask, “does this actually make sense?”</p>
+      </div>
+      <div class="assessment-rule">Practical lesson: use AI for the first structured draft, then apply domain knowledge and scepticism to the high-risk decisions.</div>
+    </section>
 
   </div>
 </main>

@@ -1942,6 +1942,230 @@ body::before {
   box-shadow: 0 0 0 2px rgba(25, 180, 184, .10);
 }
 
+/* AI Reflection: transparent decision log */
+.reflection-page .content { max-width: 1080px; }
+.reflection-hero {
+  margin-bottom: 20px;
+  padding: 31px 34px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--cyan);
+  border-radius: 8px;
+  background: var(--panel);
+}
+.reflection-kicker,
+.assessment-label {
+  margin-bottom: 12px;
+  color: var(--cyan);
+  font: 10px 'Share Tech Mono', monospace;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.reflection-hero h2 {
+  margin: 0 0 14px;
+  color: var(--text);
+  font-size: 32px;
+  line-height: 1.16;
+  letter-spacing: -.04em;
+}
+.reflection-hero p {
+  max-width: 780px;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+.reflection-summary {
+  display: flex;
+  gap: 42px;
+  margin-top: 27px;
+  padding-top: 23px;
+  border-top: 1px solid var(--border);
+}
+.reflection-summary strong {
+  display: block;
+  color: var(--cyan);
+  font-size: 28px;
+  font-weight: 650;
+  line-height: 1;
+}
+.reflection-summary span {
+  display: block;
+  margin-top: 7px;
+  color: var(--text-muted);
+  font-size: 11px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.prompt-card {
+  margin-bottom: 18px;
+  padding: 27px 29px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+}
+.prompt-heading {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  margin-bottom: 21px;
+}
+.prompt-index {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border: 1px solid var(--cyan);
+  border-radius: 50%;
+  color: var(--cyan);
+  font: 15px/38px 'Share Tech Mono', monospace;
+  text-align: center;
+}
+.prompt-heading h2 {
+  margin: 0 0 5px;
+  color: var(--text);
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: -.025em;
+}
+.prompt-heading p {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.prompt-source {
+  overflow: hidden;
+  margin-bottom: 22px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg2);
+}
+.prompt-source summary {
+  padding: 14px 17px;
+  color: var(--cyan);
+  font: 11px 'Share Tech Mono', monospace;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.prompt-source[open] summary { border-bottom: 1px solid var(--border); }
+.prompt-source pre {
+  overflow-x: auto;
+  margin: 0;
+  padding: 18px 20px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.65;
+}
+.evaluation-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.evaluation {
+  padding: 19px 20px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+.evaluation.good { border-top: 3px solid #21a982; background: rgba(33,169,130,.045); }
+.evaluation.missed { border-top: 3px solid #d0526c; background: rgba(208,82,108,.045); }
+.evaluation h3 {
+  margin: 0 0 13px;
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 600;
+}
+.evaluation ul {
+  margin: 0;
+  padding-left: 17px;
+}
+.evaluation li {
+  margin-bottom: 9px;
+  color: var(--text-muted);
+  font-size: 12.5px;
+  line-height: 1.58;
+}
+.reflection-lessons,
+.assessment-final {
+  margin-bottom: 18px;
+  padding: 27px 29px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+}
+.lesson-title {
+  margin-bottom: 18px;
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 650;
+}
+.lesson-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.lesson {
+  padding: 16px 17px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg2);
+}
+.lesson span {
+  color: var(--cyan);
+  font: 10px 'Share Tech Mono', monospace;
+}
+.lesson h3 {
+  margin: 8px 0 7px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+}
+.lesson p {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.58;
+}
+.assessment-final h2 {
+  max-width: 690px;
+  margin: 0 0 22px;
+  color: var(--text);
+  font-size: 27px;
+  letter-spacing: -.035em;
+}
+.assessment-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 27px;
+}
+.assessment-columns p {
+  color: var(--text-muted);
+  font-size: 13.5px;
+  line-height: 1.7;
+}
+.assessment-columns strong { color: var(--text); }
+.assessment-rule {
+  margin-top: 23px;
+  padding: 16px 18px;
+  border-left: 3px solid var(--cyan);
+  background: rgba(25,180,184,.07);
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+[data-theme="light"] .reflection-hero,
+[data-theme="light"] .prompt-card,
+[data-theme="light"] .reflection-lessons,
+[data-theme="light"] .assessment-final {
+  border-color: #e3e9f0;
+  background: #fff;
+}
+[data-theme="light"] .reflection-hero { border-left-color: #19b4b8; }
+[data-theme="light"] .prompt-source,
+[data-theme="light"] .lesson { border-color: #e3e9f0; background: #f8fafc; }
+@media (max-width: 900px) {
+  .evaluation-grid, .lesson-grid, .assessment-columns { grid-template-columns: 1fr; }
+  .reflection-summary { flex-direction: column; gap: 18px; }
+}
+
 [data-theme="light"] .glossary-group {
   position: relative;
   border-left: 4px solid #1ab4b8;

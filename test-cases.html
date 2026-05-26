@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-eva.css?v=20260526-miku1" />
+  <link rel="stylesheet" href="style-eva.css?v=20260526-allure1" />
 </head>
 <body class="cases-page">
 
@@ -62,7 +62,7 @@
 </div>
 
 <script>
-const savedTheme = localStorage.getItem('eva-theme');
+const savedTheme = localStorage.getItem('eva-theme-v2');
 if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
 function updateThemeBtn() {
   const t = document.documentElement.getAttribute('data-theme');
@@ -71,7 +71,7 @@ function updateThemeBtn() {
 function toggleTheme() {
   const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
   document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('eva-theme', next);
+  localStorage.setItem('eva-theme-v2', next);
   updateThemeBtn();
 }
 updateThemeBtn();
@@ -189,30 +189,42 @@ function openDetail(id) {
   panel.style.display = 'block';
 
   const notesHtml = tc.notes ? `
-    <div class="detail-divider"></div>
-    <div class="detail-section-label">Notes</div>
-    <div class="detail-notes">${escHtml(tc.notes)}</div>` : '';
+    <section class="meta-block">
+      <div class="meta-label">Notes</div>
+      <div class="meta-text">${escHtml(tc.notes)}</div>
+    </section>` : '';
 
   panel.innerHTML = `
-    <div class="detail-tc-meta">
-      <span class="detail-tc-id">${tc.id}</span>
-      ${areaTag(tc.area)}
-      ${scenarioTag(tc.type)}
-    </div>
-    <h1 class="detail-title">${escHtml(tc.title)}</h1>
-    <div class="detail-divider"></div>
-    <div class="detail-section-label">Test Data</div>
-    <div class="detail-variation">${escHtml(tc.testData)}</div>
-    <div class="detail-divider"></div>
-    <div class="detail-section-label">Preconditions</div>
-    ${stepList(tc.preconditions, 'detail-preconditions-list')}
-    <div class="detail-divider"></div>
-    <div class="detail-section-label">Steps</div>
-    ${stepList(tc.steps, 'detail-steps')}
-    <div class="detail-divider"></div>
-    <div class="detail-section-label">Expected Result</div>
-    ${stepList(tc.expected, 'detail-results')}
-    ${notesHtml}`;
+    <header class="case-header">
+      <div class="detail-tc-meta"><span class="detail-tc-id">${tc.id}</span></div>
+      <h1 class="detail-title">${escHtml(tc.title)}</h1>
+    </header>
+    <nav class="case-tabs" aria-label="Case sections"><span class="active">Overview</span><span>History</span><span>Attachments</span></nav>
+    <div class="case-grid">
+      <div class="case-main">
+        <section class="case-section">
+          <h2>Test Data</h2>
+          <div class="detail-variation">${escHtml(tc.testData)}</div>
+        </section>
+        <section class="case-section">
+          <h2>Preconditions</h2>
+          ${stepList(tc.preconditions, 'detail-preconditions-list')}
+        </section>
+        <section class="case-section">
+          <h2>Steps</h2>
+          ${stepList(tc.steps, 'detail-steps')}
+        </section>
+        <section class="case-section expected-section">
+          <h2>Expected Result</h2>
+          ${stepList(tc.expected, 'detail-results')}
+        </section>
+      </div>
+      <aside class="case-aside">
+        <section class="meta-block"><div class="meta-label">Area</div>${areaTag(tc.area)}</section>
+        <section class="meta-block"><div class="meta-label">Positive / Negative</div>${scenarioTag(tc.type)}</section>
+        ${notesHtml}
+      </aside>
+    </div>`;
 }
 
 buildAreaDropdown();

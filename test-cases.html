@@ -494,7 +494,7 @@ const cases = [
 
   { id:'TC-064', area:'line-desc',       pri:'p1', auto:'m', title:'Script injection in lineDescription is safe',
     pre:'All other fields valid.',
-    steps:['Set lineDescription="<script>alert(1)</script>"','Trigger Writeback','Open the ERP line record and inspect the description'],
+    steps:['Set lineDescription="<script>alert(1)<\\/script>"','Trigger Writeback','Open the ERP line record and inspect the description'],
     exp:'Text stored and displayed as plain text. Script is not executed.',
     expType:'ok', gap:null },
 
@@ -698,7 +698,7 @@ const cases = [
 
   { id:'TC-098', area:'security',        pri:'p1', auto:'m', title:'Script injection in batchDescription is not executed',
     pre:'Valid master data.',
-    steps:['Set batchDescription="<script>alert(1)</script>"','Trigger Writeback','Open ERP batch record'],
+    steps:['Set batchDescription="<script>alert(1)<\\/script>"','Trigger Writeback','Open ERP batch record'],
     exp:'Text stored as plain text. Script is not executed in ERP UI or elsewhere.',
     expType:'ok', gap:null },
 

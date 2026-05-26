@@ -13,30 +13,30 @@
     /* ── AI Reflection local layer ── */
 
     /* Section numbered heading */
-    .ai-section { margin-bottom: 56px; }
+    .ai-section { margin-bottom: 32px; }
 
     .ai-section-head {
       display: flex;
       align-items: flex-end;
       gap: 0;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
       position: relative;
     }
 
     .ai-num {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 72px;
+      font-size: 44px;
       line-height: 1;
       color: rgba(25,223,219,0.08);
       flex-shrink: 0;
-      width: 64px;
+      width: 48px;
       text-align: right;
-      padding-right: 14px;
+      padding-right: 12px;
       user-select: none;
     }
-    [data-theme="light"] .ai-num { color: rgba(0,143,153,0.1); }
+    [data-theme="light"] .ai-num { color: rgba(0,143,153,0.12); }
 
-    .ai-head-text { flex: 1; padding-bottom: 12px; border-bottom: 1px solid var(--line-cyan); }
+    .ai-head-text { flex: 1; padding-bottom: 10px; border-bottom: 1px solid var(--line-cyan); }
 
     .ai-tag {
       font-family: 'Share Tech Mono', monospace;
@@ -44,33 +44,33 @@
       letter-spacing: 0.22em;
       text-transform: uppercase;
       color: var(--red);
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
 
     .ai-title {
       font-family: 'Bebas Neue', sans-serif;
-      font-size: 24px;
+      font-size: 22px;
       letter-spacing: 0.07em;
       color: var(--text);
     }
     [data-theme="light"] .ai-title {
       font-family: 'Inter', sans-serif;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 700;
       letter-spacing: -0.02em;
     }
 
-    .ai-body { padding-left: 64px; }
+    .ai-body { padding-left: 48px; }
 
     /* Plain paragraph */
     .ai-para {
-      font-size: 14px;
+      font-size: 13.5px;
       color: var(--text-muted);
-      line-height: 1.8;
-      margin-bottom: 16px;
+      line-height: 1.75;
+      margin-bottom: 14px;
     }
     .ai-para strong { color: var(--text); }
-    [data-theme="light"] .ai-para { color: #4b5a6c; font-size: 15px; }
+    [data-theme="light"] .ai-para { color: #4b5a6c; font-size: 14px; }
     [data-theme="light"] .ai-para strong { color: #172337; }
 
     /* Numbered list */
@@ -79,23 +79,23 @@
       padding: 0;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      margin-bottom: 16px;
+      gap: 6px;
+      margin-bottom: 14px;
     }
     .ai-list li {
       display: flex;
-      gap: 14px;
+      gap: 12px;
       align-items: baseline;
-      font-size: 13.5px;
+      font-size: 13px;
       color: var(--text-muted);
-      line-height: 1.65;
+      line-height: 1.6;
     }
-    [data-theme="light"] .ai-list li { color: #4b5a6c; font-size: 14px; }
+    [data-theme="light"] .ai-list li { color: #4b5a6c; font-size: 13.5px; }
     .ai-list .n {
       font-family: 'Share Tech Mono', monospace;
       font-size: 9px;
       color: var(--text-dim);
-      min-width: 24px;
+      min-width: 22px;
       flex-shrink: 0;
     }
     [data-theme="light"] .ai-list .n { color: #aab3be; }
@@ -104,17 +104,19 @@
 
     /* Prompt terminal block */
     .prompt-box {
-      background: rgba(4,7,9,0.7);
-      border: 1px solid var(--line-white);
-      border-top: 1px solid var(--line-cyan);
-      padding: 18px 22px 16px;
-      margin-bottom: 22px;
+      background: rgba(4,7,9,0.88);
+      border: 1px solid rgba(25,223,219,0.18);
+      border-top: 2px solid var(--cyan);
+      padding: 0;
+      margin-bottom: 18px;
       position: relative;
+      border-radius: 3px;
+      overflow: hidden;
     }
     [data-theme="light"] .prompt-box {
-      background: #f7f9fb;
-      border: 1px solid #e1e8f0;
-      border-top: 2px solid #19b4b8;
+      background: #0d1b2a;
+      border: 1px solid rgba(25,223,219,0.22);
+      border-top: 2px solid #19dfdb;
     }
     .prompt-box-lbl {
       font-family: 'Share Tech Mono', monospace;
@@ -122,39 +124,55 @@
       letter-spacing: 0.2em;
       color: var(--cyan);
       text-transform: uppercase;
-      margin-bottom: 12px;
-      opacity: 0.7;
+      padding: 8px 16px;
+      background: rgba(25,223,219,0.05);
+      border-bottom: 1px solid rgba(25,223,219,0.1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    [data-theme="light"] .prompt-box-lbl { color: #19b4b8; }
+    .prompt-box-lbl::before {
+      content: '●  ●  ●';
+      font-size: 7px;
+      letter-spacing: 0.05em;
+      color: var(--red);
+      opacity: 0.6;
+      flex-shrink: 0;
+    }
+    [data-theme="light"] .prompt-box-lbl {
+      color: #19dfdb;
+      background: rgba(25,223,219,0.07);
+      border-bottom-color: rgba(25,223,219,0.12);
+    }
     .prompt-box pre {
       background: transparent;
       border: none;
-      padding: 0;
+      padding: 14px 16px 16px;
       font-size: 12px;
       color: var(--text-muted);
       line-height: 1.75;
       margin: 0;
     }
-    [data-theme="light"] .prompt-box pre { color: #637081; }
+    [data-theme="light"] .prompt-box pre { color: #8bacc4; }
 
     /* Annotation columns — replaces heavy card boxes */
     .ai-cols {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
-      gap: 28px;
-      margin-bottom: 20px;
+      gap: 18px;
+      margin-bottom: 16px;
     }
     .ai-cols-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 28px;
-      margin-bottom: 20px;
+      gap: 18px;
+      margin-bottom: 16px;
     }
     @media (max-width: 800px) {
       .ai-cols, .ai-cols-2 { grid-template-columns: 1fr; }
     }
 
-    .ai-col { padding-top: 14px; border-top: 2px solid; }
+    .ai-col { padding-top: 12px; border-top: 2px solid; }
     .ai-col-ok   { border-color: var(--green); }
     .ai-col-err  { border-color: var(--red); }
     .ai-col-fix  { border-color: var(--yellow); }
@@ -167,7 +185,7 @@
       font-size: 8px;
       letter-spacing: 0.22em;
       text-transform: uppercase;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
     .ai-col-ok  .ai-col-lbl { color: var(--green); }
     .ai-col-err .ai-col-lbl { color: var(--red); }
@@ -181,12 +199,12 @@
       padding: 0;
       display: flex;
       flex-direction: column;
-      gap: 7px;
+      gap: 5px;
     }
     .ai-col-items li {
-      font-size: 13px;
+      font-size: 12.5px;
       color: var(--text-muted);
-      line-height: 1.6;
+      line-height: 1.55;
       padding-left: 12px;
       position: relative;
     }
@@ -202,7 +220,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      margin: -10px 0 30px;
+      margin: -8px 0 20px;
       opacity: 0.45;
     }
     .prompt-step-line { width: 1px; height: 20px; background: var(--red); flex-shrink:0; }
@@ -216,8 +234,8 @@
     /* Full-width accent block (used / not enough) */
     .ai-accent-block {
       border-top: 2px solid;
-      padding-top: 14px;
-      margin-bottom: 18px;
+      padding-top: 12px;
+      margin-bottom: 14px;
     }
     .ai-accent-block.ok  { border-color: var(--green); }
     .ai-accent-block.err { border-color: var(--red); }
@@ -283,16 +301,52 @@
     .ai-hr {
       height: 1px;
       background: var(--line-white);
-      margin: 20px 0;
+      margin: 16px 0;
       position: relative;
     }
     .ai-hr::before {
       content: '';
       position: absolute;
       left: 0; top: 0;
-      height: 1px; width: 64px;
+      height: 1px; width: 48px;
       background: var(--cyan);
     }
+
+    /* ── Light theme polish ── */
+    [data-theme="light"] .ai-section-head {
+      border-radius: 2px;
+    }
+    [data-theme="light"] .ai-head-text {
+      border-bottom-color: rgba(25,180,184,0.4);
+    }
+    [data-theme="light"] .ai-num {
+      color: rgba(25,180,184,0.13);
+    }
+    [data-theme="light"] .ai-tag {
+      color: #c82040;
+    }
+    [data-theme="light"] .ai-col {
+      background: rgba(246,248,251,0.7);
+      border-radius: 2px;
+      padding: 12px 14px 10px;
+    }
+    [data-theme="light"] .ai-col-ok   { background: rgba(41,192,122,0.04); }
+    [data-theme="light"] .ai-col-err  { background: rgba(224,48,80,0.04); }
+    [data-theme="light"] .ai-col-fix  { background: rgba(192,144,32,0.04); }
+    [data-theme="light"] .ai-accent-block.ok {
+      background: rgba(41,192,122,0.04);
+      padding: 12px 14px 10px;
+      border-radius: 2px;
+    }
+    [data-theme="light"] .ai-accent-block.err {
+      background: rgba(224,48,80,0.04);
+      padding: 12px 14px 10px;
+      border-radius: 2px;
+    }
+    [data-theme="light"] .ai-hr { background: #dce4ed; }
+    [data-theme="light"] .ai-hr::before { background: #19b4b8; }
+    [data-theme="light"] .prompt-step-line { background: #c82040; }
+    [data-theme="light"] .prompt-step-txt { color: #c82040; }
   </style>
 </head>
 <body>
@@ -338,7 +392,7 @@
       </div>
       <div class="ai-body">
         <p class="ai-para">
-          This wasn't a one-source task. I pulled from several places, and each one added something the others couldn't. The spec gave me the structure. My own research gave me the context. Notes from Miro and Google Docs gave me the questions I hadn't thought of yet.
+          The analysis used several sources. The spec defined what the function should do. Research and notes added context, open questions, and edge cases that weren't in the spec.
         </p>
         <ul class="ai-list">
           <li><span class="n">01.</span><span>The original specification for WRITEBACKJOURNALDRAFT</span></li>
@@ -387,7 +441,7 @@
     </div>
 
     <!-- Prompt log header -->
-    <div style="margin-bottom:32px; padding-left:64px;">
+    <div style="margin-bottom:20px; padding-left:48px;">
       <div style="font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--red);margin-bottom:6px;">// PROMPT LOG</div>
       <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.07em;color:var(--text-muted);">Five prompts · in order of use</div>
     </div>
@@ -656,7 +710,7 @@ rules, defaults, limits. Add columns if needed.</pre>
         </div>
       </div>
       <div class="ai-body">
-        <p class="ai-para">The final approach was based on senior QA practice — not just writing test cases, but treating the requirement as something that must be challenged before it can be tested.</p>
+        <p class="ai-para">Before writing test cases, the requirement itself had to be checked — whether it was complete, clear, and actually testable.</p>
         <ul class="ai-list">
           <li><span class="n">01.</span><span>Understand the business domain before writing any test cases</span></li>
           <li><span class="n">02.</span><span>Don't test only the happy path</span></li>
@@ -737,15 +791,8 @@ rules, defaults, limits. Add columns if needed.</pre>
         </div>
       </div>
       <div class="ai-body">
-        <p class="ai-para">At some point the material became too large for one document. The work covered: requirement notes, domain research, field specification, gaps, test cases, validation rules, and this AI usage log. Scrolling through one file to find a specific part stopped making sense.</p>
-        <p class="ai-para">A website format made navigation practical — different people need different sections:</p>
-        <div class="ai-role-list">
-          <div class="ai-role-row"><span class="ai-role-key">QA</span><span class="ai-role-sep">//</span><span>Can jump directly to test cases without reading everything else</span></div>
-          <div class="ai-role-row"><span class="ai-role-key">Analysts</span><span class="ai-role-sep">//</span><span>Can review gaps and assumptions independently</span></div>
-          <div class="ai-role-row"><span class="ai-role-key">Devs</span><span class="ai-role-sep">//</span><span>Can check field rules and API expectations</span></div>
-          <div class="ai-role-row"><span class="ai-role-key">Product</span><span class="ai-role-sep">//</span><span>Can understand open questions and risks without reading test steps</span></div>
-          <div class="ai-role-row"><span class="ai-role-key">Reviewer</span><span class="ai-role-sep">//</span><span>Can see how AI was used and where human judgment replaced it</span></div>
-        </div>
+        <p class="ai-para">As the analysis grew, one flat document became too overloaded. There were test cases, gaps, assumptions, field specifications, validation rules, AI usage notes, and review comments.</p>
+        <p class="ai-para">Because of that, I decided that a small structured website would be a better format. It would let the reader switch between sections instead of scrolling through one long document.</p>
       </div>
     </div>
 
@@ -769,11 +816,6 @@ rules, defaults, limits. Add columns if needed.</pre>
           <li><span class="n">06.</span><span>Improving the artifact so it is useful for a real review, not just submitted</span></li>
         </ul>
 
-        <div class="ai-final">
-          <strong>The practical takeaway:</strong><br/>
-          <em>AI can generate a useful first draft, but a senior QA engineer must own the logic, risk analysis, and final decisions.</em><br/><br/>
-          For this task, I fully invested in the process. I researched the domain, kept notes in Miro and Google Docs, challenged weak assumptions, rewrote unclear sections multiple times, and restructured the artifact when the format stopped working. The final result is not raw AI output — it is a reviewed QA artifact built through research, iteration, and critical thinking.
-        </div>
       </div>
     </div>
 

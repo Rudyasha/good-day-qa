@@ -963,14 +963,6 @@ dl dd { color: var(--text-muted); margin-left: 12px; margin-top: 3px; font-size:
 dl dt:first-child { margin-top: 0; }
 
 /* ══════════════════════════════════════════
-   TYPE BADGES  (+positive / -negative)
-══════════════════════════════════════════ */
-.badge-type-pos { background: rgba(0,200,112,0.14);  color: #00C870; }
-.badge-type-neg { background: rgba(232,0,26,0.14);   color: #ff4455; }
-[data-theme="light"] .badge-type-pos { background: #d4f5e4; color: #007840; }
-[data-theme="light"] .badge-type-neg { background: #fde8ea; color: #c00010; }
-
-/* ══════════════════════════════════════════
    SUB-NAV (Glossary under Test Cases)
 ══════════════════════════════════════════ */
 .nav-sub-link {
@@ -988,45 +980,6 @@ dl dt:first-child { margin-top: 0; }
 }
 .nav-sub-link:hover { color: #888888; background: rgba(255,255,255,0.02); }
 .nav-sub-link.active { color: #E8001A; border-left-color: #E8001A; background: rgba(232,0,26,0.04); }
-
-/* ══════════════════════════════════════════
-   TYPE FILTER CHIPS
-══════════════════════════════════════════ */
-.type-chips { display: flex; gap: 4px; }
-.type-chip {
-  border: 1px solid var(--border);
-  padding: 4px 9px;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 8.5px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  background: transparent;
-  cursor: pointer;
-  transition: all 0.12s;
-}
-.type-chip:hover { border-color: var(--text-muted); color: var(--text); }
-.type-chip.tc-all { border-color: var(--cyan); color: var(--cyan); background: rgba(0,191,207,0.08); }
-.type-chip.tc-pos { border-color: var(--green); color: var(--green); background: rgba(0,200,112,0.08); }
-.type-chip.tc-neg { border-color: var(--red); color: var(--red); background: rgba(232,0,26,0.08); }
-
-/* ══════════════════════════════════════════
-   PRECONDITIONS BLOCK (in detail view)
-══════════════════════════════════════════ */
-.precond-block {
-  padding: 12px 14px;
-  background: rgba(0,191,207,0.04);
-  border: 1px solid rgba(0,191,207,0.18);
-  border-left: 3px solid var(--cyan);
-}
-.precond-list {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-.precond-list .step-num { color: var(--cyan); }
 
 /* ══════════════════════════════════════════
    GAP SEVERITY COLORS

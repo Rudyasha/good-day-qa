@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,7 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-eva.css?v=20260528" />
+  <link rel="stylesheet" href="style-eva.css?v=20260526-allure5" />
+  <script src="theme.js?v=20260526-allure2"></script>
 </head>
 <body class="cases-page">
 
@@ -59,20 +60,6 @@
 </div>
 
 <script>
-const savedTheme = localStorage.getItem('eva-theme');
-if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
-function updateThemeBtn() {
-  const t = document.documentElement.getAttribute('data-theme');
-  document.getElementById('theme-btn').textContent = t === 'light' ? '◑ SWITCH TO DARK' : '◑ SWITCH TO LIGHT';
-}
-function toggleTheme() {
-  const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-  document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('eva-theme', next);
-  updateThemeBtn();
-}
-updateThemeBtn();
-
 const cases = [
   {
     id: "TC-001",

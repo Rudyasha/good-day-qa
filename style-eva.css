@@ -1876,10 +1876,10 @@ body::before {
 .stat-action {
   position: absolute;
   right: 18px;
-  bottom: 16px;
+  top: 17px;
   color: var(--cyan);
-  font: 10px 'Share Tech Mono', monospace;
-  letter-spacing: .1em;
+  font: 17px 'Share Tech Mono', monospace;
+  letter-spacing: 0;
   text-transform: uppercase;
   opacity: 0;
   transform: translateY(3px);
@@ -1906,6 +1906,10 @@ body::before {
   line-height: 1.65;
 }
 [data-theme="light"] .callout strong { margin-right: 4px; }
+[data-theme="light"] .gaps-page .callout {
+  padding: 11px 14px;
+  line-height: 1.6;
+}
 
 [data-theme="light"] .glossary-group {
   position: relative;

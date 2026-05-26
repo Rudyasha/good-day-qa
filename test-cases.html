@@ -1310,6 +1310,18 @@ function openDetail(id) {
     <\/div>`;
 }
 
+/* Re-trigger slide-in animation each time a case is opened */
+const _origOpen = openDetail;
+window.openDetail = function(id) {
+  _origOpen(id);
+  const panel = document.getElementById('detail-content');
+  if (panel) {
+    panel.style.animation = 'none';
+    panel.offsetHeight; /* reflow */
+    panel.style.animation = '';
+  }
+};
+
 buildAreaDropdown();
 renderList();
 openDetail('TC-001');

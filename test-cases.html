@@ -27,7 +27,7 @@
   </div>
   <div class="sidebar-footer">
     NERV :: QA DIVISION<br/>
-    VELIXO ASSESSMENT<br/>
+    QA ASSESSMENT<br/>
     MAY 2026
   </div>
 </aside>
@@ -715,10 +715,10 @@ const cases = [
     exp:'Audit entry shows: current user, timestamp, and creation event.',
     expType:'ok', gap:'G-21' },
 
-  { id:'TC-101', area:'audit',           pri:'p1', auto:'l', title:'Audit log identifies Excel/Velixo as the creation source',
+  { id:'TC-101', area:'audit',           pri:'p1', auto:'l', title:'Audit log identifies the Excel add-in as the creation source',
     pre:'ERP audit/history is accessible.',
     steps:['Create batch via Excel','Check the audit log source field'],
-    exp:'Source indicates "Excel / Velixo add-in / Writeback operation" — not a generic ERP entry.',
+    exp:'Source indicates "Excel / Add-in / Writeback operation" — not a generic ERP entry.',
     expType:'ok', gap:'G-21' },
 
   { id:'TC-102', area:'audit',           pri:'p2', auto:'l', title:'Failed validation is not logged as a successful creation',
@@ -776,19 +776,19 @@ const cases = [
     expType:'err', gap:'G-25' },
 
   { id:'TC-111', area:'cross-platform',  pri:'p0', auto:'l', title:'Works in Excel for Windows',
-    pre:'Excel for Windows with the Velixo add-in installed.',
+    pre:'Excel for Windows with the add-in installed.',
     steps:['Open the workbook in Excel for Windows','Trigger a valid balanced Writeback'],
     exp:'Batch created successfully. All fields correct in ERP.',
     expType:'ok', gap:'G-23' },
 
   { id:'TC-112', area:'cross-platform',  pri:'p0', auto:'l', title:'Works in Excel for macOS',
-    pre:'Excel for macOS with the Velixo add-in installed.',
+    pre:'Excel for macOS with the add-in installed.',
     steps:['Open the workbook in Excel for macOS','Trigger a valid balanced Writeback'],
     exp:'Batch created. Behavior matches the Windows result.',
     expType:'ok', gap:'G-23' },
 
   { id:'TC-113', area:'cross-platform',  pri:'p0', auto:'l', title:'Works in Excel Web (or limitation documented)',
-    pre:'Excel Web with the Velixo add-in.',
+    pre:'Excel Web with the add-in.',
     steps:['Open the workbook in Excel Web','Trigger a valid balanced Writeback'],
     exp:'Batch created successfully, OR a clear documented limitation is shown.',
     expType:'ok', gap:'G-23' },

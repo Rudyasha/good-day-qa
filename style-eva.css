@@ -2474,9 +2474,9 @@ body::before {
   flex-shrink: 0;
   margin-top: 1px;
 }
-/* inject the counter number via CSS — replaces the empty span content */
+/* number injected via JS — CSS ::before must be empty */
 [data-theme="light"] .detail-steps .detail-step .step-mark::before {
-  content: counter(step-num);
+  content: none;
 }
 
 /* ── LIGHT MODE: preconditions — soft dot ────────────────────── */
@@ -2530,13 +2530,14 @@ body::before {
   height: 20px;
   border-radius: 50%;
   background: #2dba7e;
+  color: #fff;
+  font: 700 12px/1 'Inter', sans-serif;
   flex-shrink: 0;
   margin-top: 2px;
 }
+/* checkmark injected via JS — CSS ::before must be empty */
 [data-theme="light"] .expected-section .detail-results .step-mark::before {
-  content: '✓';
-  color: #fff;
-  font: 700 11px/1 'Inter', sans-serif;
+  content: none;
 }
 
 /* ── LIGHT MODE: Test Data — monospace code block ─────────────── */

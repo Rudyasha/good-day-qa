@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Reflection — WRITEBACKJOURNALDRAFT QA</title>
+  <title>AI Reflection - WRITEBACKJOURNALDRAFT QA</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -155,7 +155,7 @@
     }
     [data-theme="light"] .prompt-box pre { color: #3a5068; }
 
-    /* Annotation columns — replaces heavy card boxes */
+    /* Annotation columns - replaces heavy card boxes */
     .ai-cols {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -264,7 +264,7 @@
     [data-theme="light"] .ai-final strong { color: #916815; }
     [data-theme="light"] .ai-final em { color: #172337; }
 
-    /* Section 11 role list — fixed alignment */
+    /* Section 11 role list - fixed alignment */
     .ai-role-list {
       display: flex;
       flex-direction: column;
@@ -396,8 +396,8 @@
         <ul class="ai-list">
           <li><span class="n">01.</span><span>The original specification for WRITEBACKJOURNALDRAFT</span></li>
           <li><span class="n">02.</span><span>My own research into ERP systems, GL journals, writeback flows, and financial terminology</span></li>
-          <li><span class="n">03.</span><span>Google Docs notes — questions, draft ideas, risks I spotted while reading the spec</span></li>
-          <li><span class="n">04.</span><span>Miro brainstorming board — unclear behaviors, edge cases, and missing rules</span></li>
+          <li><span class="n">03.</span><span>Google Docs notes - questions, draft ideas, risks I spotted while reading the spec</span></li>
+          <li><span class="n">04.</span><span>Miro brainstorming board - unclear behaviors, edge cases, and missing rules</span></li>
           <li><span class="n">05.</span><span>AI-assisted explanations of how similar systems may work under the hood</span></li>
           <li><span class="n">06.</span><span>Manual QA thinking on Excel behavior, ERP side effects, financial risks, and integration edge cases</span></li>
         </ul>
@@ -419,7 +419,7 @@
       </div>
       <div class="ai-body">
         <p class="ai-para">
-          Honestly — AI saved me a lot of the mechanical first-draft work. I used it to get up to speed on a domain I didn't know well, to turn scattered notes into something readable, and to get a first version of test cases fast enough that I could actually critique it rather than stare at a blank page.
+          Honestly - AI saved me a lot of the mechanical first-draft work. I used it to get up to speed on a domain I didn't know well, to turn scattered notes into something readable, and to get a first version of test cases fast enough that I could actually critique it rather than stare at a blank page.
         </p>
         <div class="ai-accent-block ok" style="margin-bottom:16px;">
           <div class="ai-col-lbl" style="color:var(--green);font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;margin-bottom:10px;">What I asked AI to do</div>
@@ -428,13 +428,13 @@
             <li><span class="n">02.</span><span>Show how a writeback flow might work end-to-end under the hood</span></li>
             <li><span class="n">03.</span><span>Brainstorm test categories and surface potential risks before I wrote anything</span></li>
             <li><span class="n">04.</span><span>Find unclear or missing rules in the spec</span></li>
-            <li><span class="n">05.</span><span>Draft the first version of test cases — so manual review had something concrete to start from</span></li>
+            <li><span class="n">05.</span><span>Draft the first version of test cases - so manual review had something concrete to start from</span></li>
             <li><span class="n">06.</span><span>Help merge near-duplicate cases and make the suite leaner</span></li>
             <li><span class="n">07.</span><span>Improve wording, restructure gaps, and organize the final artifact</span></li>
           </ul>
         </div>
         <p class="ai-para" style="margin-bottom:0;">
-          I didn't take AI output at face value. Every result was reviewed and either kept as-is, rewritten, or thrown out. The thinking had to be mine — AI just gave me something to react to.
+          I didn't take AI output at face value. Every result was reviewed and either kept as-is, rewritten, or thrown out. The thinking had to be mine - AI just gave me something to react to.
         </p>
       </div>
     </div>
@@ -472,7 +472,7 @@ What risks should a QA engineer think about before writing test cases?</pre>
             <div class="ai-col-lbl">✓ what worked</div>
             <ul class="ai-col-items">
               <li>Made me see the feature as a system flow, not just an Excel formula</li>
-              <li>Explained ERP terms in plain language — ledger, account, period, journal line</li>
+              <li>Explained ERP terms in plain language - ledger, account, period, journal line</li>
               <li>Separated user-entered fields from generated technical fields</li>
               <li>Made it clear that writeback has <strong>real ERP side effects</strong></li>
               <li>Surfaced early risks: duplicate creation, wrong status, timeout and retry</li>
@@ -531,16 +531,16 @@ idempotency, retry/timeout, permissions, audit, errors, cross-platform.</pre>
             <ul class="ai-col-items">
               <li>Quickly mapped the main test areas: happy path, validation, balance, ERP status, error handling</li>
               <li>Spotted the naming mismatch between <strong>date/reportingPeriod</strong> and <strong>transactionDate/postPeriod</strong></li>
-              <li>Suggested decimal precision risks — important for financial data</li>
+              <li>Suggested decimal precision risks - important for financial data</li>
               <li>Treated WRITEBACKJOURNALDRAFT as a system integration, not just a formula</li>
             </ul>
           </div>
           <div class="ai-col ai-col-err">
             <div class="ai-col-lbl">✗ what fell short</div>
             <ul class="ai-col-items">
-              <li>Accepted "at least one line required" literally — a single debit can't balance without a credit line</li>
+              <li>Accepted "at least one line required" literally - a single debit can't balance without a credit line</li>
               <li>Didn't challenge the batch grouping key: branch? currency? postPeriod?</li>
-              <li>Assumed all Excel cells return the same batch number — spec doesn't confirm this</li>
+              <li>Assumed all Excel cells return the same batch number - spec doesn't confirm this</li>
               <li>Some suggested cases were too generic, no concrete test data</li>
             </ul>
           </div>
@@ -575,7 +575,7 @@ TC-ID · Category · Title · Preconditions · Test Data · Steps · Expected Re
 
 No Priority or Severity. Simple English.
 Numbered lists for Preconditions, Steps, Expected Result.
-Preconditions specific to each case — not a shared header block.
+Preconditions specific to each case - not a shared header block.
 Group duplicates. Smoke tests go at the end.</pre>
         </div>
         <div class="ai-cols">
@@ -590,10 +590,10 @@ Group duplicates. Smoke tests go at the end.</pre>
           <div class="ai-col ai-col-err">
             <div class="ai-col-lbl">✗ what fell short</div>
             <ul class="ai-col-items">
-              <li>First version had too many near-duplicates — needed manual merging</li>
+              <li>First version had too many near-duplicates - needed manual merging</li>
               <li>Some preconditions were still vague ("valid ERP data exists")</li>
               <li>Verification steps mixed into Steps instead of Expected Result</li>
-              <li>Called the field "Case Data / Variation" — renamed to <strong>Test Data</strong></li>
+              <li>Called the field "Case Data / Variation" - renamed to <strong>Test Data</strong></li>
             </ul>
           </div>
           <div class="ai-col ai-col-fix">
@@ -690,7 +690,7 @@ rules, defaults, limits. Add columns if needed.</pre>
           <div class="ai-col ai-col-fix">
             <div class="ai-col-lbl">→ what I improved manually</div>
             <ul class="ai-col-items">
-              <li>Made the table stricter — removed vague "code/name/ID" where one canonical form should be specified</li>
+              <li>Made the table stricter - removed vague "code/name/ID" where one canonical form should be specified</li>
               <li>Marked unconfirmed limits as assumptions, not facts</li>
               <li>Added global validation rules below the table for shared constraints</li>
             </ul>
@@ -709,15 +709,15 @@ rules, defaults, limits. Add columns if needed.</pre>
         </div>
       </div>
       <div class="ai-body">
-        <p class="ai-para">Before writing test cases, the requirement itself had to be checked — whether it was complete, clear, and actually testable.</p>
+        <p class="ai-para">Before writing test cases, the requirement itself had to be checked - whether it was complete, clear, and actually testable.</p>
         <ul class="ai-list">
           <li><span class="n">01.</span><span>Understand the business domain before writing any test cases</span></li>
           <li><span class="n">02.</span><span>Don't test only the happy path</span></li>
           <li><span class="n">03.</span><span>Check whether each requirement is actually testable as written</span></li>
           <li><span class="n">04.</span><span>Separate confirmed requirements from open assumptions</span></li>
           <li><span class="n">05.</span><span>Convert unclear behavior into explicit gaps</span></li>
-          <li><span class="n">06.</span><span>Merge duplicates — a large suite is not the same as a good one</span></li>
-          <li><span class="n">07.</span><span>Use concrete test data — not "valid inputs" but actual values</span></li>
+          <li><span class="n">06.</span><span>Merge duplicates - a large suite is not the same as a good one</span></li>
+          <li><span class="n">07.</span><span>Use concrete test data - not "valid inputs" but actual values</span></li>
           <li><span class="n">08.</span><span>Validate both Excel-side behavior and ERP-side effects</span></li>
           <li><span class="n">09.</span><span>Check that failed validation is <strong>visible to the user in Excel</strong>, not just logged somewhere</span></li>
           <li><span class="n">10.</span><span>Check that no invalid or partial data is written to ERP</span></li>
@@ -742,7 +742,7 @@ rules, defaults, limits. Add columns if needed.</pre>
           <ul class="ai-list" style="margin-bottom:0;">
             <li><span class="n">01.</span><span>Getting up to speed on a domain I hadn't worked with before</span></li>
             <li><span class="n">02.</span><span>Visualizing the system flow from Excel to ERP and back</span></li>
-            <li><span class="n">03.</span><span>Giving me a first structure to react to — instead of starting from nothing</span></li>
+            <li><span class="n">03.</span><span>Giving me a first structure to react to - instead of starting from nothing</span></li>
             <li><span class="n">04.</span><span>Suggesting test categories I could evaluate and filter</span></li>
             <li><span class="n">05.</span><span>Drafting validation cases and gap descriptions in bulk</span></li>
             <li><span class="n">06.</span><span>Improving wording and turning raw notes into readable sections</span></li>
@@ -805,7 +805,7 @@ rules, defaults, limits. Add columns if needed.</pre>
         </div>
       </div>
       <div class="ai-body">
-        <p class="ai-para">AI was most valuable as a speed multiplier. It helped create the first draft faster — but the final QA value came from manual review. The parts that mattered required human judgment:</p>
+        <p class="ai-para">AI was most valuable as a speed multiplier. It helped create the first draft faster - but the final QA value came from manual review. The parts that mattered required human judgment:</p>
         <ul class="ai-list" style="margin-bottom:24px;">
           <li><span class="n">01.</span><span>Understanding what financial risks actually look like in an ERP context</span></li>
           <li><span class="n">02.</span><span>Challenging unclear or untestable requirements</span></li>

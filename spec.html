@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Spec Review — WRITEBACKJOURNALDRAFT</title>
+  <title>Spec Review - WRITEBACKJOURNALDRAFT</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -256,7 +256,7 @@
 
     <!-- ── Ideal Spec Outline ── -->
     <div class="card">
-      <div class="card-title"><span class="icon">◇</span> Ideal Specification — What Is Missing</div>
+      <div class="card-title"><span class="icon">◇</span> Ideal Specification - What Is Missing</div>
       <p style="font-size:13px;color:var(--text-muted);line-height:1.65;margin-bottom:14px;">
         A complete specification for this feature should include all of the following sections. Sections absent from the current spec are the source of the 32 gaps documented in the <a href="gaps.html" style="color:var(--yellow);text-decoration:none;">Spec Gaps</a> page.
       </p>
@@ -286,15 +286,15 @@
           <div class="ideal-explain">Shows where each Excel value lands and whether Excel or ERP owns validation.<div class="ideal-example"><strong>Example</strong><br><code>ledger</code> maps to ERP Ledger ID; existence and access permissions are checked server-side.</div></div>
         </details>
         <details class="ideal-item">
-          <summary><span class="ideal-num">07</span>Batch grouping rules — full grouping key definition</summary>
+          <summary><span class="ideal-num">07</span>Batch grouping rules - full grouping key definition</summary>
           <div class="ideal-explain">Prevents lines for different entities from being silently combined into one journal batch.<div class="ideal-example"><strong>Example</strong><br>Lines are grouped only when connection, date, period, branch, ledger, currency and description all match.</div></div>
         </details>
         <details class="ideal-item">
-          <summary><span class="ideal-num">08</span>Line-level debit/credit rules — mutual exclusion</summary>
+          <summary><span class="ideal-num">08</span>Line-level debit/credit rules - mutual exclusion</summary>
           <div class="ideal-explain">Defines valid accounting shape of a single line.<div class="ideal-example"><strong>Example</strong><br>Each line must contain a positive debit or a positive credit, never both and never neither.</div></div>
         </details>
         <details class="ideal-item">
-          <summary><span class="ideal-num">09</span>Balance validation scope — per batch, not global</summary>
+          <summary><span class="ideal-num">09</span>Balance validation scope - per batch, not global</summary>
           <div class="ideal-explain">Makes clear that one imbalanced group cannot be hidden by another compensating group.<div class="ideal-example"><strong>Example</strong><br>Batch A debit 100 / credit 90 is rejected even if Batch B has debit 90 / credit 100.</div></div>
         </details>
         <details class="ideal-item">
@@ -395,7 +395,7 @@
               <td>connectionName</td>
               <td>Input / system</td>
               <td><span class="badge badge-required">Yes</span></td>
-              <td>Text — connection name</td>
+              <td>Text - connection name</td>
               <td>string</td>
               <td>ERP connection selector</td>
               <td>Must exist and be accessible</td>
@@ -450,7 +450,7 @@
               <td>ledger</td>
               <td>Batch</td>
               <td><span class="badge badge-required">Yes</span></td>
-              <td>Ledger code / name / ID — must be specified</td>
+              <td>Ledger code / name / ID - must be specified</td>
               <td>ledger code / id</td>
               <td>Ledger</td>
               <td>Active and accessible ERP ledger</td>
@@ -561,23 +561,23 @@
 
     <!-- ── Risk Map ── -->
     <div class="card" id="risk-map">
-      <div class="card-title"><span class="icon">◈</span> Risk Map — Financial Impact</div>
+      <div class="card-title"><span class="icon">◈</span> Risk Map - Financial Impact</div>
       <div style="margin-top:4px;">
         <div class="risk-row">
           <div class="risk-pri"><span class="risk-dot-critical"></span></div>
-          <div><div class="risk-title">Duplicate batch creation</div><div class="risk-desc">Excel recalculation, workbook reopen, or timeout retry creates multiple identical GL journal drafts — a critical financial data integrity risk.</div></div>
+          <div><div class="risk-title">Duplicate batch creation</div><div class="risk-desc">Excel recalculation, workbook reopen, or timeout retry creates multiple identical GL journal drafts - a critical financial data integrity risk.</div></div>
         </div>
         <div class="risk-row">
           <div class="risk-pri"><span class="risk-dot-critical"></span></div>
-          <div><div class="risk-title">Wrong status or auto-posting</div><div class="risk-desc">Batch bypasses "On Hold" and gets posted/released automatically — journal entries appear in financial reports without accountant review.</div></div>
+          <div><div class="risk-title">Wrong status or auto-posting</div><div class="risk-desc">Batch bypasses "On Hold" and gets posted/released automatically - journal entries appear in financial reports without accountant review.</div></div>
         </div>
         <div class="risk-row">
           <div class="risk-pri"><span class="risk-dot-critical"></span></div>
-          <div><div class="risk-title">Wrong balance validation scope</div><div class="risk-desc">Global-range balance check masks imbalanced individual batches — incorrect financial data passes silently.</div></div>
+          <div><div class="risk-title">Wrong balance validation scope</div><div class="risk-desc">Global-range balance check masks imbalanced individual batches - incorrect financial data passes silently.</div></div>
         </div>
         <div class="risk-row">
           <div class="risk-pri"><span class="risk-dot-critical"></span></div>
-          <div><div class="risk-title">Partial batch creation (atomicity)</div><div class="risk-desc">One invalid line leaves a partial batch in ERP — an imbalanced orphaned journal entry that is difficult to detect and reverse.</div></div>
+          <div><div class="risk-title">Partial batch creation (atomicity)</div><div class="risk-desc">One invalid line leaves a partial batch in ERP - an imbalanced orphaned journal entry that is difficult to detect and reverse.</div></div>
         </div>
         <div class="risk-row">
           <div class="risk-pri"><span class="risk-dot-critical"></span></div>
@@ -601,7 +601,7 @@
         </div>
         <div class="risk-row">
           <div class="risk-pri"><span class="risk-dot-high"></span></div>
-          <div><div class="risk-title">Script / markup injection via text fields</div><div class="risk-desc">Unsanitized batchDescription or lineDescription could execute in ERP UI — XSS or formula injection risk.</div></div>
+          <div><div class="risk-title">Script / markup injection via text fields</div><div class="risk-desc">Unsanitized batchDescription or lineDescription could execute in ERP UI - XSS or formula injection risk.</div></div>
         </div>
       </div>
     </div>

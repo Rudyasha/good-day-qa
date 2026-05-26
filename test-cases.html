@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-eva.css?v=20260526-allure6" />
+  <link rel="stylesheet" href="style-eva.css?v=20260526-allure7" />
   <script src="theme.js?v=20260526-allure2"></script>
 </head>
 <body class="cases-page">
@@ -1325,7 +1325,7 @@ function stepList(items, cssClass) {
   const isExpected = cssClass === 'detail-results';
   const isSteps    = cssClass === 'detail-steps';
   return `<ol class="${cssClass}">${items.map((item, i) => {
-    const mark = isExpected ? '&#10003;' : isSteps ? (i + 1) : '';
+    const mark = isExpected ? '' : isSteps ? (i + 1) : '';
     return `<li class="detail-step"><span class="step-mark" aria-hidden="true">${mark}<\/span><span class="step-text">${escHtml(item)}<\/span><\/li>`;
   }).join('')}<\/ol>`;
 }
@@ -1353,7 +1353,7 @@ function openDetail(id) {
       <div class="detail-tc-meta"><span class="detail-tc-id">${tc.id}<\/span><\/div>
       <h1 class="detail-title">${escHtml(tc.title)}<\/h1>
     <\/header>
-    <nav class="case-tabs" aria-label="Case sections"><span class="active">Overview<\/span><span>History<\/span><span>Attachments<\/span><\/nav>
+    <nav class="case-tabs" aria-label="Case sections"><span class="active">Overview<\/span><\/nav>
     <div class="case-grid">
       <div class="case-main">
         <section class="case-section">

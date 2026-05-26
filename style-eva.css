@@ -2916,3 +2916,33 @@ body::before {
 [data-theme="light"] .nav-link.active {
   background: rgba(232,0,26,0.1);
 }
+
+/* ── Expected results: no checkmark circles, just plain rows ── */
+/* hide the empty step-mark span in expected results */
+.expected-section .detail-results .step-mark,
+[data-theme="light"] .expected-section .detail-results .step-mark {
+  display: none !important;
+}
+/* tighten rows without the circle */
+[data-theme="light"] .expected-section .detail-results .detail-step {
+  gap: 0;
+  padding: 5px 12px;
+}
+[data-theme="light"] .expected-section .detail-results .step-text {
+  color: #28493f;
+  font-size: 12.5px;
+}
+/* dark mode expected rows — hide circle too */
+.expected-section .detail-results .detail-step {
+  gap: 0;
+  padding: 7px 2px;
+}
+
+/* ── Smaller font across entire detail panel ── */
+[data-theme="light"] .step-text { font-size: 12.5px; }
+[data-theme="light"] .detail-variation { font-size: 12px; }
+[data-theme="light"] .meta-text { font-size: 12px; }
+[data-theme="dark"] .detail-steps .step-text,
+[data-theme="dark"] .detail-results .step-text,
+[data-theme="dark"] .detail-preconditions-list .step-text { font-size: 12.5px; }
+

@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-eva.css?v=20260526-allure6" />
+  <link rel="stylesheet" href="style-eva.css?v=20260526-allure7" />
   <script src="theme.js?v=20260526-allure2"></script>
   <style>
     /* ── AI Reflection local layer ── */
@@ -114,9 +114,9 @@
       overflow: hidden;
     }
     [data-theme="light"] .prompt-box {
-      background: #0d1b2a;
-      border: 1px solid rgba(25,223,219,0.22);
-      border-top: 2px solid #19dfdb;
+      background: #f2f7f7;
+      border: 1px solid rgba(25,180,184,0.2);
+      border-top: 2px solid #19b4b8;
     }
     .prompt-box-lbl {
       font-family: 'Share Tech Mono', monospace;
@@ -140,9 +140,9 @@
       flex-shrink: 0;
     }
     [data-theme="light"] .prompt-box-lbl {
-      color: #19dfdb;
-      background: rgba(25,223,219,0.07);
-      border-bottom-color: rgba(25,223,219,0.12);
+      color: #19b4b8;
+      background: rgba(25,180,184,0.06);
+      border-bottom-color: rgba(25,180,184,0.14);
     }
     .prompt-box pre {
       background: transparent;
@@ -153,7 +153,7 @@
       line-height: 1.75;
       margin: 0;
     }
-    [data-theme="light"] .prompt-box pre { color: #8bacc4; }
+    [data-theme="light"] .prompt-box pre { color: #3a5068; }
 
     /* Annotation columns — replaces heavy card boxes */
     .ai-cols {
@@ -571,7 +571,7 @@ idempotency, retry/timeout, permissions, audit, errors, cross-platform.</pre>
         <div class="prompt-box">
           <div class="prompt-box-lbl">&gt; prompt used</div>
           <pre>Write formal test cases using this structure:
-TC-ID · Area · Title · Preconditions · Test Data · Steps · Expected Result
+TC-ID · Category · Title · Preconditions · Test Data · Steps · Expected Result
 
 No Priority or Severity. Simple English.
 Numbered lists for Preconditions, Steps, Expected Result.

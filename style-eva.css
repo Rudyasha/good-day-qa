@@ -1083,10 +1083,7 @@ body {
     #050708;
 }
 [data-theme="light"] body {
-  background:
-    radial-gradient(circle at 85% 12%, rgba(25,223,219,0.14), transparent 33%),
-    radial-gradient(circle at 53% 100%, rgba(255,64,115,0.06), transparent 37%),
-    #f5f8f7;
+  background: #f7f7f5;
 }
 body::before {
   content: '';
@@ -1400,11 +1397,7 @@ body::before {
    Clean reading layer with restrained EVA / cyan-signal accents.
    -------------------------------------------------------------------------- */
 [data-theme="light"] body {
-  background:
-    radial-gradient(circle at 92% 8%,  rgba(25,223,219,0.18), transparent 30%),
-    radial-gradient(circle at 8%  50%, rgba(25,223,219,0.10), transparent 28%),
-    radial-gradient(circle at 55% 95%, rgba(255,64,115,0.05), transparent 35%),
-    #f6f8fb;
+  background: #f7f7f5;
   color: #172337;
 }
 [data-theme="light"] body::before { display: none; }
@@ -2795,117 +2788,101 @@ body::before {
    LIGHT THEME UPGRADE — richer visual language
 ══════════════════════════════════════════════════════════════════ */
 
-/* Subtle grid texture in light mode (mirror of dark mode grid) */
+/* Light mode — NO background texture, clean paper */
 [data-theme="light"] body::before {
-  display: block;
-  left: 220px;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  background-image:
-    linear-gradient(rgba(25,180,184,0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(25,180,184,0.035) 1px, transparent 1px);
-  background-size: 56px 56px;
-  mask-image: radial-gradient(ellipse at 80% 18%, black 8%, transparent 62%);
-  -webkit-mask-image: radial-gradient(ellipse at 80% 18%, black 8%, transparent 62%);
+  display: none;
 }
 
-/* Main area: let body gradient bleed through, don't hard-fill white */
-[data-theme="light"] .main { background: transparent; }
+/* ── Light main / content: clean white, no background color ── */
+[data-theme="light"] .main { background: #ffffff; }
+[data-theme="light"] .content { background: transparent; }
 
-/* Content area: very slight warm tint so white cards lift from bg */
-[data-theme="light"] .content {
-  background: transparent;
-}
-
-/* Page header: stronger cyan accent on the underline */
+/* ── Page header: clean white, no tint ── */
 [data-theme="light"] .page-header {
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border-bottom: 1px solid rgba(25,180,184,0.2);
+  background: #ffffff;
+  backdrop-filter: none;
+  border-bottom: 1px solid #e8e8e4;
 }
+
+/* Bottom accent line on page header — narrow red dash, fades out */
 [data-theme="light"] .page-header::after {
-  background: linear-gradient(90deg, #19b4b8 0 80px, rgba(25,180,184,.15) 80px 200px, transparent 200px 100%);
-  height: 2px;
+  background: linear-gradient(90deg, #E8001A 0 44px, #e8e8e4 44px 100%);
+  height: 1px;
 }
 
-/* Page title: stronger color, tighter */
+/* ── Breadcrumb: darker, more editorial ── */
+[data-theme="light"] .breadcrumb {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .18em;
+  color: #999;
+}
+
+/* ── Page title: strong dark, no tint ── */
 [data-theme="light"] .page-title {
-  font-size: clamp(26px, 2.6vw, 33px);
-  color: #0e1f33;
+  font-size: clamp(24px, 2.4vw, 30px);
+  color: #111;
+  letter-spacing: -.03em;
 }
 
-/* Cards: lift with shadow */
+/* ── Cards: clean lift shadow, no color ring ── */
 [data-theme="light"] .card,
 [data-theme="light"] .stat-card {
-  box-shadow: 0 1px 4px rgba(15,32,51,.07), 0 0 0 1px rgba(25,180,184,.07);
+  box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 0 0 1px rgba(0,0,0,.05);
 }
 
-/* Split layout background */
-[data-theme="light"] .cases-page .split-layout {
-  background: transparent;
-}
-
-/* List panel: white with slight shadow instead of flat #f8fafc */
+/* ── Split layout: plain white ── */
+[data-theme="light"] .cases-page .split-layout { background: #fff; }
 [data-theme="light"] .cases-page .list-panel {
-  background: rgba(255,255,255,0.92);
-  border-right: 1px solid rgba(25,180,184,0.16);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: #fafaf8;
+  border-right: 1px solid #e8e8e4;
 }
 [data-theme="light"] .cases-page .list-header {
-  background: rgba(255,255,255,0.95);
-  border-bottom: 1px solid rgba(25,180,184,0.14);
+  background: #ffffff;
+  border-bottom: 1px solid #e8e8e4;
 }
+[data-theme="light"] .cases-page .detail-panel { background: #ffffff; }
 
-/* Detail panel: white glass, cyan top strip */
-[data-theme="light"] .cases-page .detail-panel {
-  background: rgba(255,255,255,0.94);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-}
+/* Thin red top strip on detail panel (EVA accent, not cyan) */
 [data-theme="light"] .cases-page .detail-panel::before {
   content: '';
   display: block;
-  height: 2px;
-  background: linear-gradient(90deg, #19b4b8 0 60px, rgba(25,180,184,.2) 60px 220px, transparent 220px 100%);
+  height: 1px;
+  background: linear-gradient(90deg, #E8001A 0 32px, #e8e8e4 32px 100%);
 }
 
-/* Case section h2 — cyan left accent */
+/* ── Case section h2: bold dark, red left rule ── */
 [data-theme="light"] .case-section h2 {
-  color: #19b4b8;
-  padding-left: 10px;
-  border-left: 2px solid rgba(25,180,184,0.45);
+  color: #111;
+  padding-left: 9px;
+  border-left: 2px solid #E8001A;
 }
 
-/* Aside meta-label — cyan mono style */
+/* ── Aside meta-label: monospace dark, no color ── */
 [data-theme="light"] .meta-label {
-  color: #19b4b8;
+  color: #888;
   font-family: 'Share Tech Mono', monospace;
   font-size: 9px;
   letter-spacing: .16em;
 }
 
-/* Aside meta-block divider */
-[data-theme="light"] .meta-block {
-  border-bottom-color: rgba(25,180,184,0.1);
-}
+/* ── Dividers: neutral ── */
+[data-theme="light"] .meta-block { border-bottom-color: #ebebea; }
+[data-theme="light"] .case-aside { border-left-color: #ebebea; }
+[data-theme="light"] .expected-section { border-top-color: #ebebea; }
 
-/* Case aside border */
-[data-theme="light"] .case-aside {
-  border-left-color: rgba(25,180,184,0.18);
-}
+/* ── Scrollbar: neutral ── */
+[data-theme="light"] .detail-panel::-webkit-scrollbar-thumb { background: #d0d0cc; }
 
-/* Expected section top border */
-[data-theme="light"] .expected-section {
-  border-top-color: rgba(25,180,184,0.16);
-}
+/* ── TC-ID in list: small red text, feels editorial ── */
+[data-theme="light"] .cases-page .tc-item-id { color: #E8001A; }
 
-/* Scrollbar in detail panel — cyan tint */
-[data-theme="light"] .detail-panel::-webkit-scrollbar-thumb {
-  background: rgba(25,180,184,0.3);
+/* ── Active list item: red left border ── */
+[data-theme="light"] .cases-page .tc-item.active {
+  border-left-color: #E8001A;
+  background: #fff8f8;
 }
+[data-theme="light"] .cases-page .tc-item-id { font-variant-numeric: tabular-nums; }
 
 /* Gap items in light mode: subtle left accent by severity */
 [data-theme="light"] .gap-critical { border-left: 3px solid #e03050; }

@@ -127,7 +127,7 @@ const cases = [
   {
     id: "TC-003",
     area: "Input Normalization",
-    type: "Positive",
+    type: "Negative",
     title: "Spaces and letter case are handled by a documented rule",
     testData: "Examples: ' ACTUAL ', 'actual', ' 6000 ', 'erp_test'\nFields: connectionName, ledger, account, branch, currency, period",
     preconditions: [
@@ -190,7 +190,7 @@ const cases = [
   {
     id: "TC-006",
     area: "Date / Period",
-    type: "Positive",
+    type: "Positive / Negative",
     title: "Date and post period must match",
     testData: "transactionDate is inside or outside the selected postPeriod.",
     preconditions: [
@@ -285,7 +285,7 @@ const cases = [
   {
     id: "TC-010",
     area: "Text Fields",
-    type: "Negative",
+    type: "Positive / Negative",
     title: "Text length boundaries are handled safely",
     testData: "Use batchDescription and lineDescription at max length and above max length.",
     preconditions: [
@@ -330,7 +330,7 @@ const cases = [
   {
     id: "TC-012",
     area: "Text Fields / Security",
-    type: "Positive",
+    type: "Negative",
     title: "HTML, script text, and Excel formulas are not executed",
     testData: "Examples: <b>test</b>, <script>alert(1)<\/script>, =HYPERLINK(...).",
     preconditions: [
@@ -351,7 +351,7 @@ const cases = [
   {
     id: "TC-013",
     area: "Debit / Credit",
-    type: "Positive",
+    type: "Positive / Negative",
     title: "Valid debit and credit amount classes are handled consistently",
     testData: "Variations: positive value, empty opposite side, zero, negative, text number, too many decimals.",
     preconditions: [
@@ -460,7 +460,7 @@ const cases = [
   {
     id: "TC-018",
     area: "Balance / Business Rule",
-    type: "Positive",
+    type: "Positive / Negative",
     title: "Same account on debit and credit follows documented rule",
     testData: "Example: account 6420 debit 1000.00 and account 6420 credit 1000.00.",
     preconditions: [
@@ -503,7 +503,7 @@ const cases = [
   {
     id: "TC-020",
     area: "Selected Range Processing",
-    type: "Positive",
+    type: "Positive / Negative",
     title: "Blank rows inside the selected range follow documented behavior",
     testData: "Valid debit line, blank row, valid credit line.",
     preconditions: [
@@ -589,7 +589,7 @@ const cases = [
   {
     id: "TC-024",
     area: "Currency",
-    type: "Negative",
+    type: "Positive / Negative",
     title: "Currency validation and defaulting are safe",
     testData: "Variations: empty currency, supported currency, unsupported currency, mixed currencies in one range.",
     preconditions: [
@@ -614,7 +614,7 @@ const cases = [
   {
     id: "TC-025",
     area: "Excel Side Effects",
-    type: "Positive",
+    type: "Negative",
     title: "Excel recalculation does not create a batch",
     testData: "A batch has already been created from the workbook.",
     preconditions: [
@@ -657,7 +657,7 @@ const cases = [
   {
     id: "TC-027",
     area: "Idempotency",
-    type: "Positive",
+    type: "Negative",
     title: "Retrying the same operation does not create duplicates",
     testData: "Same operation id or idempotency key, same payload.",
     preconditions: [
@@ -679,7 +679,7 @@ const cases = [
   {
     id: "TC-028",
     area: "Idempotency",
-    type: "Positive",
+    type: "Negative",
     title: "Timeout after ERP creation is handled safely",
     testData: "ERP creates the batch, but Excel/API response times out.",
     preconditions: [
@@ -746,7 +746,7 @@ const cases = [
   {
     id: "TC-031",
     area: "Atomicity",
-    type: "Positive",
+    type: "Negative",
     title: "ERP failure does not leave an incomplete batch",
     testData: "Simulate ERP failure during batch or line creation.",
     preconditions: [
@@ -768,7 +768,7 @@ const cases = [
   {
     id: "TC-032",
     area: "Atomicity",
-    type: "Positive",
+    type: "Negative",
     title: "Mixed valid and invalid groups follow the documented rule",
     testData: "One group valid, one group invalid.",
     preconditions: [
@@ -836,7 +836,7 @@ const cases = [
   {
     id: "TC-035",
     area: "Resilience",
-    type: "Positive",
+    type: "Negative",
     title: "Network or API failure returns a safe Excel error",
     testData: "Simulate network failure, API unavailable, or auth/session expiry.",
     preconditions: [
@@ -858,7 +858,7 @@ const cases = [
   {
     id: "TC-036",
     area: "Error Messages",
-    type: "Positive",
+    type: "Negative",
     title: "Validation errors are visible and actionable in Excel",
     testData: "Use a multi-line range with one invalid field.",
     preconditions: [
@@ -879,7 +879,7 @@ const cases = [
   {
     id: "TC-037",
     area: "Error Messages",
-    type: "Positive",
+    type: "Negative",
     title: "Batch-level errors name the affected group",
     testData: "Use an imbalanced batch group or date/period mismatch.",
     preconditions: [
@@ -899,7 +899,7 @@ const cases = [
   {
     id: "TC-038",
     area: "Error Messages",
-    type: "Positive",
+    type: "Negative",
     title: "ERP/API errors are mapped to user-friendly Excel errors",
     testData: "Example: ERP rejects invalid account, closed period, or restricted ledger.",
     preconditions: [
@@ -920,7 +920,7 @@ const cases = [
   {
     id: "TC-039",
     area: "Audit",
-    type: "Positive",
+    type: "Positive / Negative",
     title: "Successful and failed attempts have correct audit behavior",
     testData: "ERP audit/history is available.",
     preconditions: [
@@ -963,7 +963,7 @@ const cases = [
   {
     id: "TC-041",
     area: "Telemetry",
-    type: "Positive",
+    type: "Negative",
     title: "Failed writeback is logged without sensitive data",
     testData: "Log or telemetry access is available.",
     preconditions: [
@@ -1006,7 +1006,7 @@ const cases = [
   {
     id: "TC-043",
     area: "API / OData Contract",
-    type: "Positive",
+    type: "Positive / Negative",
     title: "API response is mapped back to the correct Excel result",
     testData: "Payload and response are inspectable.",
     preconditions: [
@@ -1050,7 +1050,7 @@ const cases = [
   {
     id: "TC-045",
     area: "Limits",
-    type: "Negative",
+    type: "Positive / Negative",
     title: "Maximum line count is accepted and max plus one is rejected",
     testData: "Documented maximum line count is known.",
     preconditions: [
@@ -1074,7 +1074,7 @@ const cases = [
   {
     id: "TC-046",
     area: "Limits",
-    type: "Positive",
+    type: "Positive / Negative",
     title: "Amount precision and size limits follow documented rules",
     testData: "Use min positive, max allowed, max precision, over-precision, and over-limit values.",
     preconditions: [
@@ -1095,7 +1095,7 @@ const cases = [
   {
     id: "TC-047",
     area: "Async / Queue",
-    type: "Positive",
+    type: "Negative",
     title: "Async processing creates no duplicates during retry",
     testData: "Only applicable if architecture uses queue/background processing.",
     preconditions: [
@@ -1323,9 +1323,12 @@ function renderList() {
 }
 
 function stepList(items, cssClass) {
-  return `<ol class="${cssClass}">${items.map((item,i) =>
-    `<li class="detail-step"><span class="step-mark" aria-hidden="true"><\/span><span class="step-text">${escHtml(item)}<\/span><\/li>`
-  ).join('')}<\/ol>`;
+  const isExpected = cssClass === 'detail-results';
+  const isSteps    = cssClass === 'detail-steps';
+  return `<ol class="${cssClass}">${items.map((item, i) => {
+    const mark = isExpected ? '&#10003;' : isSteps ? (i + 1) : '';
+    return `<li class="detail-step"><span class="step-mark" aria-hidden="true">${mark}<\/span><span class="step-text">${escHtml(item)}<\/span><\/li>`;
+  }).join('')}<\/ol>`;
 }
 
 function openDetail(id) {

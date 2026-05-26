@@ -2332,17 +2332,7 @@ body::before {
 }
 [data-theme="light"] .sidebar::after { display: none; }
 
-/* ── Blinking cursor after // SYSTEM: ACTIVE ─────────────────── */
-.sidebar-eyebrow::after {
-  content: '▮';
-  margin-left: 4px;
-  animation: cursor-blink 1.1s step-end infinite;
-  color: var(--cyan);
-  font-size: 9px;
-}
-[data-theme="light"] .sidebar-eyebrow::after {
-  color: #19b4b8;
-}
+/* blinking cursor removed (user request) */
 
 /* ── Active nav icon pulse ───────────────────────────────────── */
 .nav-link.active .nav-icon,
@@ -2356,13 +2346,7 @@ body::before {
   animation: line-draw .7s cubic-bezier(.22,1,.36,1) both;
 }
 
-/* ── Page title glitch (dark mode) ──────────────────────────── */
-.page-title {
-  animation: glitch 14s ease-in-out infinite;
-}
-[data-theme="light"] .page-title {
-  animation: glitch 18s ease-in-out infinite;
-}
+/* page title glitch removed (user request) */
 
 /* ── Detail panel slide-in (test cases) ─────────────────────── */
 .detail-content {

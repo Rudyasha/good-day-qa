@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-eva.css?v=20260526-allure5" />
+  <link rel="stylesheet" href="style-eva.css?v=20260526-allure6" />
   <script src="theme.js?v=20260526-allure2"></script>
 </head>
 <body class="gaps-page">
@@ -22,7 +22,6 @@
   <a href="spec.html" class="nav-link"><span class="nav-icon">◆</span> Spec Review</a>
   <a href="gaps.html" class="nav-link active"><span class="nav-icon">◎</span> Spec Gaps</a>
   <a href="test-cases.html" class="nav-link"><span class="nav-icon">◉</span> Test Cases</a>
-  <a href="glossary.html" class="nav-sub-link"><span class="nav-icon">·</span> Glossary</a>
   <a href="ai-reflection.html" class="nav-link"><span class="nav-icon">◇</span> AI Reflection</a>
   <div class="theme-toggle">
     <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">◑ SWITCH THEME</button>
@@ -42,11 +41,7 @@
 
   <div class="content">
 
-    <div class="callout callout-warn" style="margin-bottom:20px;">
-      <strong>Why this matters:</strong> Every untested assumption is a potential hidden defect. Making these explicit lets the team confirm with dev/BA before scripting — or add targeted test cases to probe each boundary.
-    </div>
-
-    <div class="stats gap-filters" style="margin-bottom:24px;" aria-label="Filter specification gaps by severity">
+<div class="stats gap-filters" style="margin-bottom:24px;" aria-label="Filter specification gaps by severity">
       <button class="stat-card gap-filter" type="button" data-filter="critical" aria-pressed="false" onclick="filterGaps('critical')"><div class="stat-num" style="color:#ff4455;">4</div><div class="stat-label">Critical</div></button>
       <button class="stat-card gap-filter" type="button" data-filter="high" aria-pressed="false" onclick="filterGaps('high')"><div class="stat-num" style="color:#F0C030;">21</div><div class="stat-label">High</div></button>
       <button class="stat-card gap-filter" type="button" data-filter="medium" aria-pressed="false" onclick="filterGaps('medium')"><div class="stat-num" style="color:#00BFCF;">7</div><div class="stat-label">Medium</div></button>

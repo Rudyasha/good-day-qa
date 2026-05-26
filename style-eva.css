@@ -2427,3 +2427,175 @@ body::before {
   animation: grid-shimmer 6s ease-in-out infinite;
 }
 
+
+
+/* ══════════════════════════════════════════════════════════════════
+   UX POLISH — numbered steps, checkmarks, section accents
+   Applied in both themes; light theme overrides where needed
+══════════════════════════════════════════════════════════════════ */
+
+/* ── DARK MODE: numbered steps ──────────────────────────────── */
+.detail-steps {
+  counter-reset: step-dark;
+}
+.detail-steps .detail-step {
+  counter-increment: step-dark;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.detail-steps .step-mark {
+  content: counter(step-dark);
+  min-width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--cyan);
+  color: #000;
+  font: 700 10px/22px 'Share Tech Mono', monospace;
+  text-align: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  width: 22px;
+  height: 22px;
+}
+
+/* ── LIGHT MODE: numbered steps ─────────────────────────────── */
+[data-theme="light"] .detail-steps {
+  counter-reset: step-num;
+  gap: 6px;
+}
+[data-theme="light"] .detail-steps .detail-step {
+  counter-increment: step-num;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  transition: background .15s ease;
+}
+[data-theme="light"] .detail-steps .detail-step:hover {
+  background: rgba(25,180,184,.06);
+}
+[data-theme="light"] .detail-steps .step-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #19b4b8;
+  color: #fff;
+  font: 700 11px/1 'Inter', sans-serif;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+/* inject the counter number via CSS — replaces the empty span content */
+[data-theme="light"] .detail-steps .detail-step .step-mark::before {
+  content: counter(step-num);
+}
+
+/* ── LIGHT MODE: preconditions — soft dot ────────────────────── */
+[data-theme="light"] .detail-preconditions-list {
+  gap: 6px;
+}
+[data-theme="light"] .detail-preconditions-list .detail-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 5px 0;
+}
+[data-theme="light"] .detail-preconditions-list .step-mark {
+  display: block;
+  min-width: 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #aab8c6;
+  margin-top: 8px;
+  flex-shrink: 0;
+}
+[data-theme="light"] .detail-preconditions-list .step-mark::before { display: none; }
+
+/* ── LIGHT MODE: expected result — checkmarks ────────────────── */
+[data-theme="light"] .expected-section .detail-results {
+  gap: 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+[data-theme="light"] .expected-section .detail-results .detail-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 11px 16px;
+  border-top: 1px solid rgba(45,186,126,.14);
+  transition: background .15s ease;
+}
+[data-theme="light"] .expected-section .detail-results .detail-step:first-child {
+  border-top: 0;
+}
+[data-theme="light"] .expected-section .detail-results .detail-step:hover {
+  background: rgba(45,186,126,.07);
+}
+[data-theme="light"] .expected-section .detail-results .step-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #2dba7e;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+[data-theme="light"] .expected-section .detail-results .step-mark::before {
+  content: '✓';
+  color: #fff;
+  font: 700 11px/1 'Inter', sans-serif;
+}
+
+/* ── LIGHT MODE: Test Data — monospace code block ─────────────── */
+[data-theme="light"] .case-section:first-child .detail-variation {
+  padding: 13px 16px !important;
+  border: 1px solid #dde4ee !important;
+  border-radius: 6px !important;
+  background: #f8fafc !important;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px !important;
+  color: #3a5068 !important;
+  line-height: 1.7 !important;
+  white-space: pre-wrap !important;
+}
+
+/* ── LIGHT MODE: section h2 — cyan underline accent ──────────── */
+[data-theme="light"] .case-section h2 {
+  padding-bottom: 11px;
+  border-bottom: 2px solid #edf1f6;
+  position: relative;
+  margin-bottom: 18px;
+}
+[data-theme="light"] .case-section h2::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0;
+  width: 36px; height: 2px;
+  background: #19b4b8;
+}
+
+/* ── DARK MODE: expected result — green tint rows ─────────────── */
+.expected-section .detail-results .detail-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 9px 0;
+  border-top: 1px solid rgba(0,200,112,.1);
+}
+.expected-section .detail-results .detail-step:first-child { border-top: 0; }
+.expected-section .detail-results .step-mark {
+  background: var(--green);
+  width: 18px; min-width: 18px; height: 18px;
+  border-radius: 50%;
+  margin-top: 3px;
+}
+

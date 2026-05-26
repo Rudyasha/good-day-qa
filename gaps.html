@@ -34,7 +34,7 @@
   <div class="page-header">
     <div class="breadcrumb">QA_PLAN / SPEC_GAPS</div>
     <div class="page-title">Spec Gaps &amp; Assumptions</div>
-    <div class="page-desc">8 ambiguities identified — each with stated assumption and reasoning</div>
+    <div class="page-desc">28 ambiguities identified — 25 senior-level + 3 unique originals · each with assumption and reasoning</div>
   </div>
 
   <div class="content">
@@ -43,115 +43,399 @@
       <strong>Why this matters:</strong> Every untested assumption is a potential hidden defect. Making these explicit lets the team confirm with dev/BA before scripting — or add targeted test cases to probe each boundary.
     </div>
 
+    <!-- ─── PDF GAPS G-01 to G-25 ─── -->
+
     <div class="gap-item">
-      <div class="gap-tag">GAP-001</div>
-      <div class="gap-title">Parameter name mismatch between signature and parameter table</div>
+      <div class="gap-tag">G-01 · HIGH</div>
+      <div class="gap-title">Parameter naming conflict</div>
       <div class="gap-body">
-        The function signature uses <code>date</code> and <code>reportingPeriod</code>, but the parameter table names the same arguments <code>transactionDate</code> and <code>postPeriod</code>. It is unclear which names are canonical — particularly relevant in error messages and documentation.
+        The function signature uses <code>date</code> and <code>reportingPeriod</code>, but the parameter table names the same fields <code>transactionDate</code> and <code>postPeriod</code>. It is unclear which names are canonical — particularly relevant in error messages and documentation.
       </div>
       <div class="assumption">
         <strong>Assumption</strong>
-        The parameter table names (<code>transactionDate</code>, <code>postPeriod</code>) are authoritative. The signature likely reflects an earlier draft. All test cases in this plan use the table names.
+        Assume the same fields by position mapping, but the spec must choose one source of truth before scripting. All test cases in this plan use the parameter table names (<code>transactionDate</code>, <code>postPeriod</code>).
         <br/><br/>
-        <strong>Why:</strong> The parameter table is more detailed and structured — more likely to represent the final spec.
+        <strong>Why:</strong> The parameter table is more detailed and structured — more likely to represent the final spec intent.
       </div>
     </div>
 
     <div class="gap-item">
-      <div class="gap-tag">GAP-002</div>
-      <div class="gap-title">"Empty line range" is undefined for a per-line function</div>
+      <div class="gap-tag">G-02 · CRITICAL</div>
+      <div class="gap-title">Trigger model missing — formula recalculation vs. explicit Writeback</div>
       <div class="gap-body">
-        The acceptance criteria state: <em>"An empty line range returns 'At least one transaction line is required'."</em> But each <code>WRITEBACKJOURNALDRAFT</code> call defines exactly one line — the function has no range parameter. It is unclear how zero lines would be represented, or what triggers this error.
+        The spec does not state whether the batch is created on formula recalculation (F9, workbook open, cell edit) or only on an explicit Writeback action. This directly determines whether recalculation creates duplicate drafts in ERP.
       </div>
       <div class="assumption">
         <strong>Assumption</strong>
-        This error is triggered by a batch-level orchestration mechanism — e.g. when a user invokes a "create batch" action with no function calls present, or when all cells in the designated batch range are empty. TC-023 is marked as pending clarification on the trigger mechanism.
+        Only an explicit Writeback action creates a batch. Ordinary formula recalculation must not write to ERP.
         <br/><br/>
-        <strong>Why:</strong> The spec describes batch-level behaviour alongside per-line calls, so a separate batch-creation trigger likely exists.
+        <strong>Why:</strong> Automatic ERP writes on every recalculation would create uncontrolled duplicate journal drafts — a critical financial risk.
       </div>
     </div>
 
     <div class="gap-item">
-      <div class="gap-tag">GAP-003</div>
-      <div class="gap-title">Batch grouping logic is not specified</div>
+      <div class="gap-tag">G-03 · CRITICAL</div>
+      <div class="gap-title">Idempotency not defined</div>
       <div class="gap-body">
-        The glossary says a batch is lines sharing the same date, ledger, and batch description. But what happens when two calls on the same sheet have <em>different</em> batch descriptions or dates? Do they form separate batches in one execution, or is only one batch allowed per execution?
+        Retry, timeout, workbook reopen, or pressing F9 may trigger the same operation multiple times. The spec does not describe any mechanism to prevent duplicate draft batches from being created.
       </div>
       <div class="assumption">
         <strong>Assumption</strong>
-        All calls sharing identical <code>transactionDate</code>, <code>ledger</code>, and <code>batchDescription</code> are grouped into one batch. Calls with different combinations create separate batches. Balance validation applies independently per group.
+        The backend enforces an idempotency key per operation. Retrying the same operation with the same key returns the original batch, not a new one.
         <br/><br/>
-        <strong>Why:</strong> The glossary definition directly implies grouping by these three fields, consistent with standard ERP batch logic.
+        <strong>Why:</strong> Without idempotency, a network timeout followed by a retry would create two identical GL journal drafts — a serious financial data integrity issue.
       </div>
     </div>
 
     <div class="gap-item">
-      <div class="gap-tag">GAP-004</div>
-      <div class="gap-title">Behaviour when both debit and credit are non-zero on the same line</div>
+      <div class="gap-tag">G-04 · HIGH</div>
+      <div class="gap-title">Grouping key incomplete</div>
       <div class="gap-body">
-        Both <code>debit</code> and <code>credit</code> are optional. The spec does not state whether a single line can carry both a non-zero debit and a non-zero credit simultaneously. Standard double-entry accounting places only one side on each line.
+        The glossary defines a batch as lines sharing "same transaction date, ledger, and batch description," but does not specify whether <code>connectionName</code>, <code>postPeriod</code>, <code>branch</code>, or <code>currency</code> also contribute to the grouping key. Two calls with different branches could be grouped into one batch or separated.
       </div>
       <div class="assumption">
         <strong>Assumption</strong>
-        Providing both non-zero debit and credit on the same line is rejected with a validation error. If accepted, only one value is used. This needs explicit verification (TC-024).
+        Full grouping key: <code>connectionName + transactionDate + postPeriod + batchDescription + branch + ledger + currency</code>. All must match for lines to form one batch.
         <br/><br/>
-        <strong>Why:</strong> Standard GL conventions prohibit dual-sided lines. An ERP would likely enforce this, but the spec must state it clearly.
+        <strong>Why:</strong> The glossary definition is a minimum; standard ERP logic uses the full header to distinguish batches.
       </div>
     </div>
 
     <div class="gap-item">
-      <div class="gap-tag">GAP-005</div>
+      <div class="gap-tag">G-05 · CRITICAL</div>
+      <div class="gap-title">Balance scope unclear — per batch or global</div>
+      <div class="gap-body">
+        The spec says "across all lines" but does not clarify whether balance is checked per grouped batch or globally across the entire selected range. If global, two imbalanced batches could incorrectly pass by cancelling each other out.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        Balance is validated independently per grouped batch. The global total across all lines must not be used as a pass condition.
+        <br/><br/>
+        <strong>Why:</strong> Per-batch balancing is standard double-entry accounting. Global-only checking is financially incorrect and could hide real imbalances.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">G-06 · HIGH</div>
+      <div class="gap-title">Batch vs. voucher level balance unclear</div>
+      <div class="gap-body">
+        Some ERP systems validate balance at the voucher or journal entry level, not the batch level. The spec does not specify which granularity applies.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        Balance is validated at the batch level unless the ERP defines a lower-level voucher construct.
+        <br/><br/>
+        <strong>Why:</strong> The spec describes batches as the primary container, so batch-level is the natural assumption.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">G-07 · HIGH</div>
+      <div class="gap-title">Debit/credit mutual exclusion rule missing</div>
+      <div class="gap-body">
+        Both <code>debit</code> and <code>credit</code> are marked optional. The spec does not state whether a single line can carry both a non-zero debit and a non-zero credit simultaneously, or whether a line with neither is valid.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        Each line must have exactly one financial side: either debit > 0 or credit > 0, never both and never neither.
+        <br/><br/>
+        <strong>Why:</strong> Standard double-entry accounting places only one side per line. Both sides on one line produces a self-cancelling entry, which is meaningless and likely an input error.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">G-08 · HIGH</div>
+      <div class="gap-title">Minimum line rule is too weak</div>
+      <div class="gap-body">
+        The acceptance criteria states "at least one transaction line is required," but a single-line batch can never be balanced (debits would never equal credits). The rule does not require at least one debit line and one credit line.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        A valid batch requires at least one debit line and at least one credit line. A batch with only one side will always fail the balance check.
+        <br/><br/>
+        <strong>Why:</strong> The "at least one line" criterion is logically incomplete — a single debit line with no credit line can never pass balance validation.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">G-09 · MEDIUM</div>
+      <div class="gap-title">Date format not defined</div>
+      <div class="gap-body">
+        Excel dates are locale-sensitive. A text value like "05/06/2026" is ambiguous — it means May 6 in US locale and June 5 in European locale. The spec does not define accepted date formats or how locale conversion is handled.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        Accept Excel DATE values or DATE() formula results and normalize to YYYY-MM-DD. Text date strings are either rejected or handled only by a documented locale conversion rule.
+        <br/><br/>
+        <strong>Why:</strong> Silent locale conversion of text dates is a high risk for incorrect accounting dates in international deployments.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">G-10 · HIGH</div>
+      <div class="gap-title">Period format inconsistent across spec sections</div>
+      <div class="gap-body">
+        The glossary example uses "Month Ending 31 March 2027" while the parameter table example uses "05-2026". These are two different formats. The canonical format is not declared.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        The parameter table format <code>MM-YYYY</code> (e.g. "05-2026") is canonical. The spec must document the accepted format and validate against ERP period codes.
+        <br/><br/>
+        <strong>Why:</strong> The parameter table example is more precise and machine-parseable. The glossary example reads as a human-readable description, not an input format.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">G-11 · HIGH</div>
+      <div class="gap-title">Date/period consistency rule missing</div>
+      <div class="gap-body">
+        The spec requires both <code>transactionDate</code> and <code>postPeriod</code> but does not state what happens when the date falls outside the given period — e.g. date=2026-03-15 but postPeriod="05-2026".
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        <code>transactionDate</code> must fall within the date range of <code>postPeriod</code>. A mismatch returns a validation error.
+        <br/><br/>
+        <strong>Why:</strong> Posting a March transaction to a May period is a common accountant mistake. The system must guard against it.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">G-12 · HIGH</div>
+      <div class="gap-title">Closed period behavior not defined</div>
+      <div class="gap-body">
+        The spec does not describe what happens when the specified <code>postPeriod</code> is closed or locked in the ERP. A draft could silently land in a closed period or be rejected — neither behavior is documented.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        The ERP rejects creation into a closed or locked period with a clear error message.
+        <br/><br/>
+        <strong>Why:</strong> Writing to a closed period could corrupt finalized financial statements — a critical compliance risk.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">G-13 · HIGH</div>
+      <div class="gap-title">Ledger allowed values not defined</div>
+      <div class="gap-body">
+        <code>ledger</code> is typed as <code>string</code> but is ERP master data. The spec does not specify whether the value is a code, display name, or internal ID. Invalid and inactive ledger handling is not described.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        Accept an active, accessible ERP ledger code or a specified identifier. Inactive, nonexistent, or inaccessible ledgers return a validation error.
+        <br/><br/>
+        <strong>Why:</strong> Ledger is a critical routing field — posting to the wrong ledger corrupts financial reporting.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">G-14 · HIGH</div>
+      <div class="gap-title">Account validation rules missing</div>
+      <div class="gap-body">
+        The spec does not describe how <code>account</code> is validated against the ERP chart of accounts. Inactive, restricted, or nonexistent account codes could be submitted without a defined outcome.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        Account must exist, be active, and be accessible to the current user. Any deviation returns a validation error identifying the affected account.
+        <br/><br/>
+        <strong>Why:</strong> Journal entries to invalid accounts produce incorrect financial data that is difficult to audit and reverse.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">G-15 · MEDIUM</div>
+      <div class="gap-title">Currency default resolution is incomplete</div>
+      <div class="gap-body">
+        The spec states that <code>currency</code> defaults to the ledger's base currency, but does not specify where the default is resolved — in the Excel add-in, the connector, or the ERP — or how this is surfaced to the user.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        The ERP or connector resolves the ledger default currency. The resolved currency is stored on the batch, not left empty.
+        <br/><br/>
+        <strong>Why:</strong> An empty currency field in ERP could cause incorrect multi-currency valuation or reporting.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">G-16 · HIGH</div>
+      <div class="gap-title">Multi-currency behavior within one batch undefined</div>
+      <div class="gap-body">
+        The spec does not state whether lines within a single batch can have different currencies, or whether a USD debit can be balanced against a EUR credit.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        All lines within one batch must share the same currency unless the ERP explicitly supports currency conversion within a batch. Mixing currencies without conversion produces an invalid batch.
+        <br/><br/>
+        <strong>Why:</strong> Standard GL journals require monetary amounts to be in a consistent currency within a batch for the balance check to be meaningful.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">G-17 · MEDIUM</div>
+      <div class="gap-title">Branch behavior undefined</div>
+      <div class="gap-body">
+        <code>branch</code> is optional, but the spec does not specify whether it is a batch-level or line-level attribute, whether omitting it is valid for all ERP configurations, or whether it participates in the grouping key.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        Branch is a batch-level attribute. If provided, it is validated against ERP master data and included in the grouping key. If omitted, the default branch or no-branch option is applied.
+        <br/><br/>
+        <strong>Why:</strong> Branch is typically a batch-level routing dimension in ERP. Its inclusion in the grouping key prevents mixing transactions across branches in one batch.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">G-18 · CRITICAL</div>
+      <div class="gap-title">Atomicity behavior missing</div>
+      <div class="gap-body">
+        The spec does not define what happens when one line within a batch fails validation or the ERP fails mid-operation. A partial batch (some lines written, some not) could corrupt the GL.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        One Writeback operation is all-or-nothing. If any line or any batch fails, nothing is written to ERP. No partial batches are created.
+        <br/><br/>
+        <strong>Why:</strong> A partial GL journal creates an imbalanced financial record that may not be detectable until close-of-period — a serious audit risk.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">G-19 · CRITICAL</div>
+      <div class="gap-title">Timeout and retry behavior not defined</div>
+      <div class="gap-body">
+        If the ERP creates a batch but the response times out before Excel receives it, the user may retry — creating a duplicate batch. The spec does not describe timeout handling or safe retry semantics.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        Retry with the same idempotency key returns the original batch result without creating a new one. Excel must not show a false success or false failure during timeout.
+        <br/><br/>
+        <strong>Why:</strong> Financial duplicate batches from retry storms are a critical data integrity issue in ERP systems.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">G-20 · HIGH</div>
+      <div class="gap-title">Permission model not described</div>
+      <div class="gap-body">
+        The spec does not describe the permission model. It is unclear what ERP roles are required to create journal drafts, whether per-ledger or per-branch permissions exist, or how permission errors are surfaced.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        ERP permissions are enforced server-side. A user without sufficient access receives a clear permission error. No partial success for partially-accessible data.
+        <br/><br/>
+        <strong>Why:</strong> Unauthorized financial writes are a compliance and audit risk. Permissions must be enforced at the ERP level, not only client-side.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">G-21 · HIGH</div>
+      <div class="gap-title">Audit trail and telemetry not specified</div>
+      <div class="gap-body">
+        The spec does not describe whether successful or failed operations are logged, what is included in the audit trail, or how support engineers would trace a failed Writeback operation.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        Each operation is assigned a correlation ID. Successful creations and validation failures are logged. The audit trail records user, timestamp, source (Excel/add-in), and outcome.
+        <br/><br/>
+        <strong>Why:</strong> Without audit logs and correlation IDs, investigating a GL error or duplicate batch in production is extremely difficult.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">G-22 · HIGH</div>
+      <div class="gap-title">API/OData contract not described</div>
+      <div class="gap-body">
+        The spec does not define the REST/OData payload format, response schema, or error code mapping between the ERP API and Excel. This makes it impossible to write API-level tests or verify correct field mapping.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        A normalized REST/OData or API contract exists (likely JSON). Field names, data types, required fields, and error response format must be documented before integration testing can begin.
+        <br/><br/>
+        <strong>Why:</strong> Without a contract, API validation tests would be guessing at field names and error codes.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">G-23 · HIGH</div>
+      <div class="gap-title">Cross-platform behavior not defined</div>
+      <div class="gap-body">
+        The spec does not address differences between Excel for Windows, Excel for macOS, and Excel Web. Date parsing, decimal separators, and add-in capabilities differ across platforms.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        Behavior should be consistent across Windows, macOS, and Web, or platform-specific limitations should be explicitly documented.
+        <br/><br/>
+        <strong>Why:</strong> A date that parses correctly on US Windows may shift by one month on a European Mac due to locale settings — a silent accounting error.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">G-24 · MEDIUM</div>
+      <div class="gap-title">Queue/background job processing is ambiguous</div>
+      <div class="gap-body">
+        It is unclear whether the Writeback operation is synchronous (ERP responds before Excel unblocks) or asynchronous (a background job or queue processes the request). Async processing creates additional risks around duplicate messages and poison queue entries.
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        Assume near-real-time REST/OData synchronous processing. If async is used, timeout/retry/job-status behavior must be defined along with idempotency and poison message handling.
+        <br/><br/>
+        <strong>Why:</strong> Async without explicit retry semantics and idempotency leads to duplicate batch creation on transient failures.
+      </div>
+    </div>
+
+    <div class="gap-item">
+      <div class="gap-tag">G-25 · MEDIUM</div>
+      <div class="gap-title">Field length limits and numeric precision not specified</div>
+      <div class="gap-body">
+        No maximum lengths are defined for string fields (<code>batchDescription</code>, <code>lineDescription</code>, <code>account</code>, etc.) and no numeric precision rules are defined for <code>debit</code> and <code>credit</code> (e.g. max 2 decimal places, max value).
+      </div>
+      <div class="assumption">
+        <strong>Assumption</strong>
+        String fields: likely 255 chars max. Numeric fields: likely decimal(19,4) or decimal(19,2). Maximum line count per batch is limited. All limits must be defined and enforced with clear error messages.
+        <br/><br/>
+        <strong>Why:</strong> Undefined limits lead to data truncation, overflow errors, or silent corruption — all of which are difficult to diagnose in production.
+      </div>
+    </div>
+
+    <!-- ─── UNIQUE ORIGINAL GAPS ─── -->
+
+    <div class="gap-item" style="border-left-color:var(--cyan);">
+      <div class="gap-tag" style="color:var(--cyan);background:rgba(0,191,207,0.1);">GAP-005 · ORIGINAL</div>
       <div class="gap-title">Zero-value lines — are they valid?</div>
       <div class="gap-body">
-        The spec does not define what happens when both <code>debit</code> and <code>credit</code> are 0 (or omitted entirely). A zero-amount line is technically valid in some ERPs but meaningless in practice.
+        The spec does not define what happens when both <code>debit</code> and <code>credit</code> are 0 (or both omitted entirely). A zero-amount line is technically valid in some ERPs but meaningless in practice. Neither G-07 nor G-08 address this specific case.
       </div>
       <div class="assumption">
         <strong>Assumption</strong>
-        A line with debit=0 and credit=0 is accepted (contributes 0 to the balance sum) but may produce a warning in the ERP UI noting no financial impact.
+        A line with debit=0 and credit=0 is rejected with a validation error — zero-value lines carry no financial meaning and should not be silently accepted.
         <br/><br/>
-        <strong>Why:</strong> Strict rejection would frustrate users with placeholder lines. A warning is the safer, more user-friendly approach.
+        <strong>Why:</strong> Accepting zero lines could produce empty journal entries that pass balance validation but clutter the GL. Strict rejection with a clear message is safer.
       </div>
     </div>
 
-    <div class="gap-item">
-      <div class="gap-tag">GAP-006</div>
-      <div class="gap-title">Negative debit/credit values — no definition</div>
+    <div class="gap-item" style="border-left-color:var(--cyan);">
+      <div class="gap-tag" style="color:var(--cyan);background:rgba(0,191,207,0.1);">GAP-006 · ORIGINAL</div>
+      <div class="gap-title">Negative debit/credit values — no explicit definition</div>
       <div class="gap-body">
-        <code>debit</code> and <code>credit</code> are typed as <code>number</code>, but the spec does not state whether negative values are valid. Negative amounts are sometimes used for reversal entries in accounting.
+        <code>debit</code> and <code>credit</code> are typed as <code>number</code>, but the spec does not state whether negative values are valid. Negative amounts are sometimes used for reversal entries in accounting. G-07 addresses "both populated" but not the sign of individual values.
       </div>
       <div class="assumption">
         <strong>Assumption</strong>
-        Negative values are rejected with a validation error (e.g. "Debit amount must be a positive number"). If reversals are a supported use case, this must be explicitly documented.
+        Negative values are rejected with a validation error (e.g. "Debit amount must be a positive number"). If reversals are a supported use case, this must be explicitly documented with its own behavior.
         <br/><br/>
-        <strong>Why:</strong> Without explicit support, accepting negatives could silently produce incorrect entries. Failing loudly is safer.
+        <strong>Why:</strong> Without explicit support, accepting negatives could silently produce incorrect or reversed entries. Failing loudly is the safer default.
       </div>
     </div>
 
-    <div class="gap-item">
-      <div class="gap-tag">GAP-007</div>
-      <div class="gap-title">No validation rule for transactionDate vs. postPeriod mismatch</div>
-      <div class="gap-body">
-        The spec requires both a <code>transactionDate</code> and a <code>postPeriod</code>. It does not state what happens when the date falls outside the given period — e.g. date=2026-03-15 but postPeriod="05-2026".
-      </div>
-      <div class="assumption">
-        <strong>Assumption</strong>
-        If <code>transactionDate</code> does not fall within the <code>postPeriod</code> range, the function returns a validation error. This is standard ERP behaviour preventing misclassified entries.
-        <br/><br/>
-        <strong>Why:</strong> Posting a March transaction into a May period is a common accountant mistake — the ERP and function should both guard against it.
-      </div>
-    </div>
-
-    <div class="gap-item">
-      <div class="gap-tag">GAP-008</div>
+    <div class="gap-item" style="border-left-color:var(--cyan);">
+      <div class="gap-tag" style="color:var(--cyan);background:rgba(0,191,207,0.1);">GAP-008 · ORIGINAL</div>
       <div class="gap-title">Return value scope: does every line cell show the batch ID?</div>
       <div class="gap-body">
-        The spec says the function "returns 'Draft batch #JE-00087 created'". Since each call is a separate Excel cell, it is unclear whether <em>every</em> cell returns this value, or only one (e.g. the first or last line evaluated).
+        The spec says the function "returns 'Draft batch #JE-00087 created'". Since each <code>WRITEBACKJOURNALDRAFT</code> call occupies a separate Excel cell, it is unclear whether <em>every</em> cell returns this value, or only one (e.g. the first or last line evaluated). None of the PDF gaps address the per-cell return behavior.
       </div>
       <div class="assumption">
         <strong>Assumption</strong>
-        All cells belonging to the same batch return the same success message with the same batch ID. Uniformity avoids confusing UX where only some cells show a result.
+        All cells belonging to the same batch return the same success message with the same batch ID. Uniform return values avoid a confusing UX where only some cells show a confirmation.
         <br/><br/>
-        <strong>Why:</strong> If only one cell returned the ID, the user would have no visual confirmation for the other lines — a poor and error-prone experience.
+        <strong>Why:</strong> If only one cell returned the batch ID, the user would have no visual confirmation for the other lines — a poor and error-prone experience for accountants.
       </div>
     </div>
 

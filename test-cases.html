@@ -11,7 +11,6 @@
 </head>
 <body>
 
-<!-- ── NAV SIDEBAR ── -->
 <aside class="sidebar">
   <div class="sidebar-header">
     <div class="sidebar-eyebrow">// SYSTEM: ACTIVE</div>
@@ -32,25 +31,26 @@
   </div>
 </aside>
 
-<!-- ── SPLIT LAYOUT ── -->
 <div class="split-layout">
 
-  <!-- LIST PANEL -->
   <div class="list-panel">
     <div class="list-header">
-      <div class="list-title">TEST CASES <span style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);font-weight:400;letter-spacing:0.06em;">31 TOTAL</span></div>
-      <div class="list-tabs">
-        <button class="list-tab active" onclick="filterList('all',this)">ALL</button>
-        <button class="list-tab" onclick="filterList('positive',this)">POS</button>
-        <button class="list-tab" onclick="filterList('negative',this)">NEG</button>
-        <button class="list-tab" onclick="filterList('balance',this)">BAL</button>
-        <button class="list-tab" onclick="filterList('edge',this)">EDGE</button>
+      <div class="list-title">TEST CASES <span id="count-label" style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-muted);font-weight:400;letter-spacing:0.06em;"></span></div>
+      <div class="filter-bar">
+        <select class="area-select" id="area-filter" onchange="applyFilters()">
+          <option value="all">ALL AREAS</option>
+        </select>
+        <div class="pri-chips">
+          <button class="pri-chip active" data-pri="all" onclick="setPri('all',this)">ALL</button>
+          <button class="pri-chip" data-pri="p0" onclick="setPri('p0',this)">P0</button>
+          <button class="pri-chip" data-pri="p1" onclick="setPri('p1',this)">P1</button>
+          <button class="pri-chip" data-pri="p2" onclick="setPri('p2',this)">P2</button>
+        </div>
       </div>
     </div>
     <div class="list-scroll" id="list-scroll"></div>
   </div>
 
-  <!-- DETAIL PANEL -->
   <div class="detail-panel" id="detail-panel">
     <div class="detail-empty" id="detail-empty">
       <div class="detail-empty-en">SELECT A TEST CASE</div>
@@ -66,8 +66,7 @@ const savedTheme = localStorage.getItem('eva-theme');
 if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
 function updateThemeBtn() {
   const t = document.documentElement.getAttribute('data-theme');
-  document.getElementById('theme-btn').textContent =
-    t === 'light' ? '◑ SWITCH TO DARK' : '◑ SWITCH TO LIGHT';
+  document.getElementById('theme-btn').textContent = t === 'light' ? '◑ SWITCH TO DARK' : '◑ SWITCH TO LIGHT';
 }
 function toggleTheme() {
   const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
@@ -77,312 +76,879 @@ function toggleTheme() {
 }
 updateThemeBtn();
 
-/* ── Test Case Data ── */
+/* ── Areas metadata ── */
+const areasMeta = {
+  'smoke':            { label: 'Smoke',             color: 'green'  },
+  'erp-status':       { label: 'ERP Status',         color: 'green'  },
+  'erp-side-effects': { label: 'ERP Side Effects',   color: 'green'  },
+  'return-value':     { label: 'Return Value',        color: 'green'  },
+  'erp-mapping':      { label: 'ERP Mapping',         color: 'green'  },
+  'connection':       { label: 'connectionName',      color: 'amber'  },
+  'auth':             { label: 'Auth',                color: 'amber'  },
+  'transaction-date': { label: 'transactionDate',     color: 'amber'  },
+  'post-period':      { label: 'postPeriod',          color: 'amber'  },
+  'error-messages':   { label: 'Error Messages',      color: 'amber'  },
+  'batch-desc':       { label: 'batchDescription',    color: 'orange' },
+  'branch':           { label: 'branch',              color: 'orange' },
+  'ledger':           { label: 'ledger',              color: 'orange' },
+  'currency':         { label: 'currency',            color: 'orange' },
+  'account':          { label: 'account',             color: 'orange' },
+  'debit':            { label: 'debit',               color: 'orange' },
+  'credit':           { label: 'credit',              color: 'orange' },
+  'line-desc':        { label: 'lineDescription',     color: 'orange' },
+  'debit-credit':     { label: 'Debit/Credit',        color: 'red'    },
+  'balance':          { label: 'Balance',             color: 'red'    },
+  'range-detection':  { label: 'Range Detection',     color: 'red'    },
+  'grouping':         { label: 'Grouping',            color: 'red'    },
+  'excel-side-effects':{ label: 'Excel Side Effects', color: 'blue'  },
+  'idempotency':      { label: 'Idempotency',         color: 'blue'   },
+  'atomicity':        { label: 'Atomicity',           color: 'blue'   },
+  'line-boundary':    { label: 'Line Boundary',       color: 'blue'   },
+  'cross-platform':   { label: 'Cross-Platform',      color: 'blue'   },
+  'api-telemetry':    { label: 'API/Telemetry',       color: 'blue'   },
+  'async-queue':      { label: 'Async/Queue',         color: 'blue'   },
+  'permissions':      { label: 'Permissions',         color: 'purple' },
+  'security':         { label: 'Security',            color: 'purple' },
+  'audit':            { label: 'Audit',               color: 'purple' },
+};
+
+/* ── Test case data ── */
 const cases = [
-  // ─── POSITIVE ───
-  { id:'TC-001', cat:'positive', catLabel:'POSITIVE', pri:'high', priLabel:'HIGH',
-    title:'Balanced 2-line batch, all required fields',
-    pre:'ERP "DEMO-ERP" valid; ledger "GL" exists; accounts "10100" and "20100" are active',
-    steps:[
-      'In A1: =WRITEBACKJOURNALDRAFT("DEMO-ERP","2026-05-15","05-2026","Payroll","HQ","GL","USD","10100",1000,0,"Payroll expense")',
-      'In A2: same function with credit=1000, account="20100", lineDescription="Payroll payable"',
-      'Calculate the sheet',
-      'Open ERP and locate the created batch'
-    ],
-    exp:'Both cells return "Draft batch #JE-XXXXX created" with the same batch ID. Batch status in ERP = "On Hold".',
+  { id:'TC-001', area:'smoke',           pri:'p0', auto:'m', title:'Create draft batch with two balanced lines',
+    pre:'Valid connection "ERP_DEV", user has write permissions, period 05-2026 is open, ledger ACTUAL and accounts 6000/2000 are active.',
+    steps:['Add two WRITEBACKJOURNALDRAFT formulas in A1 and A2','A1: account=6000, debit=100, credit empty','A2: account=2000, debit empty, credit=100','Trigger Writeback action'],
+    exp:'Draft batch is created. Both cells return "Draft batch #<batch_number> created" with the same ID. Batch visible in ERP.',
     expType:'ok', gap:null },
 
-  { id:'TC-002', cat:'positive', catLabel:'POSITIVE', pri:'high', priLabel:'HIGH',
-    title:'Required fields only, all optional params omitted',
-    pre:'ERP connected; ledger and accounts valid',
-    steps:[
-      'Enter two balanced lines providing only required params: connectionName, transactionDate, postPeriod, ledger, account, and one of debit/credit',
-      'Leave all optional params (batchDescription, branch, currency, lineDescription) empty',
-      'Calculate'
-    ],
-    exp:'Batch created successfully. Return: "Draft batch #JE-XXXXX created". Optional fields stored as empty/null in ERP.',
+  { id:'TC-002', area:'erp-status',      pri:'p0', auto:'l', title:'Created batch has On Hold status',
+    pre:'Valid balanced batch created (TC-001).',
+    steps:['Open batch in ERP using the batch number returned','Inspect the batch status field'],
+    exp:'Status = "On Hold". Not "Posted", "Released", or "Approved".',
     expType:'ok', gap:null },
 
-  { id:'TC-003', cat:'positive', catLabel:'POSITIVE', pri:'high', priLabel:'HIGH',
-    title:'All 11 fields provided including all optional',
-    pre:'Branch "HQ" exists; currency "USD" supported by ledger',
-    steps:[
-      'Enter two balanced lines with ALL 11 params filled: connectionName, transactionDate, postPeriod, batchDescription, branch, ledger, currency, account, debit/credit, lineDescription',
-      'Calculate',
-      'Open ERP batch record and check all fields'
-    ],
-    exp:'Batch created. All optional fields (batchDescription, branch, currency, lineDescription) visible and correct in ERP.',
+  { id:'TC-003', area:'erp-side-effects',pri:'p0', auto:'l', title:'Created batch is not posted or released',
+    pre:'Valid balanced batch created.',
+    steps:['Open the created batch in ERP','Check for any posting, approval, or release flags','Verify no automatic posting occurred'],
+    exp:'Batch is in draft state only. No posting or release action was triggered.',
     expType:'ok', gap:null },
 
-  { id:'TC-004', cat:'positive', catLabel:'POSITIVE', pri:'high', priLabel:'HIGH',
-    title:'Verify batch status is "On Hold" in ERP',
-    pre:'Valid balanced batch created (TC-001 as prerequisite)',
-    steps:[
-      'Execute a valid balanced batch (TC-001)',
-      'Navigate to the journal batch list in ERP',
-      'Open the created batch and inspect its status field'
-    ],
-    exp:'Status = "On Hold". NOT "Posted", "Released", or "Approved".',
+  { id:'TC-004', area:'return-value',    pri:'p1', auto:'l', title:'Returned batch number exists in ERP',
+    pre:'Writeback completed successfully.',
+    steps:['Copy the batch number from the Excel cell return value (e.g. JE-00087)','Search for this batch in ERP'],
+    exp:'ERP contains a batch with the matching number. The return value ID is accurate.',
     expType:'ok', gap:null },
 
-  { id:'TC-005', cat:'positive', catLabel:'POSITIVE', pri:'high', priLabel:'HIGH',
-    title:'Return value matches spec format',
-    pre:'Valid balanced batch executable',
-    steps:[
-      'Execute a valid balanced 2-line batch',
-      'Note the exact return value string in each formula cell',
-      'Compare the batch ID in the return value with the batch ID visible in ERP'
-    ],
-    exp:'Return value matches pattern "Draft batch #JE-XXXXX created". The batch ID in the string matches the ERP batch record.',
+  { id:'TC-005', area:'connection',      pri:'p0', auto:'h', title:'connectionName is required',
+    pre:'All other fields valid and balanced.',
+    steps:['Leave connectionName empty or omit it','Trigger Writeback'],
+    exp:'Required field error. No batch created in ERP.',
+    expType:'err', gap:null },
+
+  { id:'TC-006', area:'connection',      pri:'p0', auto:'h', title:'Invalid connectionName is rejected',
+    pre:'"ERP_UNKNOWN" does not exist in the add-in configuration.',
+    steps:['Set connectionName="ERP_UNKNOWN"','Trigger Writeback'],
+    exp:'Connection error. No batch created.',
+    expType:'err', gap:null },
+
+  { id:'TC-007', area:'connection',      pri:'p2', auto:'m', title:'connectionName with leading/trailing spaces handled consistently',
+    pre:'"ERP_DEV" exists.',
+    steps:['Set connectionName=" ERP_DEV " (with spaces)','Trigger Writeback'],
+    exp:'Value is trimmed and accepted, OR rejected with a clear message — must match documented rule. No silent failure.',
+    expType:'note', gap:null },
+
+  { id:'TC-008', area:'auth',            pri:'p0', auto:'h', title:'Expired session is rejected',
+    pre:'User session has expired; all form data is otherwise valid.',
+    steps:['Let the session expire','Trigger Writeback'],
+    exp:'Authentication error returned to Excel. No batch created.',
+    expType:'err', gap:null },
+
+  { id:'TC-009', area:'transaction-date',pri:'p0', auto:'h', title:'transactionDate is required',
+    pre:'All other fields valid.',
+    steps:['Leave transactionDate empty','Trigger Writeback'],
+    exp:'Required field error. No batch created.',
+    expType:'err', gap:null },
+
+  { id:'TC-010', area:'transaction-date',pri:'p1', auto:'h', title:'Valid Excel DATE() formula is accepted',
+    pre:'All other fields valid.',
+    steps:['Set transactionDate=DATE(2026,5,19)','Trigger Writeback','Open ERP batch and check the date field'],
+    exp:'Batch created. ERP transaction date = 2026-05-19.',
     expType:'ok', gap:null },
 
-  { id:'TC-006', cat:'positive', catLabel:'POSITIVE', pri:'medium', priLabel:'MED',
-    title:'Multi-line batch (4 lines) balanced in aggregate',
-    pre:'4 different GL accounts available; ERP connected',
-    steps:[
-      'Enter 2 debit lines: 300 + 200 = 500',
-      'Enter 2 credit lines: 400 + 100 = 500',
-      'All lines share same connectionName, transactionDate, postPeriod, ledger',
-      'Calculate'
-    ],
-    exp:'All 4 cells return the same batch ID. Batch on Hold. Total debits (500) = total credits (500).',
+  { id:'TC-011', area:'transaction-date',pri:'p1', auto:'h', title:'Invalid calendar date is rejected',
+    pre:'All other fields valid.',
+    steps:['Set transactionDate="2026-02-31" (Feb 31 does not exist)','Trigger Writeback'],
+    exp:'Date validation error. No batch created.',
+    expType:'err', gap:null },
+
+  { id:'TC-012', area:'transaction-date',pri:'p1', auto:'h', title:'Ambiguous text date rejected or handled by documented rule',
+    pre:'All other fields valid.',
+    steps:['Set transactionDate as plain text "05/06/2026" (ambiguous locale)','Trigger Writeback'],
+    exp:'Rejected, or accepted only with a documented locale conversion rule. No silent wrong date accepted.',
+    expType:'note', gap:'G-09' },
+
+  { id:'TC-013', area:'transaction-date',pri:'p0', auto:'h', title:'transactionDate outside postPeriod rejected',
+    pre:'All other fields valid.',
+    steps:['Set transactionDate=2026-05-19 and postPeriod="04-2026" (April)','Trigger Writeback'],
+    exp:'Date/period mismatch error. No batch created.',
+    expType:'err', gap:'G-11' },
+
+  { id:'TC-014', area:'transaction-date',pri:'p2', auto:'h', title:'First day of period accepted',
+    pre:'All other fields valid.',
+    steps:['Set transactionDate=2026-05-01 and postPeriod="05-2026"','Trigger Writeback'],
+    exp:'Batch created successfully.',
     expType:'ok', gap:null },
 
-  { id:'TC-007', cat:'positive', catLabel:'POSITIVE', pri:'medium', priLabel:'MED',
-    title:'Currency defaults to ledger base currency when omitted',
-    pre:'Ledger "GL" has base currency USD; currency param omitted',
-    steps:[
-      'Create a balanced 2-line batch without providing the currency parameter',
-      'Calculate',
-      'Open ERP batch and check the currency field'
-    ],
-    exp:'Currency in ERP = "USD" (ledger default). Not empty or null.',
+  { id:'TC-015', area:'transaction-date',pri:'p2', auto:'h', title:'Last day of period accepted',
+    pre:'All other fields valid.',
+    steps:['Set transactionDate=2026-05-31 and postPeriod="05-2026"','Trigger Writeback'],
+    exp:'Batch created successfully.',
     expType:'ok', gap:null },
 
-  // ─── NEGATIVE — REQUIRED FIELDS ───
-  { id:'TC-008', cat:'negative', catLabel:'NEGATIVE', pri:'high', priLabel:'HIGH',
-    title:'connectionName is null / missing',
-    pre:'—',
-    steps:['Enter function with connectionName omitted or null','Calculate'],
-    exp:'Error: required field missing. No batch created in ERP.',
+  { id:'TC-016', area:'post-period',     pri:'p0', auto:'h', title:'postPeriod is required',
+    pre:'All other fields valid.',
+    steps:['Leave postPeriod empty','Trigger Writeback'],
+    exp:'Required field error. No batch created.',
     expType:'err', gap:null },
 
-  { id:'TC-009', cat:'negative', catLabel:'NEGATIVE', pri:'high', priLabel:'HIGH',
-    title:'connectionName is empty string ""',
-    pre:'—',
-    steps:['Enter function with connectionName=""','Calculate'],
-    exp:'Error: empty string is not a valid connection name. No batch created.',
+  { id:'TC-017', area:'post-period',     pri:'p1', auto:'h', title:'Valid open postPeriod accepted',
+    pre:'Period 05-2026 exists and is open.',
+    steps:['Set postPeriod="05-2026"','Trigger Writeback'],
+    exp:'Batch created.',
+    expType:'ok', gap:null },
+
+  { id:'TC-018', area:'post-period',     pri:'p0', auto:'h', title:'Closed postPeriod rejected',
+    pre:'Period 12-2024 is closed/locked in ERP.',
+    steps:['Set postPeriod="12-2024"','Trigger Writeback'],
+    exp:'Closed period error. No batch created.',
+    expType:'err', gap:'G-12' },
+
+  { id:'TC-019', area:'post-period',     pri:'p1', auto:'h', title:'Invalid postPeriod format rejected',
+    pre:'All other fields valid.',
+    steps:['Set postPeriod="2026-05" (reversed format)','Trigger Writeback'],
+    exp:'Format error. No batch created. Only MM-YYYY (e.g. "05-2026") is valid.',
+    expType:'err', gap:'G-10' },
+
+  { id:'TC-020', area:'post-period',     pri:'p1', auto:'h', title:'Nonexistent postPeriod rejected',
+    pre:'All other fields valid.',
+    steps:['Set postPeriod="13-2026" (month 13 does not exist)','Trigger Writeback'],
+    exp:'Invalid period error. No batch created.',
     expType:'err', gap:null },
 
-  { id:'TC-010', cat:'negative', catLabel:'NEGATIVE', pri:'high', priLabel:'HIGH',
-    title:'connectionName refers to non-existent connection',
-    pre:'Connection "FAKE-ERP" does not exist',
-    steps:['Enter function with connectionName="FAKE-ERP"','Calculate'],
-    exp:'Error: connection not found or unreachable. No batch created.',
+  { id:'TC-021', area:'batch-desc',      pri:'p2', auto:'m', title:'Empty batchDescription accepted',
+    pre:'All other fields valid, batch is balanced.',
+    steps:['Leave batchDescription empty','Trigger Writeback'],
+    exp:'Batch created with empty/null description. No error.',
+    expType:'ok', gap:null },
+
+  { id:'TC-022', area:'batch-desc',      pri:'p2', auto:'m', title:'batchDescription saved in ERP',
+    pre:'All other fields valid.',
+    steps:['Set batchDescription="QA Rent"','Trigger Writeback','Open ERP batch and inspect the description field'],
+    exp:'ERP batch description = "QA Rent".',
+    expType:'ok', gap:null },
+
+  { id:'TC-023', area:'batch-desc',      pri:'p2', auto:'m', title:'Long batchDescription handled safely',
+    pre:'All other fields valid.',
+    steps:['Enter a batchDescription longer than any documented limit (e.g. 500+ chars)','Trigger Writeback'],
+    exp:'Validation error with documented max length, OR safe truncation with a warning. No silent data corruption.',
+    expType:'note', gap:'G-25' },
+
+  { id:'TC-024', area:'batch-desc',      pri:'p2', auto:'m', title:'Special characters in batchDescription accepted',
+    pre:'All other fields valid.',
+    steps:['Set batchDescription="QA Rent / Test & Check — 2026"','Trigger Writeback'],
+    exp:'Batch created and text stored correctly in ERP.',
+    expType:'ok', gap:null },
+
+  { id:'TC-025', area:'branch',          pri:'p1', auto:'m', title:'Empty branch accepted when optional',
+    pre:'All other fields valid.',
+    steps:['Leave branch empty','Trigger Writeback'],
+    exp:'Batch created with no branch or default branch applied.',
+    expType:'ok', gap:'G-17' },
+
+  { id:'TC-026', area:'branch',          pri:'p1', auto:'m', title:'Invalid branch rejected',
+    pre:'Branch "BRANCH_UNKNOWN" does not exist in ERP.',
+    steps:['Set branch="BRANCH_UNKNOWN"','Trigger Writeback'],
+    exp:'Branch validation error. No batch created.',
     expType:'err', gap:null },
 
-  { id:'TC-011', cat:'negative', catLabel:'NEGATIVE', pri:'high', priLabel:'HIGH',
-    title:'transactionDate is null / missing',
-    pre:'—',
-    steps:['Enter function with transactionDate omitted','Calculate'],
-    exp:'Error: required field missing. No batch created.',
+  { id:'TC-027', area:'branch',          pri:'p2', auto:'m', title:'Branch restricted to user is rejected',
+    pre:'Branch "WEST" exists but current user has no access to it.',
+    steps:['Set branch="WEST"','Trigger Writeback'],
+    exp:'Access/permission error. No batch created.',
     expType:'err', gap:null },
 
-  { id:'TC-012', cat:'negative', catLabel:'NEGATIVE', pri:'medium', priLabel:'MED',
-    title:'transactionDate — invalid format',
-    pre:'—',
-    steps:['Test with "not-a-date"','Test with "32-13-2026"','Calculate each'],
-    exp:'Error: invalid date value. Function does not create a batch.',
+  { id:'TC-028', area:'branch',          pri:'p1', auto:'m', title:'branch saved in ERP',
+    pre:'Branch "MAIN" exists and is accessible.',
+    steps:['Set branch="MAIN"','Trigger Writeback','Open ERP batch and check the branch field'],
+    exp:'ERP batch branch = "MAIN".',
+    expType:'ok', gap:null },
+
+  { id:'TC-029', area:'ledger',          pri:'p0', auto:'h', title:'ledger is required',
+    pre:'All other fields valid.',
+    steps:['Leave ledger empty','Trigger Writeback'],
+    exp:'Required field error. No batch created.',
     expType:'err', gap:null },
 
-  { id:'TC-013', cat:'negative', catLabel:'NEGATIVE', pri:'high', priLabel:'HIGH',
-    title:'postPeriod is null / missing',
-    pre:'—',
-    steps:['Enter function with postPeriod omitted','Calculate'],
-    exp:'Error: required field missing. No batch created.',
+  { id:'TC-030', area:'ledger',          pri:'p0', auto:'h', title:'Valid ledger code accepted',
+    pre:'Ledger "ACTUAL" exists and is active.',
+    steps:['Set ledger="ACTUAL"','Trigger Writeback'],
+    exp:'Batch created successfully.',
+    expType:'ok', gap:null },
+
+  { id:'TC-031', area:'ledger',          pri:'p0', auto:'h', title:'Invalid ledger code rejected',
+    pre:'Ledger "UNKNOWN" does not exist.',
+    steps:['Set ledger="UNKNOWN"','Trigger Writeback'],
+    exp:'Ledger validation error. No batch created.',
+    expType:'err', gap:'G-13' },
+
+  { id:'TC-032', area:'ledger',          pri:'p1', auto:'h', title:'Inactive ledger rejected',
+    pre:'Ledger "OLD" exists but is inactive.',
+    steps:['Set ledger="OLD"','Trigger Writeback'],
+    exp:'Inactive ledger error. No batch created.',
     expType:'err', gap:null },
 
-  { id:'TC-014', cat:'negative', catLabel:'NEGATIVE', pri:'medium', priLabel:'MED',
-    title:'postPeriod — invalid format',
-    pre:'—',
-    steps:['Test "May 2026" (wrong format)','Test "2026-05" (reversed)','Test "abc"','Calculate each'],
-    exp:'Error for each invalid format. Only "MM-YYYY" (e.g. "05-2026") is valid.',
+  { id:'TC-033', area:'ledger',          pri:'p0', auto:'h', title:'Ledger without user access rejected',
+    pre:'Ledger "IFRS" exists but current user has no access.',
+    steps:['Set ledger="IFRS"','Trigger Writeback'],
+    exp:'Permission error. No batch created.',
     expType:'err', gap:null },
 
-  { id:'TC-015', cat:'negative', catLabel:'NEGATIVE', pri:'high', priLabel:'HIGH',
-    title:'ledger is null / missing',
-    pre:'—',
-    steps:['Enter function with ledger omitted','Calculate'],
-    exp:'Error: required field missing. No batch created.',
+  { id:'TC-034', area:'ledger',          pri:'p2', auto:'m', title:'Ledger case sensitivity is documented',
+    pre:'Ledger "ACTUAL" exists. Test "actual" (lowercase).',
+    steps:['Set ledger="actual" (lowercase)','Trigger Writeback'],
+    exp:'Accepted or rejected according to documented case sensitivity rule. Behavior must be consistent and documented.',
+    expType:'note', gap:null },
+
+  { id:'TC-035', area:'currency',        pri:'p0', auto:'h', title:'Empty currency defaults to ledger base currency',
+    pre:'Ledger "ACTUAL" has base currency USD.',
+    steps:['Leave currency empty','Trigger Writeback','Open ERP batch and check the currency field'],
+    exp:'ERP currency = "USD" (ledger default). Not empty or null.',
+    expType:'ok', gap:'G-15' },
+
+  { id:'TC-036', area:'currency',        pri:'p1', auto:'h', title:'Valid currency code accepted',
+    pre:'Currency "USD" is supported by the ledger.',
+    steps:['Set currency="USD"','Trigger Writeback'],
+    exp:'Batch created. Currency saved as USD.',
+    expType:'ok', gap:null },
+
+  { id:'TC-037', area:'currency',        pri:'p1', auto:'h', title:'Unsupported currency code rejected',
+    pre:'Currency "XXX" is not a valid ISO 4217 code.',
+    steps:['Set currency="XXX"','Trigger Writeback'],
+    exp:'Currency validation error. No batch created.',
     expType:'err', gap:null },
 
-  { id:'TC-016', cat:'negative', catLabel:'NEGATIVE', pri:'high', priLabel:'HIGH',
-    title:'ledger refers to non-existent ledger',
-    pre:'Ledger "NONEXISTENT" does not exist in ERP',
-    steps:['Enter function with ledger="NONEXISTENT"','Calculate'],
-    exp:'Error: ledger not found in ERP. No batch created.',
+  { id:'TC-038', area:'currency',        pri:'p2', auto:'h', title:'Currency saved in ERP',
+    pre:'Currency "USD" is valid.',
+    steps:['Create batch with currency="USD"','Open ERP batch and check the currency field'],
+    exp:'ERP currency = "USD".',
+    expType:'ok', gap:null },
+
+  { id:'TC-039', area:'account',         pri:'p0', auto:'h', title:'account is required per line',
+    pre:'All other fields valid.',
+    steps:['Leave account empty on one line','Trigger Writeback'],
+    exp:'Account required error. No batch created.',
     expType:'err', gap:null },
 
-  { id:'TC-017', cat:'negative', catLabel:'NEGATIVE', pri:'high', priLabel:'HIGH',
-    title:'account is null / missing on a line',
-    pre:'ERP connected; other params valid',
-    steps:['Enter function with account omitted or null','Calculate'],
-    exp:'Error: account is required per line. No batch created.',
+  { id:'TC-040', area:'account',         pri:'p0', auto:'h', title:'Valid account code accepted',
+    pre:'Account "6000" is active and accessible.',
+    steps:['Set account="6000"','Trigger Writeback'],
+    exp:'Batch created successfully.',
+    expType:'ok', gap:null },
+
+  { id:'TC-041', area:'account',         pri:'p0', auto:'h', title:'Invalid account code rejected',
+    pre:'Account "999999" does not exist in the ERP chart of accounts.',
+    steps:['Set account="999999"','Trigger Writeback'],
+    exp:'Account validation error. No batch created.',
+    expType:'err', gap:'G-14' },
+
+  { id:'TC-042', area:'account',         pri:'p1', auto:'h', title:'Inactive account rejected',
+    pre:'Account "7000" exists but is inactive.',
+    steps:['Set account="7000" (inactive)','Trigger Writeback'],
+    exp:'Inactive account error. No batch created.',
     expType:'err', gap:null },
 
-  // ─── BALANCE ───
-  { id:'TC-018', cat:'balance', catLabel:'BALANCE', pri:'high', priLabel:'HIGH',
-    title:'Single line — debit only, no credit',
-    pre:'ERP connected; all required fields valid',
-    steps:['Enter single function call with debit=500, credit=0','Calculate'],
-    exp:'"Journal is not balanced: debits 500.00 ≠ credits 0.00". No batch created.',
+  { id:'TC-043', area:'account',         pri:'p2', auto:'h', title:'Account with leading/trailing spaces handled consistently',
+    pre:'Account "6000" is valid.',
+    steps:['Set account=" 6000 " (with spaces)','Trigger Writeback'],
+    exp:'Trimmed and accepted, OR rejected with a clear message. No silent mismatch.',
+    expType:'note', gap:null },
+
+  { id:'TC-044', area:'account',         pri:'p1', auto:'h', title:'Account mapped correctly to ERP line',
+    pre:'Account "6000" is valid.',
+    steps:['Create batch with account="6000"','Open ERP batch and inspect the line account field'],
+    exp:'ERP line account = "6000".',
+    expType:'ok', gap:null },
+
+  { id:'TC-045', area:'debit',           pri:'p0', auto:'h', title:'Positive debit amount accepted',
+    pre:'Valid master data, credit line present for balance.',
+    steps:['Set debit=100 on one line','Set credit=100 on another line','Trigger Writeback'],
+    exp:'Batch created. ERP debit line = 100.00.',
+    expType:'ok', gap:null },
+
+  { id:'TC-046', area:'debit',           pri:'p0', auto:'h', title:'Empty debit accepted when credit is populated',
+    pre:'Valid master data.',
+    steps:['Leave debit empty on a line','Set credit=100 on the same line','Trigger Writeback (with balancing debit line elsewhere)'],
+    exp:'Line treated as a credit-only line. Batch created if overall balanced.',
+    expType:'ok', gap:null },
+
+  { id:'TC-047', area:'debit',           pri:'p1', auto:'h', title:'Zero debit rejected',
+    pre:'Valid master data.',
+    steps:['Set debit=0 on a line','Trigger Writeback'],
+    exp:'Validation error. Zero amount is not accepted as a meaningful debit.',
     expType:'err', gap:null },
 
-  { id:'TC-019', cat:'balance', catLabel:'BALANCE', pri:'high', priLabel:'HIGH',
-    title:'Single line — credit only, no debit',
-    pre:'ERP connected',
-    steps:['Enter single function call with debit=0, credit=500','Calculate'],
-    exp:'"Journal is not balanced: debits 0.00 ≠ credits 500.00". No batch created.',
+  { id:'TC-048', area:'debit',           pri:'p1', auto:'h', title:'Negative debit rejected',
+    pre:'Valid master data.',
+    steps:['Set debit=-100 on a line','Trigger Writeback'],
+    exp:'Negative amount error. No batch created.',
     expType:'err', gap:null },
 
-  { id:'TC-020', cat:'balance', catLabel:'BALANCE', pri:'high', priLabel:'HIGH',
-    title:'Multiple lines — Σ debit > Σ credit',
-    pre:'ERP connected',
-    steps:['Line 1: debit=1000, credit=0','Line 2: debit=0, credit=900','Calculate (Σ debit=1000, Σ credit=900)'],
-    exp:'"Journal is not balanced: debits 1000.00 ≠ credits 900.00". No batch created.',
+  { id:'TC-049', area:'debit',           pri:'p1', auto:'h', title:'Debit with excess decimal precision handled by documented rule',
+    pre:'Valid master data.',
+    steps:['Set debit=100.001 (3 decimal places)','Trigger Writeback'],
+    exp:'Rejected with precision error, OR rounded only per documented rule. No silent precision loss.',
+    expType:'note', gap:'G-25' },
+
+  { id:'TC-050', area:'debit',           pri:'p2', auto:'h', title:'Text string as debit amount',
+    pre:'Valid master data.',
+    steps:['Set debit="100" (text value, not number)','Trigger Writeback'],
+    exp:'Accepted only if type coercion is documented; otherwise type error. No silent wrong value.',
+    expType:'note', gap:null },
+
+  { id:'TC-051', area:'credit',          pri:'p0', auto:'h', title:'Positive credit amount accepted',
+    pre:'Valid master data, debit line present for balance.',
+    steps:['Set credit=100 on one line','Set debit=100 on another line','Trigger Writeback'],
+    exp:'Batch created. ERP credit line = 100.00.',
+    expType:'ok', gap:null },
+
+  { id:'TC-052', area:'credit',          pri:'p0', auto:'h', title:'Empty credit accepted when debit is populated',
+    pre:'Valid master data.',
+    steps:['Set debit=100 on a line','Leave credit empty on the same line','Trigger Writeback (with balancing credit line elsewhere)'],
+    exp:'Line treated as a debit-only line. Batch created if overall balanced.',
+    expType:'ok', gap:null },
+
+  { id:'TC-053', area:'credit',          pri:'p1', auto:'h', title:'Zero credit rejected',
+    pre:'Valid master data.',
+    steps:['Set credit=0 on a line','Trigger Writeback'],
+    exp:'Validation error. Zero amount is not accepted.',
     expType:'err', gap:null },
 
-  { id:'TC-021', cat:'balance', catLabel:'BALANCE', pri:'high', priLabel:'HIGH',
-    title:'Multiple lines — Σ credit > Σ debit',
-    pre:'ERP connected',
-    steps:['Line 1: debit=900, credit=0','Line 2: debit=0, credit=1000','Calculate (Σ debit=900, Σ credit=1000)'],
-    exp:'"Journal is not balanced: debits 900.00 ≠ credits 1000.00". No batch created.',
+  { id:'TC-054', area:'credit',          pri:'p1', auto:'h', title:'Negative credit rejected',
+    pre:'Valid master data.',
+    steps:['Set credit=-100 on a line','Trigger Writeback'],
+    exp:'Negative amount error. No batch created.',
     expType:'err', gap:null },
 
-  { id:'TC-022', cat:'balance', catLabel:'BALANCE', pri:'medium', priLabel:'MED',
-    title:'Error message shows exactly 2 decimal places',
-    pre:'ERP connected',
-    steps:['Line 1: debit=100.5, credit=0','Line 2: debit=0, credit=100.49 (imbalanced by 0.01)','Calculate','Read the exact error message'],
-    exp:'"Journal is not balanced: debits 100.50 ≠ credits 100.49" — both amounts shown with exactly 2 decimal places.',
+  { id:'TC-055', area:'credit',          pri:'p1', auto:'h', title:'Credit with excess decimal precision handled by documented rule',
+    pre:'Valid master data.',
+    steps:['Set credit=100.001 (3 decimal places)','Trigger Writeback'],
+    exp:'Rejected with precision error, OR rounded only per documented rule. No silent precision loss.',
+    expType:'note', gap:'G-25' },
+
+  { id:'TC-056', area:'debit-credit',    pri:'p0', auto:'m', title:'Line with both debit AND credit non-zero rejected',
+    pre:'Valid master data.',
+    steps:['Set debit=100 and credit=100 on the same line','Trigger Writeback'],
+    exp:'Line validation error. Both sides populated on one line is not valid. No batch created.',
+    expType:'err', gap:'G-07' },
+
+  { id:'TC-057', area:'debit-credit',    pri:'p0', auto:'m', title:'Line with neither debit nor credit rejected',
+    pre:'Valid master data.',
+    steps:['Leave both debit and credit empty on a line','Trigger Writeback'],
+    exp:'Line rejected — a line must carry exactly one financial side. No batch created.',
+    expType:'err', gap:'G-07' },
+
+  { id:'TC-058', area:'debit-credit',    pri:'p0', auto:'m', title:'Single debit-only batch rejected by balance check',
+    pre:'Valid master data.',
+    steps:['Create only one debit line (no credit line)','Trigger Writeback'],
+    exp:'Balance error: "Journal is not balanced: debits X.XX ≠ credits 0.00". No batch created.',
     expType:'err', gap:null },
 
-  // ─── EDGE CASES ───
-  { id:'TC-023', cat:'edge', catLabel:'EDGE', pri:'high', priLabel:'HIGH',
-    title:'No lines — empty range',
-    pre:'—',
-    steps:['Trigger function with zero line data / empty range (exact mechanism — see GAP-002)','Calculate'],
+  { id:'TC-059', area:'debit-credit',    pri:'p1', auto:'m', title:'Multiple debit lines and one credit accepted',
+    pre:'Valid master data.',
+    steps:['Line 1: debit=60','Line 2: debit=40','Line 3: credit=100','Trigger Writeback (Σ debit=100 = Σ credit=100)'],
+    exp:'Batch created. Totals balanced.',
+    expType:'ok', gap:null },
+
+  { id:'TC-060', area:'debit-credit',    pri:'p1', auto:'m', title:'One debit line and multiple credit lines accepted',
+    pre:'Valid master data.',
+    steps:['Line 1: debit=100','Line 2: credit=60','Line 3: credit=40','Trigger Writeback (Σ debit=100 = Σ credit=100)'],
+    exp:'Batch created. Totals balanced.',
+    expType:'ok', gap:null },
+
+  { id:'TC-061', area:'line-desc',       pri:'p2', auto:'m', title:'Empty lineDescription accepted',
+    pre:'All other fields valid.',
+    steps:['Leave lineDescription empty','Trigger Writeback'],
+    exp:'Batch created. Line description is empty/null in ERP.',
+    expType:'ok', gap:null },
+
+  { id:'TC-062', area:'line-desc',       pri:'p2', auto:'m', title:'lineDescription saved in ERP',
+    pre:'All other fields valid.',
+    steps:['Set lineDescription="Rent expense"','Trigger Writeback','Open ERP line and check the description field'],
+    exp:'ERP line description = "Rent expense".',
+    expType:'ok', gap:null },
+
+  { id:'TC-063', area:'line-desc',       pri:'p2', auto:'m', title:'Special characters in lineDescription accepted',
+    pre:'All other fields valid.',
+    steps:['Set lineDescription="Rent / QA & Test — 2026"','Trigger Writeback'],
+    exp:'Batch created. Text stored correctly in ERP.',
+    expType:'ok', gap:null },
+
+  { id:'TC-064', area:'line-desc',       pri:'p1', auto:'m', title:'Script injection in lineDescription is safe',
+    pre:'All other fields valid.',
+    steps:['Set lineDescription="<script>alert(1)</script>"','Trigger Writeback','Open the ERP line record and inspect the description'],
+    exp:'Text stored and displayed as plain text. Script is not executed.',
+    expType:'ok', gap:null },
+
+  { id:'TC-065', area:'balance',         pri:'p0', auto:'h', title:'Balanced batch accepted',
+    pre:'Valid master data.',
+    steps:['Line 1: debit=100','Line 2: credit=100','Trigger Writeback (Σ debit = Σ credit = 100)'],
+    exp:'Batch created successfully.',
+    expType:'ok', gap:null },
+
+  { id:'TC-066', area:'balance',         pri:'p0', auto:'h', title:'Imbalanced batch rejected with correct error',
+    pre:'Valid master data.',
+    steps:['Line 1: debit=100','Line 2: credit=90','Trigger Writeback (Σ debit=100 ≠ Σ credit=90)'],
+    exp:'"Journal is not balanced: debits 100.00 ≠ credits 90.00". No batch created.',
+    expType:'err', gap:null },
+
+  { id:'TC-067', area:'balance',         pri:'p1', auto:'h', title:'Balance error shows correct debit total',
+    pre:'Valid master data.',
+    steps:['Line 1: debit=60, Line 2: debit=40 (total debit=100)','Line 3: credit=90','Trigger Writeback'],
+    exp:'Error shows "debits 100.00" — the sum of debit lines, not any individual line.',
+    expType:'err', gap:null },
+
+  { id:'TC-068', area:'balance',         pri:'p1', auto:'h', title:'Balance error shows correct credit total',
+    pre:'Valid master data.',
+    steps:['Line 1: debit=100','Line 2: credit=50, Line 3: credit=40 (total credit=90)','Trigger Writeback'],
+    exp:'Error shows "credits 90.00" — the sum of credit lines.',
+    expType:'err', gap:null },
+
+  { id:'TC-069', area:'balance',         pri:'p1', auto:'h', title:'Decimal balance calculated correctly (floating-point safety)',
+    pre:'Valid master data.',
+    steps:['Line 1: debit=0.10','Line 2: debit=0.20 (total=0.30)','Line 3: credit=0.30','Trigger Writeback'],
+    exp:'Batch created. No floating-point arithmetic error causes a false imbalance.',
+    expType:'ok', gap:null },
+
+  { id:'TC-070', area:'range-detection', pri:'p0', auto:'m', title:'Empty range returns "at least one line" error',
+    pre:'Excel workbook available.',
+    steps:['Select a range with no WRITEBACKJOURNALDRAFT formulas','Trigger Writeback'],
     exp:'"At least one transaction line is required". No batch created.',
-    expType:'err', gap:'GAP-002' },
+    expType:'err', gap:'G-02' },
 
-  { id:'TC-024', cat:'edge', catLabel:'EDGE', pri:'medium', priLabel:'MED',
-    title:'Both debit and credit non-zero on same line',
-    pre:'ERP connected',
-    steps:['Enter function with debit=500, credit=500 in one call','Calculate'],
-    exp:'Spec does not define this case (GAP-004). Expected: error, or line treated as self-balancing. Verify actual behavior.',
-    expType:'note', gap:'GAP-004' },
+  { id:'TC-071', area:'range-detection', pri:'p1', auto:'m', title:'Range with only blank rows rejected',
+    pre:'Excel workbook available.',
+    steps:['Select a range containing only blank rows (no formula values)','Trigger Writeback'],
+    exp:'"At least one transaction line is required". No batch created.',
+    expType:'err', gap:'G-08' },
 
-  { id:'TC-025', cat:'edge', catLabel:'EDGE', pri:'medium', priLabel:'MED',
-    title:'Both debit and credit are zero',
-    pre:'ERP connected',
-    steps:['Enter function with debit=0, credit=0','Also enter a second balanced line with same zeros','Calculate'],
-    exp:'Spec does not address zero-value lines (GAP-005). Expected: accepted as zero-amount line, or error/warning returned.',
-    expType:'note', gap:'GAP-005' },
+  { id:'TC-072', area:'range-detection', pri:'p2', auto:'m', title:'Blank row between valid lines handled consistently',
+    pre:'Excel workbook available.',
+    steps:['Row 1: debit line','Row 2: blank','Row 3: credit line (balanced overall)','Trigger Writeback'],
+    exp:'Blank row is ignored OR rejected by documented rule. Result is consistent and documented.',
+    expType:'note', gap:'G-08' },
 
-  { id:'TC-026', cat:'edge', catLabel:'EDGE', pri:'medium', priLabel:'MED',
-    title:'Negative value in debit field',
-    pre:'ERP connected',
-    steps:['Enter function with debit=−500','Pair with a balancing line','Calculate'],
-    exp:'Spec does not define negative amounts (GAP-006). Expected: validation error rejecting negative debit. Verify.',
-    expType:'note', gap:'GAP-006' },
+  { id:'TC-073', area:'grouping',        pri:'p0', auto:'m', title:'Lines with same date/ledger/description form one batch',
+    pre:'Valid master data.',
+    steps:['Enter 3 lines all sharing transactionDate=2026-05-19, ledger=ACTUAL, batchDescription="Rent"','Lines are balanced in aggregate','Trigger Writeback'],
+    exp:'One batch created containing all 3 lines.',
+    expType:'ok', gap:'G-04' },
 
-  { id:'TC-027', cat:'edge', catLabel:'EDGE', pri:'medium', priLabel:'MED',
-    title:'Negative value in credit field',
-    pre:'ERP connected',
-    steps:['Enter function with credit=−500','Pair with a balancing line','Calculate'],
-    exp:'Spec does not define negative amounts (GAP-006). Expected: validation error. Verify actual behavior.',
-    expType:'note', gap:'GAP-006' },
+  { id:'TC-074', area:'grouping',        pri:'p1', auto:'m', title:'Different transactionDate creates a separate batch group',
+    pre:'Valid master data.',
+    steps:['Group A: balanced lines for 2026-05-19','Group B: balanced lines for 2026-05-20','Trigger Writeback'],
+    exp:'Two separate batches created — one per date. Lines not merged.',
+    expType:'ok', gap:'G-04' },
 
-  { id:'TC-028', cat:'edge', catLabel:'EDGE', pri:'low', priLabel:'LOW',
-    title:'Very large amounts — upper boundary',
-    pre:'ERP connected; ledger supports large numbers',
-    steps:['Create balanced batch with debit=credit=999,999,999.99','Calculate'],
-    exp:'Batch created if ERP supports the value; or a clear error if the amount exceeds ERP numeric limits.',
+  { id:'TC-075', area:'grouping',        pri:'p1', auto:'m', title:'Different ledger creates a separate batch group',
+    pre:'Both ACTUAL and BUDGET ledgers exist and are accessible.',
+    steps:['Group A: balanced lines for ledger=ACTUAL','Group B: balanced lines for ledger=BUDGET','Trigger Writeback'],
+    exp:'Two separate batches created — one per ledger.',
+    expType:'ok', gap:'G-04' },
+
+  { id:'TC-076', area:'grouping',        pri:'p1', auto:'m', title:'Different batchDescription creates a separate batch group',
+    pre:'Valid master data.',
+    steps:['Group A: lines with batchDescription="Rent"','Group B: lines with batchDescription="Software"','All groups are internally balanced','Trigger Writeback'],
+    exp:'Two separate batches created — one per description.',
+    expType:'ok', gap:'G-04' },
+
+  { id:'TC-077', area:'grouping',        pri:'p0', auto:'m', title:'Balance validated per group, not globally across all lines',
+    pre:'Valid master data.',
+    steps:['Group A: debit=100, credit=80 (imbalanced)','Group B: debit=20, credit=40 (imbalanced)','Global total: debit=120, credit=120 (globally balanced)','Trigger Writeback'],
+    exp:'Both groups fail balance validation individually. Global total does not mask per-group imbalance.',
+    expType:'err', gap:'G-05' },
+
+  { id:'TC-078', area:'erp-mapping',     pri:'p1', auto:'l', title:'transactionDate mapped to ERP batch header',
+    pre:'Batch created with transactionDate=2026-05-19.',
+    steps:['Create batch','Open ERP batch header and inspect the transaction date field'],
+    exp:'ERP transaction date = 2026-05-19.',
     expType:'ok', gap:null },
 
-  { id:'TC-029', cat:'edge', catLabel:'EDGE', pri:'medium', priLabel:'MED',
-    title:'Floating-point sum balanced across 3 lines',
-    pre:'ERP connected',
-    steps:['Line 1: debit=100.01, credit=0','Line 2: debit=99.99, credit=0','Line 3: debit=0, credit=200.00','Calculate (Σ debit=200.00, Σ credit=200.00)'],
-    exp:'Batch created. Verifies correct decimal summation across multiple lines without floating-point drift.',
+  { id:'TC-079', area:'erp-mapping',     pri:'p1', auto:'l', title:'ledger mapped to ERP batch header',
+    pre:'Batch created with ledger=ACTUAL.',
+    steps:['Create batch','Open ERP batch header and inspect the ledger field'],
+    exp:'ERP ledger = ACTUAL.',
     expType:'ok', gap:null },
 
-  { id:'TC-030', cat:'edge', catLabel:'EDGE', pri:'medium', priLabel:'MED',
-    title:'transactionDate falls outside postPeriod range',
-    pre:'Period "03-2026" covers March 2026; ERP connected',
-    steps:['Set transactionDate=2026-05-15 but postPeriod="03-2026"','Create a balanced 2-line batch','Calculate'],
-    exp:'Spec does not define this (GAP-007). Expected: error stating date does not belong to the given period. Verify.',
-    expType:'note', gap:'GAP-007' },
+  { id:'TC-080', area:'erp-mapping',     pri:'p1', auto:'l', title:'account mapped to ERP line',
+    pre:'Batch created with account=6000 on a line.',
+    steps:['Create batch','Open ERP batch line and inspect the account field'],
+    exp:'ERP line account = 6000.',
+    expType:'ok', gap:null },
 
-  { id:'TC-031', cat:'edge', catLabel:'EDGE', pri:'medium', priLabel:'MED',
-    title:'Invalid currency code',
-    pre:'Ledger supports USD and EUR; ERP connected',
-    steps:['Enter function with currency="INVALID" or currency="XYZ"','Calculate'],
-    exp:'Error: unrecognized currency code. No batch created.',
+  { id:'TC-081', area:'erp-mapping',     pri:'p1', auto:'l', title:'debit amount mapped to ERP line',
+    pre:'Batch created with debit=100 on a line.',
+    steps:['Create batch','Open ERP batch line and inspect the debit field'],
+    exp:'ERP line debit = 100.00.',
+    expType:'ok', gap:null },
+
+  { id:'TC-082', area:'erp-mapping',     pri:'p1', auto:'l', title:'credit amount mapped to ERP line',
+    pre:'Batch created with credit=100 on a line.',
+    steps:['Create batch','Open ERP batch line and inspect the credit field'],
+    exp:'ERP line credit = 100.00.',
+    expType:'ok', gap:null },
+
+  { id:'TC-083', area:'excel-side-effects',pri:'p0', auto:'l', title:'F9 recalculation does not create a new batch',
+    pre:'A valid draft batch has already been created from the workbook.',
+    steps:['Press F9 to force recalculation of the workbook','Check ERP for new batches'],
+    exp:'No additional batch created. Existing batch unchanged.',
+    expType:'ok', gap:'G-02' },
+
+  { id:'TC-084', area:'excel-side-effects',pri:'p0', auto:'l', title:'Reopening workbook does not create a new batch',
+    pre:'A valid draft batch has already been created.',
+    steps:['Save and close the workbook','Reopen the workbook','Check ERP for new batches'],
+    exp:'No additional batch created.',
+    expType:'ok', gap:'G-02' },
+
+  { id:'TC-085', area:'excel-side-effects',pri:'p1', auto:'l', title:'Editing an unrelated cell does not trigger batch creation',
+    pre:'A valid draft batch has already been created.',
+    steps:['Edit a cell unrelated to the journal formulas','Recalculate','Check ERP for new batches'],
+    exp:'No additional batch created.',
+    expType:'ok', gap:'G-02' },
+
+  { id:'TC-086', area:'excel-side-effects',pri:'p1', auto:'l', title:'Copying formulas to another range does not create batch',
+    pre:'Workbook with WRITEBACKJOURNALDRAFT formulas exists.',
+    steps:['Copy journal formula cells to a new range','Do NOT trigger Writeback','Check ERP'],
+    exp:'No batch created from the copied formulas without an explicit Writeback action.',
+    expType:'ok', gap:'G-02' },
+
+  { id:'TC-087', area:'idempotency',     pri:'p0', auto:'m', title:'Retry of the same operation does not duplicate the batch',
+    pre:'API/operation tracking available.',
+    steps:['Submit a valid journal operation','Submit the exact same operation again (same idempotency key)','Check ERP'],
+    exp:'Only one batch exists. Second submission returns the original batch result.',
+    expType:'ok', gap:'G-03' },
+
+  { id:'TC-088', area:'idempotency',     pri:'p0', auto:'m', title:'Timeout retry does not create a duplicate batch',
+    pre:'Ability to simulate an API timeout after ERP batch creation.',
+    steps:['Trigger Writeback','Simulate: ERP creates batch but response times out before Excel receives it','Retry the operation (same idempotency key)','Check ERP'],
+    exp:'Only one batch exists. Retry returns the originally created batch.',
+    expType:'ok', gap:'G-03' },
+
+  { id:'TC-089', area:'idempotency',     pri:'p0', auto:'m', title:'Same idempotency key with different payload is rejected',
+    pre:'API/operation tracking available.',
+    steps:['Submit payload A with idempotency key K1','Submit payload B (different content) with the same key K1'],
+    exp:'Second request rejected as an idempotency conflict.',
+    expType:'err', gap:'G-03' },
+
+  { id:'TC-090', area:'idempotency',     pri:'p1', auto:'m', title:'Same payload submitted as new operation has defined behavior',
+    pre:'API/operation tracking available.',
+    steps:['Create a batch (operation 1)','Submit the same payload as a new operation (different idempotency key)'],
+    exp:'System allows, blocks, or warns according to documented business rule. Behavior is explicit, not undefined.',
+    expType:'note', gap:'G-03' },
+
+  { id:'TC-091', area:'atomicity',       pri:'p0', auto:'m', title:'One invalid line prevents the entire batch from being created',
+    pre:'Failure scenarios can be simulated.',
+    steps:['Set up a valid debit line','Add a credit line with an invalid/nonexistent account','Trigger Writeback'],
+    exp:'No batch created. No partial lines saved in ERP.',
+    expType:'err', gap:'G-18' },
+
+  { id:'TC-092', area:'atomicity',       pri:'p0', auto:'m', title:'ERP failure during creation leaves no incomplete batch',
+    pre:'Ability to simulate ERP failure mid-operation.',
+    steps:['Trigger a valid Writeback','Simulate ERP failure during batch creation','Check ERP'],
+    exp:'No incomplete or partial batch remains. ERP is in a clean state. Failure state is documented.',
+    expType:'ok', gap:'G-18' },
+
+  { id:'TC-093', area:'atomicity',       pri:'p1', auto:'m', title:'Mixed valid/invalid groups: all or nothing behavior',
+    pre:'Failure scenarios can be simulated.',
+    steps:['Group A: valid and balanced','Group B: one invalid account','Trigger Writeback (both groups)'],
+    exp:'If atomic: neither group is created. If non-atomic: behavior is documented and consistent.',
+    expType:'note', gap:'G-18' },
+
+  { id:'TC-094', area:'permissions',     pri:'p0', auto:'m', title:'User without create permission is rejected',
+    pre:'A test user account without journal write permissions exists.',
+    steps:['Log in as a user without create permission','Trigger a valid Writeback'],
+    exp:'Permission error returned to Excel. No batch created.',
+    expType:'err', gap:'G-20' },
+
+  { id:'TC-095', area:'permissions',     pri:'p0', auto:'m', title:'User without access to the ledger is rejected',
+    pre:'A ledger exists that the current user cannot access.',
+    steps:['Set ledger to a ledger restricted for the current user','Trigger Writeback'],
+    exp:'Access error. No batch created.',
+    expType:'err', gap:'G-20' },
+
+  { id:'TC-096', area:'permissions',     pri:'p0', auto:'m', title:'User without access to the branch is rejected',
+    pre:'A branch exists that the current user cannot access.',
+    steps:['Set branch to a restricted branch','Trigger Writeback'],
+    exp:'Access error. No batch created.',
+    expType:'err', gap:'G-20' },
+
+  { id:'TC-097', area:'security',        pri:'p1', auto:'m', title:'HTML markup in batchDescription rendered safely',
+    pre:'Valid master data.',
+    steps:['Set batchDescription="<b>bold text</b>"','Trigger Writeback','Open ERP and inspect how the description is displayed'],
+    exp:'Text displayed as literal characters. No HTML tag rendered. No markup execution.',
+    expType:'ok', gap:null },
+
+  { id:'TC-098', area:'security',        pri:'p1', auto:'m', title:'Script injection in batchDescription is not executed',
+    pre:'Valid master data.',
+    steps:['Set batchDescription="<script>alert(1)</script>"','Trigger Writeback','Open ERP batch record'],
+    exp:'Text stored as plain text. Script is not executed in ERP UI or elsewhere.',
+    expType:'ok', gap:null },
+
+  { id:'TC-099', area:'security',        pri:'p1', auto:'m', title:'Excel formula injection in lineDescription is not executed',
+    pre:'Valid master data.',
+    steps:['Set lineDescription="=HYPERLINK(\\"http://evil.example\\",\\"click\\")"','Trigger Writeback','Export or view the data if the ERP supports it'],
+    exp:'Stored as plain text. Formula is not evaluated or executed.',
+    expType:'ok', gap:null },
+
+  { id:'TC-100', area:'audit',           pri:'p1', auto:'l', title:'Successful batch creation is recorded in audit log',
+    pre:'ERP audit/history is accessible.',
+    steps:['Create a valid balanced batch','Open the ERP audit trail or history for the created batch'],
+    exp:'Audit entry shows: current user, timestamp, and creation event.',
+    expType:'ok', gap:'G-21' },
+
+  { id:'TC-101', area:'audit',           pri:'p1', auto:'l', title:'Audit log identifies Excel/Velixo as the creation source',
+    pre:'ERP audit/history is accessible.',
+    steps:['Create batch via Excel','Check the audit log source field'],
+    exp:'Source indicates "Excel / Velixo add-in / Writeback operation" — not a generic ERP entry.',
+    expType:'ok', gap:'G-21' },
+
+  { id:'TC-102', area:'audit',           pri:'p2', auto:'l', title:'Failed validation is not logged as a successful creation',
+    pre:'ERP audit/history is accessible.',
+    steps:['Trigger Writeback with an invalid account (expected to fail)','Check the audit log'],
+    exp:'No successful creation audit record exists for this operation.',
+    expType:'ok', gap:'G-21' },
+
+  { id:'TC-103', area:'error-messages',  pri:'p0', auto:'h', title:'Imbalance error message matches spec exactly',
+    pre:'Valid master data, imbalanced lines prepared.',
+    steps:['Set debit=100, credit=90','Trigger Writeback','Note the exact error string returned'],
+    exp:'"Journal is not balanced: debits 100.00 ≠ credits 90.00" (exact format, 2 decimal places).',
     expType:'err', gap:null },
+
+  { id:'TC-104', area:'error-messages',  pri:'p0', auto:'h', title:'Empty range error message matches spec exactly',
+    pre:'Empty range or no formulas in selection.',
+    steps:['Trigger Writeback with no valid journal lines','Note the exact error string'],
+    exp:'"At least one transaction line is required" (exact spec wording).',
+    expType:'err', gap:null },
+
+  { id:'TC-105', area:'error-messages',  pri:'p1', auto:'h', title:'Field validation error identifies the affected field',
+    pre:'Error scenario prepared (e.g. missing account).',
+    steps:['Leave account empty','Trigger Writeback','Read the error message'],
+    exp:'Error message identifies "account" as the affected field.',
+    expType:'err', gap:null },
+
+  { id:'TC-106', area:'error-messages',  pri:'p1', auto:'h', title:'Line error identifies the affected row or line',
+    pre:'Multiple lines, one with an invalid account.',
+    steps:['Set up 3 lines; make line 2 invalid (invalid account)','Trigger Writeback','Read the error message'],
+    exp:'Error identifies line 2 (or its row number) as the source of the failure.',
+    expType:'err', gap:null },
+
+  { id:'TC-107', area:'line-boundary',   pri:'p0', auto:'m', title:'Minimum valid line count: 1 debit + 1 credit',
+    pre:'Line count limits are documented.',
+    steps:['Create exactly one debit line and one credit line, balanced','Trigger Writeback'],
+    exp:'Batch created successfully with 2 lines.',
+    expType:'ok', gap:'G-08' },
+
+  { id:'TC-108', area:'line-boundary',   pri:'p0', auto:'m', title:'Zero valid lines rejected',
+    pre:'Line count limits are documented.',
+    steps:['Select a range with no valid journal formula lines','Trigger Writeback'],
+    exp:'"At least one transaction line is required". No batch created.',
+    expType:'err', gap:'G-08' },
+
+  { id:'TC-109', area:'line-boundary',   pri:'p1', auto:'m', title:'Maximum supported line count accepted',
+    pre:'Maximum line count is documented.',
+    steps:['Create the maximum documented number of lines (balanced)','Trigger Writeback'],
+    exp:'Batch created with all lines present in ERP.',
+    expType:'ok', gap:'G-25' },
+
+  { id:'TC-110', area:'line-boundary',   pri:'p1', auto:'m', title:'Exceeding maximum line count produces a clear error',
+    pre:'Maximum line count is documented.',
+    steps:['Create max+1 lines (all balanced)','Trigger Writeback'],
+    exp:'Validation error stating the line limit. No partial batch created.',
+    expType:'err', gap:'G-25' },
+
+  { id:'TC-111', area:'cross-platform',  pri:'p0', auto:'l', title:'Works in Excel for Windows',
+    pre:'Excel for Windows with the Velixo add-in installed.',
+    steps:['Open the workbook in Excel for Windows','Trigger a valid balanced Writeback'],
+    exp:'Batch created successfully. All fields correct in ERP.',
+    expType:'ok', gap:'G-23' },
+
+  { id:'TC-112', area:'cross-platform',  pri:'p0', auto:'l', title:'Works in Excel for macOS',
+    pre:'Excel for macOS with the Velixo add-in installed.',
+    steps:['Open the workbook in Excel for macOS','Trigger a valid balanced Writeback'],
+    exp:'Batch created. Behavior matches the Windows result.',
+    expType:'ok', gap:'G-23' },
+
+  { id:'TC-113', area:'cross-platform',  pri:'p0', auto:'l', title:'Works in Excel Web (or limitation documented)',
+    pre:'Excel Web with the Velixo add-in.',
+    steps:['Open the workbook in Excel Web','Trigger a valid balanced Writeback'],
+    exp:'Batch created successfully, OR a clear documented limitation is shown.',
+    expType:'ok', gap:'G-23' },
+
+  { id:'TC-114', area:'cross-platform',  pri:'p1', auto:'l', title:'Date interpreted consistently across platforms',
+    pre:'Available on Windows, macOS, and Web.',
+    steps:['Use transactionDate=DATE(2026,5,19) on Windows, macOS, and Web in turn','Compare ERP batch dates'],
+    exp:'ERP date = 2026-05-19 on all platforms. No locale-driven date shift.',
+    expType:'ok', gap:'G-23' },
+
+  { id:'TC-115', area:'cross-platform',  pri:'p1', auto:'l', title:'Decimal amount interpreted consistently across platforms',
+    pre:'Available on Windows, macOS, and Web.',
+    steps:['Use debit=100.25 on Windows, macOS, and Web','Compare ERP line amounts'],
+    exp:'ERP debit = 100.25 on all platforms. No decimal separator conversion error.',
+    expType:'ok', gap:'G-23' },
+
+  { id:'TC-116', area:'api-telemetry',   pri:'p1', auto:'m', title:'API request contains correct batch-level fields',
+    pre:'API/telemetry or request logging is accessible.',
+    steps:['Trigger a valid Writeback','Inspect the outbound API request or log'],
+    exp:'Request contains: connectionName, transactionDate, postPeriod, batchDescription, branch, ledger, currency.',
+    expType:'ok', gap:'G-22' },
+
+  { id:'TC-117', area:'api-telemetry',   pri:'p1', auto:'m', title:'API request contains correct line-level fields',
+    pre:'API/telemetry or request logging is accessible.',
+    steps:['Trigger Writeback with a debit and a credit line','Inspect the API request payload'],
+    exp:'Request contains per-line: account, debit (or credit), lineDescription.',
+    expType:'ok', gap:'G-22' },
+
+  { id:'TC-118', area:'api-telemetry',   pri:'p0', auto:'m', title:'ERP validation error maps to a clear Excel error message',
+    pre:'API access available.',
+    steps:['Use an invalid account (triggers ERP-side validation error)','Trigger Writeback','Inspect the error returned to Excel'],
+    exp:'Excel shows a clear account validation error — not a generic network/server error.',
+    expType:'err', gap:'G-22' },
+
+  { id:'TC-119', area:'api-telemetry',   pri:'p0', auto:'m', title:'API timeout returns a safe error, no false success',
+    pre:'Ability to simulate an API timeout.',
+    steps:['Trigger Writeback','Simulate API timeout before response','Observe Excel behavior'],
+    exp:'Excel shows a timeout/network error. No false "batch created" message shown.',
+    expType:'err', gap:'G-19' },
+
+  { id:'TC-120', area:'api-telemetry',   pri:'p1', auto:'m', title:'Correlation/operation ID available for failed API calls',
+    pre:'Telemetry or log access available.',
+    steps:['Trigger an operation that fails at the API level','Check Excel error message or available logs'],
+    exp:'An operation/correlation ID is provided for troubleshooting support.',
+    expType:'ok', gap:'G-21' },
+
+  { id:'TC-121', area:'api-telemetry',   pri:'p1', auto:'m', title:'Successful writeback is logged with batch number and duration',
+    pre:'Telemetry access available.',
+    steps:['Create a valid batch','Search telemetry by operation ID'],
+    exp:'Log entry contains: success event, batch number, operation duration.',
+    expType:'ok', gap:'G-21' },
+
+  { id:'TC-122', area:'api-telemetry',   pri:'p1', auto:'m', title:'Validation failure is logged without leaking sensitive data',
+    pre:'Telemetry access available.',
+    steps:['Trigger a validation error','Check the log entry for this operation'],
+    exp:'Failure is logged. No bearer tokens, credentials, or sensitive user data in the log.',
+    expType:'ok', gap:'G-21' },
+
+  { id:'TC-123', area:'api-telemetry',   pri:'p1', auto:'m', title:'ERP API response is traceable by operation ID',
+    pre:'Telemetry access available.',
+    steps:['Trigger Writeback','Search logs by the operation/correlation ID'],
+    exp:'Log traces: ERP response code, created batch number, any ERP-side error details.',
+    expType:'ok', gap:'G-22' },
+
+  { id:'TC-124', area:'async-queue',     pri:'p2', auto:'l', title:'Async writeback creates one operation/message with correlation ID',
+    pre:'Applicable only if architecture uses async/queue processing.',
+    steps:['Trigger a valid Writeback','Check operation tracking or message queue'],
+    exp:'One operation/message exists with a unique correlation ID.',
+    expType:'ok', gap:'G-24' },
+
+  { id:'TC-125', area:'async-queue',     pri:'p0', auto:'l', title:'Async retry does not create duplicate batches',
+    pre:'Applicable only if architecture uses async/queue. Ability to simulate temporary ERP failure.',
+    steps:['Trigger Writeback','Simulate temporary ERP failure','Allow the retry mechanism to run','Check ERP'],
+    exp:'One batch created after retry. No duplicates.',
+    expType:'ok', gap:'G-24' },
+
+  { id:'TC-126', area:'async-queue',     pri:'p1', auto:'l', title:'Poison message does not block processing of valid messages',
+    pre:'Applicable only if architecture uses a message queue.',
+    steps:['Submit an invalid operation (becomes a poison message)','Submit a valid operation immediately after','Allow queue to process'],
+    exp:'Valid operation is processed successfully. Poison message fails and is isolated without blocking the queue.',
+    expType:'ok', gap:'G-24' },
 ];
 
-/* ── Render list ── */
-const catOrder = ['positive','negative','balance','edge'];
-const catLabels = { positive:'POSITIVE — HAPPY PATH', negative:'NEGATIVE — REQUIRED FIELDS', balance:'NEGATIVE — BALANCE', edge:'EDGE CASES' };
-let activeFilter = 'all';
+/* ── Filters ── */
+let activePri = 'all';
+let activeArea = 'all';
 
-function filterList(cat, btn) {
-  activeFilter = cat;
-  document.querySelectorAll('.list-tab').forEach(t => t.classList.remove('active'));
+function setPri(pri, btn) {
+  activePri = pri;
+  document.querySelectorAll('.pri-chip').forEach(c => c.classList.remove('active'));
   btn.classList.add('active');
+  applyFilters();
+}
+
+function applyFilters() {
+  activeArea = document.getElementById('area-filter').value;
   renderList();
 }
 
+function buildAreaDropdown() {
+  const sel = document.getElementById('area-filter');
+  const counts = {};
+  cases.forEach(c => { counts[c.area] = (counts[c.area] || 0) + 1; });
+  Object.keys(areasMeta).forEach(key => {
+    if (!counts[key]) return;
+    const opt = document.createElement('option');
+    opt.value = key;
+    opt.textContent = areasMeta[key].label.toUpperCase() + ' (' + counts[key] + ')';
+    sel.appendChild(opt);
+  });
+}
+
 function renderList() {
-  const el = document.getElementById('list-scroll');
-  const filtered = activeFilter === 'all' ? cases : cases.filter(c => c.cat === activeFilter);
+  let filtered = cases;
+  if (activeArea !== 'all') filtered = filtered.filter(c => c.area === activeArea);
+  if (activePri !== 'all') filtered = filtered.filter(c => c.pri === activePri);
+
+  document.getElementById('count-label').textContent = filtered.length + ' / ' + cases.length;
+
   let html = '';
-  let lastCat = '';
+  let lastArea = '';
   filtered.forEach(tc => {
-    if (activeFilter === 'all' && tc.cat !== lastCat) {
-      lastCat = tc.cat;
-      html += `<div class="list-cat-label">${catLabels[tc.cat]}</div>`;
+    const am = areasMeta[tc.area];
+    if (tc.area !== lastArea) {
+      lastArea = tc.area;
+      html += `<div class="list-cat-label">${am.label.toUpperCase()}</div>`;
     }
-    const priBadge = `<span class="badge badge-${tc.pri}">${tc.priLabel}</span>`;
-    const catBadge = `<span class="badge badge-${tc.cat}">${tc.catLabel}</span>`;
+    const priB = `<span class="badge badge-${tc.pri}">${tc.pri.toUpperCase()}</span>`;
+    const areaB = `<span class="area-tag area-${am.color}">${am.label}</span>`;
     html += `
       <div class="tc-item" id="item-${tc.id}" onclick="openDetail('${tc.id}')">
         <div class="tc-item-row1">
           <span class="tc-item-id">${tc.id}</span>
           <span class="tc-item-title">${tc.title}</span>
         </div>
-        <div class="tc-item-badges">${catBadge}${priBadge}</div>
+        <div class="tc-item-badges">${priB}${areaB}</div>
       </div>`;
   });
-  el.innerHTML = html;
+  if (!html) {
+    html = '<div style="padding:24px 16px;font-family:\'Share Tech Mono\',monospace;font-size:10px;color:var(--text-dim);letter-spacing:0.1em;">NO CASES MATCH FILTER</div>';
+  }
+  document.getElementById('list-scroll').innerHTML = html;
 }
 
-/* ── Open detail ── */
 function openDetail(id) {
   const tc = cases.find(c => c.id === id);
   if (!tc) return;
 
-  // Highlight selected item
   document.querySelectorAll('.tc-item').forEach(i => i.classList.remove('active'));
   const el = document.getElementById('item-' + id);
-  if (el) el.classList.add('active');
+  if (el) { el.classList.add('active'); el.scrollIntoView({ block: 'nearest' }); }
 
   document.getElementById('detail-empty').style.display = 'none';
   const content = document.getElementById('detail-content');
   content.style.display = 'block';
 
-  const catBadge = `<span class="badge badge-${tc.cat}">${tc.catLabel}</span>`;
-  const priBadge = `<span class="badge badge-${tc.pri}">${tc.priLabel}</span>`;
+  const am = areasMeta[tc.area];
+  const areaTag  = `<span class="area-tag area-${am.color}">${am.label}</span>`;
+  const priB     = `<span class="badge badge-${tc.pri}">${tc.pri.toUpperCase()}</span>`;
+  const autoLabel = tc.auto === 'h' ? 'HIGH' : tc.auto === 'm' ? 'MEDIUM' : 'LOW';
+  const autoB    = `<span class="badge badge-auto-${tc.auto}">AUTO: ${autoLabel}</span>`;
 
   const stepsHtml = tc.steps.map((s, i) => `
     <li class="detail-step">
@@ -397,7 +963,7 @@ function openDetail(id) {
   content.innerHTML = `
     <div class="detail-tc-meta">
       <span class="detail-tc-id">${tc.id}</span>
-      ${catBadge}${priBadge}
+      ${priB}${areaTag}${autoB}
     </div>
     <div class="detail-title">${tc.title}</div>
     <div class="detail-divider"></div>
@@ -420,6 +986,7 @@ function escHtml(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+buildAreaDropdown();
 renderList();
 </script>
 </body>

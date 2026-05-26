@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Glossary — WRITEBACKJOURNALDRAFT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style-eva.css?v=20260527" />
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-eyebrow">// SYSTEM: ACTIVE</div>
+    <div class="sidebar-logo">QA TEST<br>PLAN</div>
+  </div>
+  <div class="nav-section">:: Navigation</div>
+  <a href="index.html" class="nav-link"><span class="nav-icon">◈</span> Overview</a>
+  <a href="spec.html" class="nav-link"><span class="nav-icon">◆</span> Spec Review</a>
+  <a href="test-cases.html" class="nav-link"><span class="nav-icon">◉</span> Test Cases</a>
+  <a href="glossary.html" class="nav-sub-link active"><span class="nav-icon">·</span> Glossary</a>
+  <a href="gaps.html" class="nav-link"><span class="nav-icon">◎</span> Spec Gaps</a>
+  <a href="ai-reflection.html" class="nav-link"><span class="nav-icon">◇</span> AI Reflection</a>
+  <div class="theme-toggle">
+    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">◑ SWITCH THEME</button>
+  </div>
+  <div class="sidebar-footer">
+    NERV :: QA DIVISION<br/>
+    MAY 2026
+  </div>
+</aside>
+
+<main class="main">
+  <div class="page-header">
+    <div class="breadcrumb">QA_PLAN / TEST_CASES / GLOSSARY</div>
+    <div class="page-title">Glossary</div>
+    <div class="page-desc">WRITEBACKJOURNALDRAFT — terms, parameters, accounting concepts, QA vocabulary</div>
+  </div>
+
+  <div class="content">
+
+    <div class="callout callout-info" style="margin-bottom:24px;">
+      All terms used in test cases and gap analysis are defined here. This makes the document self-contained — no ERP background required to read a test case.
+    </div>
+
+    <!-- ── BATCH-LEVEL PARAMS ── -->
+    <div class="glossary-group">
+      <div class="glossary-group-title">:: Function parameters — batch level</div>
+      <dl class="glossary-dl">
+        <dt class="glossary-dt">connectionName</dt>
+        <dd class="glossary-dd">Name of the ERP connection the add-in writes to; selects which ERP instance / company receives the batch.</dd>
+
+        <dt class="glossary-dt">transactionDate</dt>
+        <dd class="glossary-dd">The accounting date of the journal batch; must fall inside the post period.</dd>
+
+        <dt class="glossary-dt">postPeriod</dt>
+        <dd class="glossary-dd">The financial period the batch posts to (e.g. 05-2026); must be open and consistent with the transaction date.</dd>
+
+        <dt class="glossary-dt">batchDescription</dt>
+        <dd class="glossary-dd">Optional text describing the whole batch; also part of the grouping key.</dd>
+
+        <dt class="glossary-dt">branch</dt>
+        <dd class="glossary-dd">Optional company branch the batch belongs to; usually tied to the ledger.</dd>
+
+        <dt class="glossary-dt">ledger</dt>
+        <dd class="glossary-dd">The target GL ledger the batch is written to; defines the default currency.</dd>
+      </dl>
+    </div>
+
+    <!-- ── LINE-LEVEL PARAMS ── -->
+    <div class="glossary-group">
+      <div class="glossary-group-title">:: Function parameters — line level</div>
+      <dl class="glossary-dl">
+        <dt class="glossary-dt">currency</dt>
+        <dd class="glossary-dd">Currency code for the line; defaults to the ledger currency when empty.</dd>
+
+        <dt class="glossary-dt">account</dt>
+        <dd class="glossary-dd">The GL account the line posts to; must exist and be active in the ERP.</dd>
+
+        <dt class="glossary-dt">debit</dt>
+        <dd class="glossary-dd">Amount on the debit side of a line; a line carries exactly one of debit or credit.</dd>
+
+        <dt class="glossary-dt">credit</dt>
+        <dd class="glossary-dd">Amount on the credit side of a line; a line carries exactly one of debit or credit.</dd>
+
+        <dt class="glossary-dt">lineDescription</dt>
+        <dd class="glossary-dd">Optional text describing a single journal line.</dd>
+      </dl>
+    </div>
+
+    <!-- ── ACCOUNTING ── -->
+    <div class="glossary-group">
+      <div class="glossary-group-title">:: Accounting concepts</div>
+      <dl class="glossary-dl">
+        <dt class="glossary-dt">GL (General Ledger)</dt>
+        <dd class="glossary-dd">The central record of all financial transactions; financial reports are built from it.</dd>
+
+        <dt class="glossary-dt">Journal / journal entry</dt>
+        <dd class="glossary-dd">A recorded financial transaction made of one or more lines that must balance.</dd>
+
+        <dt class="glossary-dt">Journal line</dt>
+        <dd class="glossary-dd">One row of a journal: an account with a debit OR a credit amount.</dd>
+
+        <dt class="glossary-dt">Batch</dt>
+        <dd class="glossary-dd">A group of journal lines that share the same batch fields (date, ledger, description).</dd>
+
+        <dt class="glossary-dt">Double-entry</dt>
+        <dd class="glossary-dd">Each transaction posts equal debits and credits across accounts.</dd>
+
+        <dt class="glossary-dt">Balance / balanced</dt>
+        <dd class="glossary-dd">Total debits equal total credits across all lines of the batch.</dd>
+
+        <dt class="glossary-dt">Draft batch</dt>
+        <dd class="glossary-dd">A journal batch that is created but not yet posted; sits in On Hold for review.</dd>
+
+        <dt class="glossary-dt">On Hold</dt>
+        <dd class="glossary-dd">The status of a draft batch awaiting manual review and posting; never posted by the function.</dd>
+
+        <dt class="glossary-dt">Post / Release</dt>
+        <dd class="glossary-dd">The manual action that finalizes a draft into the ledger; performed only by a human.</dd>
+
+        <dt class="glossary-dt">Reporting period</dt>
+        <dd class="glossary-dd">A predefined accounting period that a transaction date belongs to.</dd>
+
+        <dt class="glossary-dt">Master data / dictionary value</dt>
+        <dd class="glossary-dd">Predefined ERP reference data: connections, ledgers, accounts, branches, currencies, periods.</dd>
+      </dl>
+    </div>
+
+    <!-- ── QA CONCEPTS ── -->
+    <div class="glossary-group">
+      <div class="glossary-group-title">:: QA concepts</div>
+      <dl class="glossary-dl">
+        <dt class="glossary-dt">Writeback</dt>
+        <dd class="glossary-dd">The documented action that sends the prepared range from Excel to the ERP.</dd>
+
+        <dt class="glossary-dt">Grouping key</dt>
+        <dd class="glossary-dd">The set of fields (connection, date, period, ledger, branch, currency, description) that decides which lines form one batch.</dd>
+
+        <dt class="glossary-dt">Idempotency</dt>
+        <dd class="glossary-dd">Repeating the same operation does not create a duplicate batch; one logical operation = one result.</dd>
+
+        <dt class="glossary-dt">Idempotency key / operation id</dt>
+        <dd class="glossary-dd">A stable identifier used to recognize a repeated operation and prevent duplicates.</dd>
+
+        <dt class="glossary-dt">Atomicity</dt>
+        <dd class="glossary-dd">All-or-nothing: either the whole batch is created or nothing is; never a partial batch.</dd>
+
+        <dt class="glossary-dt">Partial batch</dt>
+        <dd class="glossary-dd">An incomplete write (some lines saved, some not); must never happen.</dd>
+
+        <dt class="glossary-dt">Side effect</dt>
+        <dd class="glossary-dd">An unintended ERP write caused by Excel actions (recalculation, copy, open) without an explicit Writeback.</dd>
+
+        <dt class="glossary-dt">Equivalence classes</dt>
+        <dd class="glossary-dd">Grouping inputs that behave the same (valid, zero, negative, text) so one representative of each is tested.</dd>
+
+        <dt class="glossary-dt">Boundary values</dt>
+        <dd class="glossary-dd">Inputs at the edges of valid ranges (min, max, max precision) where bugs often hide.</dd>
+
+        <dt class="glossary-dt">Normalization</dt>
+        <dd class="glossary-dd">Cleaning input to a canonical form (trim spaces, fix letter case) per a documented rule.</dd>
+
+        <dt class="glossary-dt">Poison message</dt>
+        <dd class="glossary-dd">A malformed message in a queue that must not block processing of valid messages.</dd>
+
+        <dt class="glossary-dt">Dead-letter handling</dt>
+        <dd class="glossary-dd">Routing a repeatedly failing message aside so the queue keeps working.</dd>
+
+        <dt class="glossary-dt">Correlation / operation id</dt>
+        <dd class="glossary-dd">An identifier that lets one operation be traced across Excel, API, and ERP in logs.</dd>
+
+        <dt class="glossary-dt">Telemetry</dt>
+        <dd class="glossary-dd">Logs and metrics that record what happened, used for tracing and troubleshooting.</dd>
+      </dl>
+    </div>
+
+    <!-- ── MY TERMS ── -->
+    <div class="glossary-group">
+      <div class="glossary-group-title">:: Terms introduced in the test cases</div>
+      <div class="callout callout-info" style="margin-bottom:14px;font-size:12px;">
+        These phrasings appear in test case titles and expected results. Defining them keeps the document self-consistent.
+      </div>
+      <dl class="glossary-dl">
+        <dt class="glossary-dt">On-Hold draft / draft On Hold</dt>
+        <dd class="glossary-dd">Same as a draft batch; emphasizes that the function only ever produces an unposted, review-ready batch.</dd>
+
+        <dt class="glossary-dt">Self-cancelling entry</dt>
+        <dd class="glossary-dd">A balanced line pair that debits and credits the same account for the same amount; passes balance validation but is economically meaningless (left to human review).</dd>
+
+        <dt class="glossary-dt">Documented rule / per documented rule</dt>
+        <dd class="glossary-dd">Behavior that the spec must define (e.g. trimming, rounding, defaulting); the case checks the implementation against whatever that rule turns out to be.</dd>
+
+        <dt class="glossary-dt">Round-trip</dt>
+        <dd class="glossary-dd">The full path Excel → API/ERP → response back to Excel; used when a check requires confirmation from the ERP, not just the cell.</dd>
+
+        <dt class="glossary-dt">All-or-nothing</dt>
+        <dd class="glossary-dd">Plain-language phrasing of atomicity used in the expected results.</dd>
+      </dl>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  const saved = localStorage.getItem('eva-theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  const btn = document.getElementById('theme-btn');
+  function updateBtn() {
+    btn.textContent = document.documentElement.getAttribute('data-theme') === 'light'
+      ? '◑  SWITCH TO DARK' : '◑  SWITCH TO LIGHT';
+  }
+  function toggleTheme() {
+    const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('eva-theme', next);
+    updateBtn();
+  }
+  updateBtn();
+</script>
+</body>
+</html>

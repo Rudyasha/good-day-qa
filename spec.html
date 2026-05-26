@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-eva.css?v=20260526-2" />
+  <link rel="stylesheet" href="style-eva.css?v=20260527" />
   <style>
     .ideal-list {
       list-style: none;
@@ -54,9 +54,9 @@
     }
     .spec-table tr:last-child td { border-bottom: none; }
     .spec-table td:first-child { color: var(--cyan); font-family: 'Share Tech Mono', monospace; font-size: 11.5px; white-space: nowrap; }
-    .risk-row { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .risk-row { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); }
     .risk-row:last-child { border-bottom: none; }
-    .risk-pri { flex-shrink: 0; width: 26px; }
+    .risk-pri { flex-shrink: 0; width: 16px; padding-top: 5px; display: flex; justify-content: center; }
     .risk-title { font-size: 13px; color: var(--text); font-weight: 500; }
     .risk-desc { font-size: 12px; color: var(--text-muted); margin-top: 3px; line-height: 1.55; }
   </style>
@@ -66,20 +66,21 @@
 <aside class="sidebar">
   <div class="sidebar-header">
     <div class="sidebar-eyebrow">// SYSTEM: ACTIVE</div>
-    <div class="sidebar-logo">QA Test Plan</div>
+    <div class="sidebar-logo">QA TEST<br>PLAN</div>
   </div>
   <div class="nav-section">:: Navigation</div>
   <a href="index.html" class="nav-link"><span class="nav-icon">◈</span> Overview</a>
   <a href="spec.html" class="nav-link active"><span class="nav-icon">◆</span> Spec Review</a>
   <a href="test-cases.html" class="nav-link"><span class="nav-icon">◉</span> Test Cases</a>
+  <a href="glossary.html" class="nav-sub-link"><span class="nav-icon">·</span> Glossary</a>
   <a href="gaps.html" class="nav-link"><span class="nav-icon">◎</span> Spec Gaps</a>
   <a href="ai-reflection.html" class="nav-link"><span class="nav-icon">◇</span> AI Reflection</a>
   <div class="theme-toggle">
-    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">◑ &nbsp;SWITCH THEME</button>
+    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">◑ SWITCH THEME</button>
   </div>
   <div class="sidebar-footer">
-    QA :: ASSESSMENT<br/>
-    VERSION 1.0.0 :: MAY 2026
+    NERV :: QA DIVISION<br/>
+    MAY 2026
   </div>
 </aside>
 
@@ -96,7 +97,7 @@
     <div class="card">
       <div class="card-title"><span class="icon">◇</span> Ideal Specification — What Is Missing</div>
       <p style="font-size:13px;color:var(--text-muted);line-height:1.65;margin-bottom:14px;">
-        A complete specification for this feature should include all of the following sections. Sections absent from the current spec are the source of the 25 gaps documented in the <a href="gaps.html" style="color:var(--yellow);text-decoration:none;">Spec Gaps</a> page.
+        A complete specification for this feature should include all of the following sections. Sections absent from the current spec are the source of the 32 gaps documented in the <a href="gaps.html" style="color:var(--yellow);text-decoration:none;">Spec Gaps</a> page.
       </p>
       <ul class="ideal-list">
         <li><span class="ideal-num">01</span>Business goal and user story</li>
@@ -145,7 +146,7 @@
             <tr>
               <td>connectionName</td>
               <td>Input / system</td>
-              <td><span class="badge badge-p0">Yes</span></td>
+              <td><span class="badge badge-required">Yes</span></td>
               <td>Text — connection name</td>
               <td>string</td>
               <td>ERP connection selector</td>
@@ -156,7 +157,7 @@
             <tr>
               <td>transactionDate</td>
               <td>Batch</td>
-              <td><span class="badge badge-p0">Yes</span></td>
+              <td><span class="badge badge-required">Yes</span></td>
               <td>Excel date or <code>DATE(Y,M,D)</code></td>
               <td>YYYY-MM-DD</td>
               <td>Transaction Date</td>
@@ -167,7 +168,7 @@
             <tr>
               <td>postPeriod</td>
               <td>Batch</td>
-              <td><span class="badge badge-p0">Yes</span></td>
+              <td><span class="badge badge-required">Yes</span></td>
               <td>Text period code, e.g. <code>05-2026</code></td>
               <td>string / periodId</td>
               <td>Financial Period</td>
@@ -178,7 +179,7 @@
             <tr>
               <td>batchDescription</td>
               <td>Batch</td>
-              <td><span class="badge badge-p2">No</span></td>
+              <td><span class="badge badge-scripted">No</span></td>
               <td>Text</td>
               <td>string</td>
               <td>Batch Description</td>
@@ -189,7 +190,7 @@
             <tr>
               <td>branch</td>
               <td>Batch</td>
-              <td><span class="badge badge-p2">No / Depends</span></td>
+              <td><span class="badge badge-scripted">No / Depends</span></td>
               <td>Branch code</td>
               <td>branch code / id</td>
               <td>Branch</td>
@@ -200,7 +201,7 @@
             <tr>
               <td>ledger</td>
               <td>Batch</td>
-              <td><span class="badge badge-p0">Yes</span></td>
+              <td><span class="badge badge-required">Yes</span></td>
               <td>Ledger code / name / ID — must be specified</td>
               <td>ledger code / id</td>
               <td>Ledger</td>
@@ -211,7 +212,7 @@
             <tr>
               <td>currency</td>
               <td>Batch / Line</td>
-              <td><span class="badge badge-p2">No</span></td>
+              <td><span class="badge badge-scripted">No</span></td>
               <td>Currency code</td>
               <td>currency code</td>
               <td>Currency</td>
@@ -222,7 +223,7 @@
             <tr>
               <td>account</td>
               <td>Line</td>
-              <td><span class="badge badge-p0">Yes</span></td>
+              <td><span class="badge badge-required">Yes</span></td>
               <td>Account code</td>
               <td>account code / id</td>
               <td>GL Account</td>
@@ -255,7 +256,7 @@
             <tr>
               <td>lineDescription</td>
               <td>Line</td>
-              <td><span class="badge badge-p2">No</span></td>
+              <td><span class="badge badge-scripted">No</span></td>
               <td>Text</td>
               <td>string</td>
               <td>Line Description</td>
@@ -301,48 +302,48 @@
       </div>
     </div>
 
-    <!-- ── Risk Priorities ── -->
+    <!-- ── Risk Map ── -->
     <div class="card">
-      <div class="card-title"><span class="icon">◈</span> Risk-Based Priority Map</div>
+      <div class="card-title"><span class="icon">◈</span> Risk Map — Financial Impact</div>
       <div style="margin-top:4px;">
         <div class="risk-row">
-          <div class="risk-pri"><span class="badge badge-p0">P0</span></div>
+          <div class="risk-pri"><span class="risk-dot-critical"></span></div>
           <div><div class="risk-title">Duplicate batch creation</div><div class="risk-desc">Excel recalculation, workbook reopen, or timeout retry creates multiple identical GL journal drafts — a critical financial data integrity risk.</div></div>
         </div>
         <div class="risk-row">
-          <div class="risk-pri"><span class="badge badge-p0">P0</span></div>
+          <div class="risk-pri"><span class="risk-dot-critical"></span></div>
           <div><div class="risk-title">Wrong status or auto-posting</div><div class="risk-desc">Batch bypasses "On Hold" and gets posted/released automatically — journal entries appear in financial reports without accountant review.</div></div>
         </div>
         <div class="risk-row">
-          <div class="risk-pri"><span class="badge badge-p0">P0</span></div>
+          <div class="risk-pri"><span class="risk-dot-critical"></span></div>
           <div><div class="risk-title">Wrong balance validation scope</div><div class="risk-desc">Global-range balance check masks imbalanced individual batches — incorrect financial data passes silently.</div></div>
         </div>
         <div class="risk-row">
-          <div class="risk-pri"><span class="badge badge-p0">P0</span></div>
+          <div class="risk-pri"><span class="risk-dot-critical"></span></div>
           <div><div class="risk-title">Partial batch creation (atomicity)</div><div class="risk-desc">One invalid line leaves a partial batch in ERP — an imbalanced orphaned journal entry that is difficult to detect and reverse.</div></div>
         </div>
         <div class="risk-row">
-          <div class="risk-pri"><span class="badge badge-p0">P0</span></div>
+          <div class="risk-pri"><span class="risk-dot-critical"></span></div>
           <div><div class="risk-title">Wrong ledger / account / period</div><div class="risk-desc">Financial data posted to incorrect ledger or period corrupts reporting and may require audit-trail investigation to reverse.</div></div>
         </div>
         <div class="risk-row">
-          <div class="risk-pri"><span class="badge badge-p1">P1</span></div>
+          <div class="risk-pri"><span class="risk-dot-high"></span></div>
           <div><div class="risk-title">Date/locale conversion errors</div><div class="risk-desc">Ambiguous text dates (05/06 = May 6 vs June 5) silently produce wrong accounting dates across platforms.</div></div>
         </div>
         <div class="risk-row">
-          <div class="risk-pri"><span class="badge badge-p1">P1</span></div>
+          <div class="risk-pri"><span class="risk-dot-high"></span></div>
           <div><div class="risk-title">Permission bypass</div><div class="risk-desc">Unauthorized financial writes if ERP-side permissions are not enforced server-side.</div></div>
         </div>
         <div class="risk-row">
-          <div class="risk-pri"><span class="badge badge-p1">P1</span></div>
+          <div class="risk-pri"><span class="risk-dot-high"></span></div>
           <div><div class="risk-title">Missing traceability</div><div class="risk-desc">No correlation ID or audit log entry means support cannot investigate ERP/API failures after they occur.</div></div>
         </div>
         <div class="risk-row">
-          <div class="risk-pri"><span class="badge badge-p1">P1</span></div>
+          <div class="risk-pri"><span class="risk-dot-high"></span></div>
           <div><div class="risk-title">Cross-platform inconsistency</div><div class="risk-desc">Different date or decimal behavior between Windows / macOS / Excel Web produces incorrect journal data depending on the user's environment.</div></div>
         </div>
         <div class="risk-row">
-          <div class="risk-pri"><span class="badge badge-p1">P1</span></div>
+          <div class="risk-pri"><span class="risk-dot-high"></span></div>
           <div><div class="risk-title">Script / markup injection via text fields</div><div class="risk-desc">Unsanitized batchDescription or lineDescription could execute in ERP UI — XSS or formula injection risk.</div></div>
         </div>
       </div>

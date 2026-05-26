@@ -165,6 +165,7 @@ body {
 .sidebar-header {
   padding: 16px 18px 14px;
   border-bottom: 1px solid #1a1a1a;
+  min-height: 72px;
 }
 
 .sidebar-eyebrow {
@@ -960,3 +961,164 @@ dl dt { font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 
 [data-theme="light"] dl dt { color: #111111; }
 dl dd { color: var(--text-muted); margin-left: 12px; margin-top: 3px; font-size: 13.5px; line-height: 1.65; }
 dl dt:first-child { margin-top: 0; }
+
+/* ══════════════════════════════════════════
+   TYPE BADGES  (+positive / -negative)
+══════════════════════════════════════════ */
+.badge-type-pos { background: rgba(0,200,112,0.14);  color: #00C870; }
+.badge-type-neg { background: rgba(232,0,26,0.14);   color: #ff4455; }
+[data-theme="light"] .badge-type-pos { background: #d4f5e4; color: #007840; }
+[data-theme="light"] .badge-type-neg { background: #fde8ea; color: #c00010; }
+
+/* ══════════════════════════════════════════
+   SUB-NAV (Glossary under Test Cases)
+══════════════════════════════════════════ */
+.nav-sub-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 18px 7px 36px;
+  color: #2e2e2e;
+  text-decoration: none;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  transition: all 0.12s;
+  border-left: 2px solid transparent;
+}
+.nav-sub-link:hover { color: #888888; background: rgba(255,255,255,0.02); }
+.nav-sub-link.active { color: #E8001A; border-left-color: #E8001A; background: rgba(232,0,26,0.04); }
+
+/* ══════════════════════════════════════════
+   TYPE FILTER CHIPS
+══════════════════════════════════════════ */
+.type-chips { display: flex; gap: 4px; }
+.type-chip {
+  border: 1px solid var(--border);
+  padding: 4px 9px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 8.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.type-chip:hover { border-color: var(--text-muted); color: var(--text); }
+.type-chip.tc-all { border-color: var(--cyan); color: var(--cyan); background: rgba(0,191,207,0.08); }
+.type-chip.tc-pos { border-color: var(--green); color: var(--green); background: rgba(0,200,112,0.08); }
+.type-chip.tc-neg { border-color: var(--red); color: var(--red); background: rgba(232,0,26,0.08); }
+
+/* ══════════════════════════════════════════
+   PRECONDITIONS BLOCK (in detail view)
+══════════════════════════════════════════ */
+.precond-block {
+  padding: 12px 14px;
+  background: rgba(0,191,207,0.04);
+  border: 1px solid rgba(0,191,207,0.18);
+  border-left: 3px solid var(--cyan);
+}
+.precond-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.precond-list .step-num { color: var(--cyan); }
+
+/* ══════════════════════════════════════════
+   GAP SEVERITY COLORS
+══════════════════════════════════════════ */
+.gap-critical { border-left-color: #ff4455; }
+.gap-high     { border-left-color: #F0C030; }
+.gap-medium   { border-left-color: #00BFCF; }
+.gap-sev-critical { background: rgba(232,0,26,0.12);   color: #ff4455; }
+.gap-sev-high     { background: rgba(240,192,48,0.12); color: #F0C030; }
+.gap-sev-medium   { background: rgba(0,191,207,0.12);  color: #00BFCF; }
+[data-theme="light"] .gap-sev-critical { background: #fde8ea; color: #c00010; }
+[data-theme="light"] .gap-sev-high     { background: #fff0c0; color: #7a5000; }
+[data-theme="light"] .gap-sev-medium   { background: #d0eef5; color: #005a6a; }
+
+.gap-sections {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+.gap-sec {
+  padding: 10px 12px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+}
+.gap-sec-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 7.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  display: block;
+}
+.gap-sec-unclear .gap-sec-label  { color: #ff4455; }
+.gap-sec-assume  .gap-sec-label  { color: #00C870; }
+.gap-sec-why     .gap-sec-label  { color: #F0C030; }
+.gap-sec-coverage .gap-sec-label { color: #00BFCF; }
+.gap-sec-text { font-size: 12.5px; color: var(--text-muted); line-height: 1.6; }
+
+/* ══════════════════════════════════════════
+   GLOSSARY PAGE
+══════════════════════════════════════════ */
+.glossary-group {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 18px 22px;
+  margin-bottom: 14px;
+  position: relative;
+}
+.glossary-group::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 2px; height: 100%;
+  background: var(--cyan);
+  opacity: 0.5;
+}
+.glossary-group-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.glossary-dl { margin: 0; }
+.glossary-dt {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11.5px;
+  color: var(--text);
+  letter-spacing: 0.04em;
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.glossary-dt:first-child { margin-top: 0; }
+.glossary-dt::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.glossary-dd {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin: 4px 0 0 0;
+  padding-left: 12px;
+  border-left: 2px solid var(--border);
+}
+
+/* ══════════════════════════════════════════
+   SPEC REVIEW — RISK MAP (no P-labels)
+══════════════════════════════════════════ */
+.risk-dot-critical { width: 8px; height: 8px; border-radius: 50%; background: #ff4455; flex-shrink: 0; }
+.risk-dot-high     { width: 8px; height: 8px; border-radius: 50%; background: #F0C030; flex-shrink: 0; }
+.risk-dot-medium   { width: 8px; height: 8px; border-radius: 50%; background: #00BFCF; flex-shrink: 0; }

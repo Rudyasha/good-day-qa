@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,8 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-eva.css?v=20260526-allure5" />
-  <script src="theme.js?v=20260526-allure2"></script>
+  <link rel="stylesheet" href="style-eva.css?v=20260528" />
 </head>
 <body class="cases-page">
 
@@ -20,15 +19,15 @@
   <div class="nav-section">:: Navigation</div>
   <a href="index.html" class="nav-link"><span class="nav-icon">◈</span> Overview</a>
   <a href="spec.html" class="nav-link"><span class="nav-icon">◆</span> Spec Review</a>
-  <a href="gaps.html" class="nav-link"><span class="nav-icon">◎</span> Spec Gaps</a>
   <a href="test-cases.html" class="nav-link active"><span class="nav-icon">◉</span> Test Cases</a>
   <a href="glossary.html" class="nav-sub-link"><span class="nav-icon">·</span> Glossary</a>
+  <a href="gaps.html" class="nav-link"><span class="nav-icon">◎</span> Spec Gaps</a>
   <a href="ai-reflection.html" class="nav-link"><span class="nav-icon">◇</span> AI Reflection</a>
   <div class="theme-toggle">
     <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">◑ SWITCH THEME</button>
   </div>
   <div class="sidebar-footer">
-    QA DOCUMENTATION<br/>
+    NERV :: QA DIVISION<br/>
     MAY 2026
   </div>
 </aside>
@@ -38,16 +37,13 @@
     <div class="list-header">
       <div class="list-title">TEST CASES <span id="count-label" class="list-count"></span></div>
       <div class="filter-bar">
-        <label class="filter-label" for="area-filter">Filter by Area</label>
         <select class="area-select" id="area-filter" onchange="applyFilters()">
           <option value="all">ALL AREAS</option>
         </select>
-        <div class="filter-label scenario-label">Positive / Negative</div>
-        <div class="scenario-filter" aria-label="Positive / Negative">
-          <button class="scenario-btn active" data-type="all" onclick="setScenario('all', this)">ALL</button>
-          <button class="scenario-btn" data-type="Positive" onclick="setScenario('Positive', this)">POSITIVE</button>
-          <button class="scenario-btn" data-type="Negative" onclick="setScenario('Negative', this)">NEGATIVE</button>
-          <button class="scenario-btn" data-type="Positive / Negative" onclick="setScenario('Positive / Negative', this)">MIXED</button>
+        <div class="scenario-filter">
+          <button class="scenario-btn active" id="chip-all" onclick="setType('all')">ALL</button>
+          <button class="scenario-btn scenario-pos" id="chip-positive" onclick="setType('positive')">+ POSITIVE</button>
+          <button class="scenario-btn scenario-neg" id="chip-negative" onclick="setType('negative')">− NEGATIVE</button>
         </div>
       </div>
     </div>
@@ -63,160 +59,1277 @@
 </div>
 
 <script>
-const areaColors = {
-  'Smoke / ERP Result':       'green',
-  'Smoke / ERP Mapping':      'green',
-  'Required Fields':          'amber',
-  'Master Data Validation':   'amber',
-  'Input Normalization':      'amber',
-  'Date / Period':            'amber',
-  'Optional Fields':          'orange',
-  'Text Fields':              'orange',
-  'Text Fields / Security':   'purple',
-  'Debit / Credit':           'red',
-  'Balance':                  'red',
-  'Balance / Business Rule':  'red',
-  'Selected Range Processing':'red',
-  'Grouping':                 'red',
-  'Grouping / Balance':       'red',
-  'Currency':                 'orange',
-  'Excel Side Effects':       'blue',
-  'Idempotency':              'blue',
-  'Atomicity':                'blue',
-  'Permissions':              'purple',
-  'Resilience':               'blue',
-  'Error Messages':           'amber',
-  'Audit':                    'purple',
-  'Telemetry':                'blue',
-  'API / OData Contract':     'blue',
-  'Cross-platform':           'blue',
-  'Limits':                   'orange',
-  'Async / Queue':            'blue'
-};
-
-const cases = [{"id":"TC-001","area":"Required Fields","title":"Required fields are rejected when empty","testData":"required fields: connectionName, ledger, account, branch, currency, period","preconditions":["1. The user is signed in. For permission tests, use a user with the required restricted role","2. Optional fields are not filled"],"steps":["1. Leave one required field empty","2. Run Writeback","3. Repeat for each required field > Check that the batch is not created"],"expected":["1. No batch is created","2. Excel shows a clear required-field error","3. The error names the affected field and row or group","4. ERP has no side effects"],"notes":"Merged from separate empty-field cases.","type":"Negative"},{"id":"TC-002","area":"Master Data Validation","title":"Non-existent or inactive dictionary value is rejected","testData":"required fields: connectionName, ledger, account","preconditions":["1. The user is signed in. For permission tests, use a user with the required restricted role","2. Optional fields are not filled","3. connectionName, ledger, and account have a non-existent or inactive status"],"steps":["1. Enter a value that does not exist in the ERP, or that is inactive/draft, for a dictionary field","2. Keep the rest valid and balanced","3. Run Writeback > Check that the batch is not created","4. Repeat for each master-data field"],"expected":["1. No batch is created","2. Excel shows a business validation error, not a generic failure","3. The error names the invalid field and value","4. ERP has no partial batch"],"notes":"","type":"Negative"},{"id":"TC-003","area":"Input Normalization","title":"Spaces and letter case are handled by a documented rule","testData":"Examples: ' ACTUAL ', 'actual', ' 6000 ', 'erp_test'\nFields: connectionName, ledger, account, branch, currency, period","preconditions":["1. The user is signed in. For permission tests, use a user with the required restricted role","2. Optional fields are not filled"],"steps":["1. Add leading/trailing spaces or different letter case to code-like fields","2. Run Writeback > Compare Excel result and ERP values"],"expected":["1. Values are either normalized and saved correctly, or rejected with a clear field error"],"notes":"","type":"Negative"},{"id":"TC-004","area":"Date / Period","title":"Excel DATE formula is accepted and stored without date shift","testData":"transactionDate = DATE(2026,5,19), postPeriod = 05-2026.","preconditions":["1. The user is signed in. For permission tests, use a user with the required restricted role","2. Optional fields are not filled","3. Required fields are filled with valid data"],"steps":["1. Use an Excel DATE formula for transactionDate","2. Run Writeback > Open the batch in ERP"],"expected":["1. Batch is created","2. ERP transaction date is 2026-05-19","3. Date is not changed by locale, timezone, or platform settings"],"notes":"","type":"Positive"},{"id":"TC-005","area":"Date / Period","title":"Unsupported date formats are rejected safely","testData":"Variations: ambiguous text date 05/06/2026, impossible date 2026-02-31, date-time where only date is allowed.","preconditions":["1. Required fields are filled with valid data","2. A valid balanced journal is ready (debit and credit lines)"],"steps":["1. Run Writeback with one unsupported date variation","2. Check Excel result and ERP","3. Repeat for each variation"],"expected":["1. No batch is created for unsupported date input","2. Excel explains why the date is invalid or ambiguous","3. The system does not silently convert to the wrong date"],"notes":"","type":"Negative"},{"id":"TC-006","area":"Date / Period","title":"Date and post period must match","testData":"transactionDate is inside or outside the selected postPeriod.","preconditions":["1. Required fields are filled with valid data","2. An open postPeriod and a date inside it are known","3. A valid balanced journal is ready"],"steps":["1. Run with transactionDate inside the open postPeriod","2. Run with transactionDate outside that postPeriod","3. Check Excel result and ERP"],"expected":["1. Matching date and period are accepted","2. Mismatching date and period are rejected","3. Excel names both transactionDate and postPeriod in the error","4. ERP has no side effects for the rejected run"],"notes":"","type":"Positive / Negative"},{"id":"TC-007","area":"Date / Period","title":"Closed, locked, wrong-format, or non-existent period is rejected","testData":"Variations: closed period, locked period, wrong format such as 2026-05, non-existent period such as 13-2026.","preconditions":["1. Required fields except the date are filled with valid data","2. A valid balanced journal is ready so only the date varies"],"steps":["1. Use one invalid period variation","2. Keep the journal otherwise valid","3. Run Writeback > Check that the batch is not created","4. Repeat for each variation"],"expected":["1. No batch is created","2. Excel shows a clear period validation error","3. The error says whether the period is closed, locked, wrong format, or unknown when available","4. ERP has no partial batch"],"notes":"","type":"Negative"},{"id":"TC-008","area":"Optional Fields","title":"Provided optional fields are saved correctly","testData":"optional fields: batchDescription, branch, currency, and lineDescription are filled with valid values.","preconditions":["1. An open postPeriod is available","2. A valid balanced journal is ready so only the period varies"],"steps":["1. Fill all optional fields with valid values","2. Run Writeback","3. Open the batch and lines in ERP","4. Compare ERP values with Excel input"],"expected":["1. Batch is created","2. Optional field values are saved exactly or normalized by documented rules","3. No optional value is lost or saved in the wrong level"],"notes":"","type":"Positive"},{"id":"TC-009","area":"Optional Fields","title":"Empty optional fields use documented defaults","testData":"Run one variation per optional field: empty batchDescription, branch, currency, lineDescription.","preconditions":["1. A valid balanced journal is ready","2. Optional fields are filled with valid values"],"steps":["1. Leave one optional field empty","2. Keep the journal otherwise valid","3. Run Writeback > Open ERP result","4. Repeat for each optional field"],"expected":["1. Empty optional fields are accepted only when allowed","2. Currency defaults to ledger currency if this is the documented rule","3. Empty text fields remain empty/null","4. If ERP config requires a field, Excel shows a clear error"],"notes":"","type":"Positive"},{"id":"TC-010","area":"Text Fields","title":"Text length boundaries are handled safely","testData":"Use batchDescription and lineDescription at max length and above max length.","preconditions":["1. A valid balanced journal is ready","2. The ledger has a known default currency"],"steps":["1. Run with text at the documented max length","2. Run with text longer than the documented max","3. Check Excel result and ERP"],"expected":["1. Max-length text is accepted and saved correctly","2. Over-limit text is rejected or truncated only if documented","3. No silent corruption occurs","4. Excel names the affected field when rejected"],"notes":"","type":"Positive / Negative"},{"id":"TC-011","area":"Text Fields / Security","title":"Special characters and non-Latin text are safe","testData":"Use characters such as quotes, ampersands, slashes, brackets, Cyrillic, and accented letters.","preconditions":["1. A valid balanced journal is ready","2. The documented max text length for the fields is known"],"steps":["1. Put special and non-Latin characters in text fields","2. Run Writeback","3. Open the values in ERP and any available export"],"expected":["1. Text is preserved or normalized by documented rules","2. No text corruption happens between Excel, API, and ERP","3. Batch is created if business validation passes"],"notes":"","type":"Positive"},{"id":"TC-012","area":"Text Fields / Security","title":"HTML, script text, and Excel formulas are not executed","testData":"Examples: <b>test<\/b>, <script>alert(1)<\/script>, =HYPERLINK(...).","preconditions":["1. A valid balanced journal is ready so only the text fields vary"],"steps":["1. Put the test strings into batchDescription and lineDescription","2. Run Writeback","3. View the values in ERP and any export"],"expected":["1. Text is shown as plain text or rejected by validation","2. Nothing is executed as HTML, JavaScript, or Excel formula","3. Excel and logs do not expose secrets"],"notes":"","type":"Negative"},{"id":"TC-013","area":"Debit / Credit","title":"Valid debit and credit amount classes are handled consistently","testData":"Variations: positive value, empty opposite side, zero, negative, text number, too many decimals.","preconditions":["1. A valid balanced journal is ready so only the text fields vary"],"steps":["1. Run debit-side variations with a valid balancing credit line","2. Run credit-side variations with a valid balancing debit line","3. Check Excel result and ERP for each run"],"expected":["1. Valid positive amounts are accepted","2. Empty opposite side is accepted","3. Zero and negative values are rejected","4. Text numbers and extra precision are accepted only if documented","5. Excel names the affected amount field and row"],"notes":"Merged debit and credit duplicate cases.","type":"Positive / Negative"},{"id":"TC-014","area":"Debit / Credit","title":"A line must have exactly one side: debit or credit","testData":"Variations: both debit and credit filled; both debit and credit empty.","preconditions":["1. Required fields are filled with valid data","2. A valid balancing line is ready for each amount variation"],"steps":["1. Create one line with both debit and credit filled","2. Run Writeback","3. Create one line with both debit and credit empty","4. Run Writeback > Check that the batch is not created"],"expected":["1. No batch is created for either invalid line","2. Excel explains that exactly one side must be filled","3. The error names the affected row","4. ERP has no partial lines"],"notes":"","type":"Negative"},{"id":"TC-015","area":"Balance","title":"Balanced journals are accepted for common line patterns","testData":"Patterns: one debit/one credit, many debits/one credit, one debit/many credits.","preconditions":["1. Required fields are filled with valid data"],"steps":["1. Build each balanced pattern","2. Run Writeback for each pattern","3. Open ERP batch lines"],"expected":["1. Batch is created for each balanced pattern","2. ERP total debit equals ERP total credit","3. All source lines are present in ERP"],"notes":"Merged separate balanced-pattern cases.","type":"Positive"},{"id":"TC-016","area":"Balance","title":"Imbalanced journal is rejected with useful totals","testData":"Examples: debit total 100.00, credit total 90.00.","preconditions":["1. Required fields are filled with valid data"],"steps":["1. Prepare an imbalanced journal","2. Run Writeback > Read the Excel error"],"expected":["1. No batch is created","2. Excel shows that the journal is not balanced","3. The error includes debit total and credit total","4. ERP has no side effects"],"notes":"","type":"Negative"},{"id":"TC-017","area":"Balance","title":"Decimal arithmetic does not create false imbalance","testData":"Example: debit 0.10 and 0.20; credit 0.30.","preconditions":["1. Required fields are filled with valid data"],"steps":["1. Prepare a journal using decimal amounts","2. Run Writeback > Compare Excel and ERP totals"],"expected":["1. Batch is created","2. No floating-point precision error appears","3. ERP totals are mathematically balanced"],"notes":"","type":"Positive"},{"id":"TC-018","area":"Balance / Business Rule","title":"Same account on debit and credit follows documented rule","testData":"Example: account 6420 debit 1000.00 and account 6420 credit 1000.00.","preconditions":["1. Required fields are filled with valid data","2. The same account exists and is active in the ERP"],"steps":["1. Prepare a balanced journal where debit and credit use the same account","2. Run Writeback > Check Excel result and ERP"],"expected":["1. Behavior follows the documented accounting rule","2. If allowed, batch is created On Hold","3. If blocked, Excel explains the business reason","4. No silent incorrect posting risk is introduced"],"notes":"","type":"Positive / Negative"},{"id":"TC-019","area":"Selected Range Processing","title":"Empty or blank selected range is rejected","testData":"Variations: empty range, blank rows only, formulas returning empty values.","preconditions":["1. Required fields are filled with valid data"],"steps":["1. Select a range without valid journal lines","2. Run Writeback","3. Repeat for each blank-range variation"],"expected":["1. No batch is created","2. Excel says that at least one valid transaction line is required","3. ERP has no side effects"],"notes":"","type":"Negative"},{"id":"TC-020","area":"Selected Range Processing","title":"Blank rows inside the selected range follow documented behavior","testData":"Valid debit line, blank row, valid credit line.","preconditions":["1. Required fields are filled with valid data","2. A valid debit line and a valid credit line are ready"],"steps":["1. Prepare a selected range with a blank row between valid lines","2. Run Writeback > Check Excel result and ERP"],"expected":["1. Blank row is either ignored or rejected by documented rule","2. If accepted, the valid lines create one balanced batch","3. If rejected, Excel names the blank row or selected range issue"],"notes":"","type":"Positive / Negative"},{"id":"TC-021","area":"Grouping","title":"Rows with the same grouping key create one batch","testData":"Same connectionName, transactionDate, postPeriod, ledger, branch, currency, and batchDescription.","preconditions":["1. Required fields are filled with valid data","2. Several balanced lines that share one grouping key are ready"],"steps":["1. Prepare several balanced lines with the same grouping key","2. Run Writeback > Open ERP result"],"expected":["1. Exactly one batch is created","2. All matching lines are inside that batch","3. No duplicate batch is created for the same group"],"notes":"","type":"Positive"},{"id":"TC-022","area":"Grouping","title":"Different grouping key values create separate batches","testData":"Change one key at a time: date, period, ledger, branch, currency, description, connection.","preconditions":["1. Required fields are filled with valid data","2. Two or more balanced groups are ready"],"steps":["1. Prepare two or more balanced groups","2. Change one grouping key in each group","3. Run Writeback > Check ERP batches"],"expected":["1. Lines with different grouping keys are not mixed","2. Separate batches are created or handled by documented multi-group rule","3. Each created batch is balanced on its own"],"notes":"","type":"Positive"},{"id":"TC-023","area":"Grouping / Balance","title":"Balance is checked per group, not only globally","testData":"Group A is imbalanced, Group B compensates it so global totals look balanced.","preconditions":["1. Required fields are filled with valid data","2. Two groups are ready where global totals match but one group is imbalanced"],"steps":["1. Prepare two groups where global debit equals global credit","2. Make at least one group internally imbalanced","3. Run Writeback"],"expected":["1. The operation does not pass only because global totals match","2. Excel identifies the imbalanced group","3. ERP does not contain an invalid batch"],"notes":"","type":"Negative"},{"id":"TC-024","area":"Currency","title":"Currency validation and defaulting are safe","testData":"Variations: empty currency, supported currency, unsupported currency, mixed currencies in one range.","preconditions":["1. Required fields are filled with valid data","2. Supported and unsupported currencies are known","3. The ledger has a known default currency"],"steps":["1. Run one variation at a time","2. Keep the journal otherwise valid and balanced","3. Check Excel result and ERP"],"expected":["1. Empty currency uses ledger default only if documented","2. Supported currency is saved correctly","3. Unsupported currency is rejected","4. Mixed currencies are rejected or split only by documented rule","5. No silent cross-currency balancing occurs"],"notes":"Merged currency cases.","type":"Positive / Negative"},{"id":"TC-025","area":"Excel Side Effects","title":"Excel recalculation does not create a batch","testData":"A batch has already been created from the workbook.","preconditions":["1. A batch has already been created from the workbook"],"steps":["1. Press F9 or recalculate the workbook","2. Check Excel result area","3. Search ERP for new batches with the same data"],"expected":["1. No new batch is created","2. Recalculation has no financial side effect","3. Existing result remains traceable"],"notes":"","type":"Negative"},{"id":"TC-026","area":"Excel Side Effects","title":"Workbook open, unrelated edit, and formula copy do not write to ERP","testData":"Variations: reopen workbook, edit unrelated cell, copy formulas to another range without Writeback.","preconditions":["1. A batch has already been created from the workbook"],"steps":["1. Perform one side-effect variation","2. Do not run the Writeback action","3. Check ERP for new batches","4. Repeat for each variation"],"expected":["1. No batch is created by these Excel actions","2. ERP receives no write operation","3. Writeback happens only through the documented action"],"notes":"Merged side-effect duplicates.","type":"Negative"},{"id":"TC-027","area":"Idempotency","title":"Retrying the same operation does not create duplicates","testData":"Same operation id or idempotency key, same payload.","preconditions":["1. A valid balanced journal is ready","2. An operation id or idempotency key is available"],"steps":["1. Run Writeback for a valid journal","2. Repeat the same operation with the same key","3. Check ERP batch list and Excel result"],"expected":["1. Only one batch exists","2. Retry returns the original batch number or a documented safe duplicate-prevention response","3. No second financial draft is created"],"notes":"","type":"Negative"},{"id":"TC-028","area":"Idempotency","title":"Timeout after ERP creation is handled safely","testData":"ERP creates the batch, but Excel/API response times out.","preconditions":["1. A valid balanced journal is ready","2. A timeout after ERP creation can be simulated"],"steps":["1. Run Writeback and simulate timeout after ERP creation","2. Retry with the same operation key","3. Check Excel result, ERP, and logs if available"],"expected":["1. Only one batch exists","2. Retry returns or recovers the original result","3. Excel does not show false success for an unknown state","4. User has a safe message explaining what happened"],"notes":"","type":"Negative"},{"id":"TC-029","area":"Idempotency","title":"Same key with different payload is rejected","testData":"Payload A and Payload B use the same idempotency key but have different data.","preconditions":["1. Two journals with different data are ready","2. The same idempotency key can be reused"],"steps":["1. Submit Payload A with key K1.","2. Submit Payload B with the same key K1.","3. Check Excel/API result and ERP"],"expected":["1. The second operation is rejected as an idempotency conflict","2. No batch is created for Payload B","3. Error is clear enough for support investigation"],"notes":"","type":"Negative"},{"id":"TC-030","area":"Atomicity","title":"One invalid line prevents partial creation","testData":"One valid line and one line with invalid account or invalid amount.","preconditions":["1. A valid debit line is ready","2. A line with an invalid account or invalid amount is ready"],"steps":["1. Prepare a journal where one line is invalid","2. Run Writeback","3. Check Excel result and ERP batch/line data"],"expected":["1. No batch is created","2. No partial line is saved in ERP","3. Excel names the invalid row and field"],"notes":"","type":"Negative"},{"id":"TC-031","area":"Atomicity","title":"ERP failure does not leave an incomplete batch","testData":"Simulate ERP failure during batch or line creation.","preconditions":["1. A valid balanced journal is ready","2. An ERP failure during creation can be simulated"],"steps":["1. Start Writeback for a valid journal","2. Simulate ERP failure during creation","3. Check ERP after the failure"],"expected":["1. No incomplete batch remains, or the failed state is documented and recoverable","2. Excel shows a safe failure message","3. Retry behavior does not create duplicates"],"notes":"","type":"Negative"},{"id":"TC-032","area":"Atomicity","title":"Mixed valid and invalid groups follow the documented rule","testData":"One group valid, one group invalid.","preconditions":["1. Two groups are ready in one range, one valid and one invalid"],"steps":["1. Prepare two groups in one selected range","2. Make one group invalid","3. Run Writeback > Check ERP"],"expected":["1. Behavior follows the documented multi-group atomicity rule","2. If operation-level atomicity is required, no group is created","3. If group-level atomicity is allowed, only valid groups are created and invalid ones are clearly reported"],"notes":"","type":"Negative"},{"id":"TC-033","area":"Permissions","title":"User without create permission is blocked","testData":"Use a user who can open the workbook but cannot create GL Journal Drafts.","preconditions":["1. A user without permission to create GL Journal Drafts is available","2. A valid balanced journal is ready"],"steps":["1. Sign in as the restricted user","2. Prepare a valid balanced journal","3. Run Writeback > Check Excel and ERP"],"expected":["1. No batch is created","2. Excel shows a permission error","3. ERP has no new batch","4. The attempt is traceable if audit/logging is available"],"notes":"","type":"Negative"},{"id":"TC-034","area":"Permissions","title":"Restricted ledger, branch, or account is blocked","testData":"Use a user who lacks access to one ledger, branch, or account.","preconditions":["1. A user who lacks access to a ledger, branch, or account is available","2. A valid balanced journal is ready"],"steps":["1. Run one variation with a restricted ledger","2. Run one variation with a restricted branch","3. Run one variation with a restricted account","4. Check Excel and ERP"],"expected":["1. No unauthorized batch is created","2. Excel names the restricted master-data object when safe to show","3. ERP has no side effects","4. The system enforces permissions server-side, not only in Excel"],"notes":"","type":"Negative"},{"id":"TC-035","area":"Resilience","title":"Network or API failure returns a safe Excel error","testData":"Simulate network failure, API unavailable, or auth/session expiry.","preconditions":["1. A valid balanced journal is ready","2. A network, API, or session failure can be simulated"],"steps":["1. Prepare a valid journal","2. Trigger the failure","3. Run Writeback > Check Excel and ERP"],"expected":["1. Excel shows a clear technical error","2. Excel does not claim success without a confirmed batch number","3. ERP has no unexpected batch, or the unknown state is handled by idempotent recovery"],"notes":"","type":"Negative"},{"id":"TC-036","area":"Error Messages","title":"Validation errors are visible and actionable in Excel","testData":"Use a multi-line range with one invalid field.","preconditions":["1. A multi-line range is ready with one invalid field"],"steps":["1. Make one line invalid, for example empty account or invalid amount","2. Run Writeback > Read the Excel error"],"expected":["1. Error is visible in Excel","2. Error names the field and row when applicable","3. Message tells the user what to fix","4. No raw technical stack trace is shown"],"notes":"","type":"Negative"},{"id":"TC-037","area":"Error Messages","title":"Batch-level errors name the affected group","testData":"Use an imbalanced batch group or date/period mismatch.","preconditions":["1. A batch-level error is ready, such as an imbalanced group or a date/period mismatch"],"steps":["1. Prepare one batch-level error","2. Run Writeback > Read the Excel error"],"expected":["1. Excel shows the affected batch group or enough group data to identify it","2. For balance errors, Excel shows debit and credit totals","3. ERP has no invalid batch"],"notes":"","type":"Negative"},{"id":"TC-038","area":"Error Messages","title":"ERP/API errors are mapped to user-friendly Excel errors","testData":"Example: ERP rejects invalid account, closed period, or restricted ledger.","preconditions":["1. A journal with a value the ERP rejects is ready, such as an invalid account or closed period"],"steps":["1. Trigger one ERP-side validation error","2. Check the error returned to Excel","3. Check logs if available"],"expected":["1. Excel shows the real business reason in simple language","2. Internal API details are not exposed to the user","3. Operation is traceable by correlation id if logging exists"],"notes":"","type":"Negative"},{"id":"TC-039","area":"Audit","title":"Successful and failed attempts have correct audit behavior","testData":"ERP audit/history is available.","preconditions":["1. ERP audit and history are available","2. A valid balanced journal is ready"],"steps":["1. Create a valid batch and check audit/history","2. Trigger a validation failure and check audit/history"],"expected":["1. Successful creation is audited with user, time, source, and batch number","2. Failed validation is not audited as a successful creation","3. Failed attempt may be logged separately if supported"],"notes":"","type":"Positive / Negative"},{"id":"TC-040","area":"Telemetry","title":"Successful writeback is traceable end to end","testData":"Log or telemetry access is available.","preconditions":["1. Log or telemetry access is available","2. A valid balanced journal is ready"],"steps":["1. Run a valid Writeback","2. Search logs by operation/correlation id","3. Compare log result with ERP batch"],"expected":["1. Logs contain operation id, user or safe user reference, batch number, duration, and success status","2. ERP response is linked to the same operation","3. Logs do not expose secrets"],"notes":"","type":"Positive"},{"id":"TC-041","area":"Telemetry","title":"Failed writeback is logged without sensitive data","testData":"Log or telemetry access is available.","preconditions":["1. Log or telemetry access is available","2. A journal that triggers validation and technical failures is ready"],"steps":["1. Trigger validation failure and technical failure variations","2. Search logs by operation/correlation id"],"expected":["1. Logs contain failure reason and correlation id","2. Logs do not include tokens, passwords, secret connection strings, or full sensitive payloads","3. Support can troubleshoot the failure without user data leakage"],"notes":"","type":"Negative"},{"id":"TC-042","area":"API / OData Contract","title":"Request contains correct batch-level and line-level fields","testData":"Payload or telemetry is inspectable.","preconditions":["1. The API or OData payload, or telemetry, is inspectable","2. A valid balanced journal is ready"],"steps":["1. Run a valid Writeback","2. Inspect the normalized API/OData request or logs","3. Compare request with Excel input"],"expected":["1. Request contains correct batch fields: connectionName, transactionDate, postPeriod, ledger, branch, currency, batchDescription","2. Request contains correct line fields: account, debit, credit, lineDescription, source line id if available","3. Field names and data formats follow the contract"],"notes":"","type":"Positive"},{"id":"TC-043","area":"API / OData Contract","title":"API response is mapped back to the correct Excel result","testData":"Payload and response are inspectable.","preconditions":["1. The API payload and response are inspectable","2. A valid journal and an invalid journal are ready"],"steps":["1. Run one successful operation","2. Run one validation-failure operation","3. Inspect response mapping to Excel"],"expected":["1. Success response returns the correct batch number to Excel","2. Validation response returns a clear Excel error","3. Correlation id is available for support when possible"],"notes":"","type":"Positive / Negative"},{"id":"TC-044","area":"Cross-platform","title":"Supported Excel platforms produce the same result","testData":"Platforms: Windows, macOS, and Excel Web if supported.","preconditions":["1. The workbook is available on each supported platform","2. A valid balanced journal is ready"],"steps":["1. Open the same workbook on each supported platform","2. Run the same valid Writeback","3. Compare ERP results"],"expected":["1. Supported platforms create correct draft batches","2. Date and decimal values stay the same","3. If Excel Web is not supported, Excel shows a documented limitation instead of failing silently"],"notes":"","type":"Positive"},{"id":"TC-045","area":"Limits","title":"Maximum line count is accepted and max plus one is rejected","testData":"Documented maximum line count is known.","preconditions":["1. The documented maximum line count is known","2. A balanced journal can be built at that line count"],"steps":["1. Create a balanced journal with exactly the max line count","2. Run Writeback and check ERP line count","3. Create a balanced journal with max + 1 lines","4. Run Writeback"],"expected":["1. Max line count is accepted and all lines are saved","2. Max + 1 is rejected cleanly unless documented chunking exists","3. Excel shows a line-count limit error","4. No partial batch is created for the rejected run"],"notes":"Merged max and over-max cases.","type":"Positive / Negative"},{"id":"TC-046","area":"Limits","title":"Amount precision and size limits follow documented rules","testData":"Use min positive, max allowed, max precision, over-precision, and over-limit values.","preconditions":["1. The documented amount precision and size limits are known","2. A valid balanced journal is ready"],"steps":["1. Run one amount boundary variation at a time","2. Check Excel result and ERP values"],"expected":["1. Values inside limits are accepted and saved correctly","2. Values outside limits are rejected or rounded only by documented rules","3. No silent rounding creates an imbalance"],"notes":"","type":"Positive / Negative"},{"id":"TC-047","area":"Async / Queue","title":"Async processing creates no duplicates during retry","testData":"Only applicable if architecture uses queue/background processing.","preconditions":["1. The architecture uses a queue or background processing","2. A temporary ERP failure can be simulated"],"steps":["1. Run Writeback for a valid journal","2. Simulate temporary ERP failure","3. Let retry processing run","4. Check ERP and logs"],"expected":["1. Only one batch exists after retry","2. Retry attempts are traceable","3. Excel or operation status does not show misleading success before confirmation"],"notes":"","type":"Negative"},{"id":"TC-048","area":"Async / Queue","title":"Poison message does not block valid operations","testData":"Only applicable if architecture uses queue/background processing.","preconditions":["1. The architecture uses a queue or background processing"],"steps":["1. Submit one invalid operation","2. Submit one valid operation after it","3. Process the queue","4. Check operation statuses and ERP"],"expected":["1. Invalid operation fails or goes to dead-letter handling","2. Valid operation is still processed","3. Queue is not blocked","4. Only the valid batch exists in ERP"],"notes":"","type":"Negative"},{"id":"TC-049","area":"Smoke / ERP Result","title":"Create one draft journal batch from two balanced lines","testData":"One debit line 100.00 and one credit line 100.00 using the default valid data.","preconditions":["1. Default valid data is set","2. One debit line and one credit line of 100.00 are ready"],"steps":["1. Fill the two journal lines in Excel","2. Run the documented Writeback action","3. Check the returned batch in ERP"],"expected":["1. Excel shows a success message with the batch number","2. ERP contains exactly one new draft batch","3. The batch has exactly two lines","4. Total debit equals total credit","5. The batch status is On Hold","6. The batch is not posted or released"],"notes":"","type":"Positive"},{"id":"TC-050","area":"Smoke / ERP Mapping","title":"Returned batch number exists and matches the ERP batch","testData":"Use the successful result from TC-001.","preconditions":["1. A batch was created successfully in TC-049","2. Its returned batch number is available"],"steps":["1. Copy the batch number returned in Excel","2. Search this batch in ERP","3. Compare batch header and line values with Excel input"],"expected":["1. ERP contains the same batch number","2. Date, period, ledger, currency, description, accounts, debit, credit, and line descriptions match the Excel input","3. No extra batch with the same operation data is created"],"notes":"","type":"Positive"}];
-
-let activeArea = 'all';
-let activeScenario = 'all';
-let activeCase = null;
-
-function escHtml(v) {
-  return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const savedTheme = localStorage.getItem('eva-theme');
+if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+function updateThemeBtn() {
+  const t = document.documentElement.getAttribute('data-theme');
+  document.getElementById('theme-btn').textContent = t === 'light' ? '◑ SWITCH TO DARK' : '◑ SWITCH TO LIGHT';
 }
-
-function areaTag(area) {
-  return `<span class="area-tag area-${areaColors[area]||'blue'}">${escHtml(area)}</span>`;
+function toggleTheme() {
+  const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('eva-theme', next);
+  updateThemeBtn();
 }
+updateThemeBtn();
 
-function scenarioTag(type) {
-  const className = type === 'Positive' ? 'scenario-pos' : type === 'Negative' ? 'scenario-neg' : 'scenario-mixed';
-  return `<span class="scenario-tag ${className}">${escHtml(type)}</span>`;
-}
+const cases = [
+  {
+    id: "TC-001",
+    area: "Required Fields",
+    type: "negative",
+    title: "Required fields are rejected when empty",
+    testData: "required fields: connectionName, ledger, account, branch, currency, period",
+    preconditions: [
+        "The user is signed in. For permission tests, use a user with the required restricted role",
+        "Optional fields are not filled"
+      ],
+    steps: [
+        "Leave one required field empty",
+        "Run Writeback",
+        "Repeat for each required field > Check that the batch is not created"
+      ],
+    expected: [
+        "No batch is created",
+        "Excel shows a clear required-field error",
+        "The error names the affected field and row or group",
+        "ERP has no side effects"
+      ],
+    notes: "Merged from separate empty-field cases."
+  },
+  {
+    id: "TC-002",
+    area: "Master Data Validation",
+    type: "negative",
+    title: "Non-existent or inactive dictionary value is rejected",
+    testData: "required fields: connectionName, ledger, account",
+    preconditions: [
+        "The user is signed in. For permission tests, use a user with the required restricted role",
+        "Optional fields are not filled",
+        "connectionName, ledger, and account have a non-existent or inactive status"
+      ],
+    steps: [
+        "Enter a value that does not exist in the ERP, or that is inactive/draft, for a dictionary field",
+        "Keep the rest valid and balanced",
+        "Run Writeback > Check that the batch is not created",
+        "Repeat for each master-data field"
+      ],
+    expected: [
+        "No batch is created",
+        "Excel shows a business validation error, not a generic failure",
+        "The error names the invalid field and value",
+        "ERP has no partial batch"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-003",
+    area: "Input Normalization",
+    type: "positive",
+    title: "Spaces and letter case are handled by a documented rule",
+    testData: "Examples: ' ACTUAL ', 'actual', ' 6000 ', 'erp_test'\nFields: connectionName, ledger, account, branch, currency, period",
+    preconditions: [
+        "The user is signed in. For permission tests, use a user with the required restricted role",
+        "Optional fields are not filled"
+      ],
+    steps: [
+        "Add leading/trailing spaces or different letter case to code-like fields",
+        "Run Writeback > Compare Excel result and ERP values"
+      ],
+    expected: [
+        "Values are either normalized and saved correctly, or rejected with a clear field error"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-004",
+    area: "Date / Period",
+    type: "positive",
+    title: "Excel DATE formula is accepted and stored without date shift",
+    testData: "transactionDate = DATE(2026,5,19), postPeriod = 05-2026.",
+    preconditions: [
+        "The user is signed in. For permission tests, use a user with the required restricted role",
+        "Optional fields are not filled",
+        "Required fields are filled with valid data"
+      ],
+    steps: [
+        "Use an Excel DATE formula for transactionDate",
+        "Run Writeback > Open the batch in ERP"
+      ],
+    expected: [
+        "Batch is created",
+        "ERP transaction date is 2026-05-19",
+        "Date is not changed by locale, timezone, or platform settings"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-005",
+    area: "Date / Period",
+    type: "negative",
+    title: "Unsupported date formats are rejected safely",
+    testData: "Variations: ambiguous text date 05/06/2026, impossible date 2026-02-31, date-time where only date is allowed.",
+    preconditions: [
+        "Required fields are filled with valid data",
+        "A valid balanced journal is ready (debit and credit lines)"
+      ],
+    steps: [
+        "Run Writeback with one unsupported date variation",
+        "Check Excel result and ERP",
+        "Repeat for each variation"
+      ],
+    expected: [
+        "No batch is created for unsupported date input",
+        "Excel explains why the date is invalid or ambiguous",
+        "The system does not silently convert to the wrong date"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-006",
+    area: "Date / Period",
+    type: "positive",
+    title: "Date and post period must match",
+    testData: "transactionDate is inside or outside the selected postPeriod.",
+    preconditions: [
+        "Required fields are filled with valid data",
+        "An open postPeriod and a date inside it are known",
+        "A valid balanced journal is ready"
+      ],
+    steps: [
+        "Run with transactionDate inside the open postPeriod",
+        "Run with transactionDate outside that postPeriod",
+        "Check Excel result and ERP"
+      ],
+    expected: [
+        "Matching date and period are accepted",
+        "Mismatching date and period are rejected",
+        "Excel names both transactionDate and postPeriod in the error",
+        "ERP has no side effects for the rejected run"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-007",
+    area: "Date / Period",
+    type: "negative",
+    title: "Closed, locked, wrong-format, or non-existent period is rejected",
+    testData: "Variations: closed period, locked period, wrong format such as 2026-05, non-existent period such as 13-2026.",
+    preconditions: [
+        "Required fields except the date are filled with valid data",
+        "A valid balanced journal is ready so only the date varies"
+      ],
+    steps: [
+        "Use one invalid period variation",
+        "Keep the journal otherwise valid",
+        "Run Writeback > Check that the batch is not created",
+        "Repeat for each variation"
+      ],
+    expected: [
+        "No batch is created",
+        "Excel shows a clear period validation error",
+        "The error says whether the period is closed, locked, wrong format, or unknown when available",
+        "ERP has no partial batch"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-008",
+    area: "Optional Fields",
+    type: "positive",
+    title: "Provided optional fields are saved correctly",
+    testData: "optional fields: batchDescription, branch, currency, and lineDescription are filled with valid values.",
+    preconditions: [
+        "An open postPeriod is available",
+        "A valid balanced journal is ready so only the period varies"
+      ],
+    steps: [
+        "Fill all optional fields with valid values",
+        "Run Writeback",
+        "Open the batch and lines in ERP",
+        "Compare ERP values with Excel input"
+      ],
+    expected: [
+        "Batch is created",
+        "Optional field values are saved exactly or normalized by documented rules",
+        "No optional value is lost or saved in the wrong level"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-009",
+    area: "Optional Fields",
+    type: "positive",
+    title: "Empty optional fields use documented defaults",
+    testData: "Run one variation per optional field: empty batchDescription, branch, currency, lineDescription.",
+    preconditions: [
+        "A valid balanced journal is ready",
+        "Optional fields are filled with valid values"
+      ],
+    steps: [
+        "Leave one optional field empty",
+        "Keep the journal otherwise valid",
+        "Run Writeback > Open ERP result",
+        "Repeat for each optional field"
+      ],
+    expected: [
+        "Empty optional fields are accepted only when allowed",
+        "Currency defaults to ledger currency if this is the documented rule",
+        "Empty text fields remain empty/null",
+        "If ERP config requires a field, Excel shows a clear error"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-010",
+    area: "Text Fields",
+    type: "negative",
+    title: "Text length boundaries are handled safely",
+    testData: "Use batchDescription and lineDescription at max length and above max length.",
+    preconditions: [
+        "A valid balanced journal is ready",
+        "The ledger has a known default currency"
+      ],
+    steps: [
+        "Run with text at the documented max length",
+        "Run with text longer than the documented max",
+        "Check Excel result and ERP"
+      ],
+    expected: [
+        "Max-length text is accepted and saved correctly",
+        "Over-limit text is rejected or truncated only if documented",
+        "No silent corruption occurs",
+        "Excel names the affected field when rejected"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-011",
+    area: "Text Fields / Security",
+    type: "positive",
+    title: "Special characters and non-Latin text are safe",
+    testData: "Use characters such as quotes, ampersands, slashes, brackets, Cyrillic, and accented letters.",
+    preconditions: [
+        "A valid balanced journal is ready",
+        "The documented max text length for the fields is known"
+      ],
+    steps: [
+        "Put special and non-Latin characters in text fields",
+        "Run Writeback",
+        "Open the values in ERP and any available export"
+      ],
+    expected: [
+        "Text is preserved or normalized by documented rules",
+        "No text corruption happens between Excel, API, and ERP",
+        "Batch is created if business validation passes"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-012",
+    area: "Text Fields / Security",
+    type: "positive",
+    title: "HTML, script text, and Excel formulas are not executed",
+    testData: "Examples: <b>test</b>, <script>alert(1)</script>, =HYPERLINK(...).",
+    preconditions: [
+        "A valid balanced journal is ready so only the text fields vary"
+      ],
+    steps: [
+        "Put the test strings into batchDescription and lineDescription",
+        "Run Writeback",
+        "View the values in ERP and any export"
+      ],
+    expected: [
+        "Text is shown as plain text or rejected by validation",
+        "Nothing is executed as HTML, JavaScript, or Excel formula",
+        "Excel and logs do not expose secrets"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-013",
+    area: "Debit / Credit",
+    type: "positive",
+    title: "Valid debit and credit amount classes are handled consistently",
+    testData: "Variations: positive value, empty opposite side, zero, negative, text number, too many decimals.",
+    preconditions: [
+        "A valid balanced journal is ready so only the text fields vary"
+      ],
+    steps: [
+        "Run debit-side variations with a valid balancing credit line",
+        "Run credit-side variations with a valid balancing debit line",
+        "Check Excel result and ERP for each run"
+      ],
+    expected: [
+        "Valid positive amounts are accepted",
+        "Empty opposite side is accepted",
+        "Zero and negative values are rejected",
+        "Text numbers and extra precision are accepted only if documented",
+        "Excel names the affected amount field and row"
+      ],
+    notes: "Merged debit and credit duplicate cases."
+  },
+  {
+    id: "TC-014",
+    area: "Debit / Credit",
+    type: "negative",
+    title: "A line must have exactly one side: debit or credit",
+    testData: "Variations: both debit and credit filled; both debit and credit empty.",
+    preconditions: [
+        "Required fields are filled with valid data",
+        "A valid balancing line is ready for each amount variation"
+      ],
+    steps: [
+        "Create one line with both debit and credit filled",
+        "Run Writeback",
+        "Create one line with both debit and credit empty",
+        "Run Writeback > Check that the batch is not created"
+      ],
+    expected: [
+        "No batch is created for either invalid line",
+        "Excel explains that exactly one side must be filled",
+        "The error names the affected row",
+        "ERP has no partial lines"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-015",
+    area: "Balance",
+    type: "positive",
+    title: "Balanced journals are accepted for common line patterns",
+    testData: "Patterns: one debit/one credit, many debits/one credit, one debit/many credits.",
+    preconditions: [
+        "Required fields are filled with valid data"
+      ],
+    steps: [
+        "Build each balanced pattern",
+        "Run Writeback for each pattern",
+        "Open ERP batch lines"
+      ],
+    expected: [
+        "Batch is created for each balanced pattern",
+        "ERP total debit equals ERP total credit",
+        "All source lines are present in ERP"
+      ],
+    notes: "Merged separate balanced-pattern cases."
+  },
+  {
+    id: "TC-016",
+    area: "Balance",
+    type: "negative",
+    title: "Imbalanced journal is rejected with useful totals",
+    testData: "Examples: debit total 100.00, credit total 90.00.",
+    preconditions: [
+        "Required fields are filled with valid data"
+      ],
+    steps: [
+        "Prepare an imbalanced journal",
+        "Run Writeback > Read the Excel error"
+      ],
+    expected: [
+        "No batch is created",
+        "Excel shows that the journal is not balanced",
+        "The error includes debit total and credit total",
+        "ERP has no side effects"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-017",
+    area: "Balance",
+    type: "positive",
+    title: "Decimal arithmetic does not create false imbalance",
+    testData: "Example: debit 0.10 and 0.20; credit 0.30.",
+    preconditions: [
+        "Required fields are filled with valid data"
+      ],
+    steps: [
+        "Prepare a journal using decimal amounts",
+        "Run Writeback > Compare Excel and ERP totals"
+      ],
+    expected: [
+        "Batch is created",
+        "No floating-point precision error appears",
+        "ERP totals are mathematically balanced"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-018",
+    area: "Balance / Business Rule",
+    type: "positive",
+    title: "Same account on debit and credit follows documented rule",
+    testData: "Example: account 6420 debit 1000.00 and account 6420 credit 1000.00.",
+    preconditions: [
+        "Required fields are filled with valid data",
+        "The same account exists and is active in the ERP"
+      ],
+    steps: [
+        "Prepare a balanced journal where debit and credit use the same account",
+        "Run Writeback > Check Excel result and ERP"
+      ],
+    expected: [
+        "Behavior follows the documented accounting rule",
+        "If allowed, batch is created On Hold",
+        "If blocked, Excel explains the business reason",
+        "No silent incorrect posting risk is introduced"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-019",
+    area: "Selected Range Processing",
+    type: "negative",
+    title: "Empty or blank selected range is rejected",
+    testData: "Variations: empty range, blank rows only, formulas returning empty values.",
+    preconditions: [
+        "Required fields are filled with valid data"
+      ],
+    steps: [
+        "Select a range without valid journal lines",
+        "Run Writeback",
+        "Repeat for each blank-range variation"
+      ],
+    expected: [
+        "No batch is created.",
+        "Excel shows the error: At least one transaction line is required.",
+        "ERP has no side effects."
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-020",
+    area: "Selected Range Processing",
+    type: "positive",
+    title: "Blank rows inside the selected range follow documented behavior",
+    testData: "Valid debit line, blank row, valid credit line.",
+    preconditions: [
+        "Required fields are filled with valid data",
+        "A valid debit line and a valid credit line are ready"
+      ],
+    steps: [
+        "Prepare a selected range with a blank row between valid lines",
+        "Run Writeback > Check Excel result and ERP"
+      ],
+    expected: [
+        "Blank row is either ignored or rejected by documented rule",
+        "If accepted, the valid lines create one balanced batch",
+        "If rejected, Excel names the blank row or selected range issue"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-021",
+    area: "Grouping",
+    type: "positive",
+    title: "Rows with the same grouping key create one batch",
+    testData: "Same connectionName, transactionDate, postPeriod, ledger, branch, currency, and batchDescription.",
+    preconditions: [
+        "Required fields are filled with valid data",
+        "Several balanced lines that share one grouping key are ready"
+      ],
+    steps: [
+        "Prepare several balanced lines with the same grouping key",
+        "Run Writeback > Open ERP result"
+      ],
+    expected: [
+        "Exactly one batch is created",
+        "All matching lines are inside that batch",
+        "No duplicate batch is created for the same group"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-022",
+    area: "Grouping",
+    type: "positive",
+    title: "Different grouping key values create separate batches",
+    testData: "Change one key at a time: date, period, ledger, branch, currency, description, connection.",
+    preconditions: [
+        "Required fields are filled with valid data",
+        "Two or more balanced groups are ready"
+      ],
+    steps: [
+        "Prepare two or more balanced groups",
+        "Change one grouping key in each group",
+        "Run Writeback > Check ERP batches"
+      ],
+    expected: [
+        "Lines with different grouping keys are not mixed",
+        "Separate batches are created or handled by documented multi-group rule",
+        "Each created batch is balanced on its own"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-023",
+    area: "Grouping / Balance",
+    type: "negative",
+    title: "Balance is checked per group, not only globally",
+    testData: "Group A is imbalanced, Group B compensates it so global totals look balanced.",
+    preconditions: [
+        "Required fields are filled with valid data",
+        "Two groups are ready where global totals match but one group is imbalanced"
+      ],
+    steps: [
+        "Prepare two groups where global debit equals global credit",
+        "Make at least one group internally imbalanced",
+        "Run Writeback"
+      ],
+    expected: [
+        "The operation does not pass only because global totals match",
+        "Excel identifies the imbalanced group",
+        "ERP does not contain an invalid batch"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-024",
+    area: "Currency",
+    type: "negative",
+    title: "Currency validation and defaulting are safe",
+    testData: "Variations: empty currency, supported currency, unsupported currency, mixed currencies in one range.",
+    preconditions: [
+        "Required fields are filled with valid data",
+        "Supported and unsupported currencies are known",
+        "The ledger has a known default currency"
+      ],
+    steps: [
+        "Run one variation at a time",
+        "Keep the journal otherwise valid and balanced",
+        "Check Excel result and ERP"
+      ],
+    expected: [
+        "Empty currency uses ledger default only if documented",
+        "Supported currency is saved correctly",
+        "Unsupported currency is rejected",
+        "Mixed currencies are rejected or split only by documented rule",
+        "No silent cross-currency balancing occurs"
+      ],
+    notes: "Merged currency cases."
+  },
+  {
+    id: "TC-025",
+    area: "Excel Side Effects",
+    type: "positive",
+    title: "Excel recalculation does not create a batch",
+    testData: "A batch has already been created from the workbook.",
+    preconditions: [
+        "A batch has already been created from the workbook"
+      ],
+    steps: [
+        "Press F9 or recalculate the workbook",
+        "Check Excel result area",
+        "Search ERP for new batches with the same data"
+      ],
+    expected: [
+        "No new batch is created",
+        "Recalculation has no financial side effect",
+        "Existing result remains traceable"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-026",
+    area: "Excel Side Effects",
+    type: "negative",
+    title: "Workbook open, unrelated edit, and formula copy do not write to ERP",
+    testData: "Variations: reopen workbook, edit unrelated cell, copy formulas to another range without Writeback.",
+    preconditions: [
+        "A batch has already been created from the workbook"
+      ],
+    steps: [
+        "Perform one side-effect variation",
+        "Do not run the Writeback action",
+        "Check ERP for new batches",
+        "Repeat for each variation"
+      ],
+    expected: [
+        "No batch is created by these Excel actions",
+        "ERP receives no write operation",
+        "Writeback happens only through the documented action"
+      ],
+    notes: "Merged side-effect duplicates."
+  },
+  {
+    id: "TC-027",
+    area: "Idempotency",
+    type: "positive",
+    title: "Retrying the same operation does not create duplicates",
+    testData: "Same operation id or idempotency key, same payload.",
+    preconditions: [
+        "A valid balanced journal is ready",
+        "An operation id or idempotency key is available"
+      ],
+    steps: [
+        "Run Writeback for a valid journal",
+        "Repeat the same operation with the same key",
+        "Check ERP batch list and Excel result"
+      ],
+    expected: [
+        "Only one batch exists",
+        "Retry returns the original batch number or a documented safe duplicate-prevention response",
+        "No second financial draft is created"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-028",
+    area: "Idempotency",
+    type: "positive",
+    title: "Timeout after ERP creation is handled safely",
+    testData: "ERP creates the batch, but Excel/API response times out.",
+    preconditions: [
+        "A valid balanced journal is ready",
+        "A timeout after ERP creation can be simulated"
+      ],
+    steps: [
+        "Run Writeback and simulate timeout after ERP creation",
+        "Retry with the same operation key",
+        "Check Excel result, ERP, and logs if available"
+      ],
+    expected: [
+        "Only one batch exists",
+        "Retry returns or recovers the original result",
+        "Excel does not show false success for an unknown state",
+        "User has a safe message explaining what happened"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-029",
+    area: "Idempotency",
+    type: "negative",
+    title: "Same key with different payload is rejected",
+    testData: "Payload A and Payload B use the same idempotency key but have different data.",
+    preconditions: [
+        "Two journals with different data are ready",
+        "The same idempotency key can be reused"
+      ],
+    steps: [
+        "Submit Payload A with key K1.",
+        "Submit Payload B with the same key K1.",
+        "Check Excel/API result and ERP"
+      ],
+    expected: [
+        "The second operation is rejected as an idempotency conflict",
+        "No batch is created for Payload B",
+        "Error is clear enough for support investigation"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-030",
+    area: "Atomicity",
+    type: "negative",
+    title: "One invalid line prevents partial creation",
+    testData: "One valid line and one line with invalid account or invalid amount.",
+    preconditions: [
+        "A valid debit line is ready",
+        "A line with an invalid account or invalid amount is ready"
+      ],
+    steps: [
+        "Prepare a journal where one line is invalid",
+        "Run Writeback",
+        "Check Excel result and ERP batch/line data"
+      ],
+    expected: [
+        "No batch is created",
+        "No partial line is saved in ERP",
+        "Excel names the invalid row and field"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-031",
+    area: "Atomicity",
+    type: "positive",
+    title: "ERP failure does not leave an incomplete batch",
+    testData: "Simulate ERP failure during batch or line creation.",
+    preconditions: [
+        "A valid balanced journal is ready",
+        "An ERP failure during creation can be simulated"
+      ],
+    steps: [
+        "Start Writeback for a valid journal",
+        "Simulate ERP failure during creation",
+        "Check ERP after the failure"
+      ],
+    expected: [
+        "No incomplete batch remains, or the failed state is documented and recoverable",
+        "Excel shows a safe failure message",
+        "Retry behavior does not create duplicates"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-032",
+    area: "Atomicity",
+    type: "positive",
+    title: "Mixed valid and invalid groups follow the documented rule",
+    testData: "One group valid, one group invalid.",
+    preconditions: [
+        "Two groups are ready in one range, one valid and one invalid"
+      ],
+    steps: [
+        "Prepare two groups in one selected range",
+        "Make one group invalid",
+        "Run Writeback > Check ERP"
+      ],
+    expected: [
+        "Behavior follows the documented multi-group atomicity rule",
+        "If operation-level atomicity is required, no group is created",
+        "If group-level atomicity is allowed, only valid groups are created and invalid ones are clearly reported"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-033",
+    area: "Permissions",
+    type: "negative",
+    title: "User without create permission is blocked",
+    testData: "Use a user who can open the workbook but cannot create GL Journal Drafts.",
+    preconditions: [
+        "A user without permission to create GL Journal Drafts is available",
+        "A valid balanced journal is ready"
+      ],
+    steps: [
+        "Sign in as the restricted user",
+        "Prepare a valid balanced journal",
+        "Run Writeback > Check Excel and ERP"
+      ],
+    expected: [
+        "No batch is created",
+        "Excel shows a permission error",
+        "ERP has no new batch",
+        "The attempt is traceable if audit/logging is available"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-034",
+    area: "Permissions",
+    type: "negative",
+    title: "Restricted ledger, branch, or account is blocked",
+    testData: "Use a user who lacks access to one ledger, branch, or account.",
+    preconditions: [
+        "A user who lacks access to a ledger, branch, or account is available",
+        "A valid balanced journal is ready"
+      ],
+    steps: [
+        "Run one variation with a restricted ledger",
+        "Run one variation with a restricted branch",
+        "Run one variation with a restricted account",
+        "Check Excel and ERP"
+      ],
+    expected: [
+        "No unauthorized batch is created",
+        "Excel names the restricted master-data object when safe to show",
+        "ERP has no side effects",
+        "The system enforces permissions server-side, not only in Excel"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-035",
+    area: "Resilience",
+    type: "positive",
+    title: "Network or API failure returns a safe Excel error",
+    testData: "Simulate network failure, API unavailable, or auth/session expiry.",
+    preconditions: [
+        "A valid balanced journal is ready",
+        "A network, API, or session failure can be simulated"
+      ],
+    steps: [
+        "Prepare a valid journal",
+        "Trigger the failure",
+        "Run Writeback > Check Excel and ERP"
+      ],
+    expected: [
+        "Excel shows a clear technical error",
+        "Excel does not claim success without a confirmed batch number",
+        "ERP has no unexpected batch, or the unknown state is handled by idempotent recovery"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-036",
+    area: "Error Messages",
+    type: "positive",
+    title: "Validation errors are visible and actionable in Excel",
+    testData: "Use a multi-line range with one invalid field.",
+    preconditions: [
+        "A multi-line range is ready with one invalid field"
+      ],
+    steps: [
+        "Make one line invalid, for example empty account or invalid amount",
+        "Run Writeback > Read the Excel error"
+      ],
+    expected: [
+        "Error is visible in Excel",
+        "Error names the field and row when applicable",
+        "Message tells the user what to fix",
+        "No raw technical stack trace is shown"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-037",
+    area: "Error Messages",
+    type: "positive",
+    title: "Batch-level errors name the affected group",
+    testData: "Use an imbalanced batch group or date/period mismatch.",
+    preconditions: [
+        "A batch-level error is ready, such as an imbalanced group or a date/period mismatch"
+      ],
+    steps: [
+        "Prepare one batch-level error",
+        "Run Writeback > Read the Excel error"
+      ],
+    expected: [
+        "Excel shows the affected batch group or enough group data to identify it",
+        "For balance errors, Excel shows debit and credit totals",
+        "ERP has no invalid batch"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-038",
+    area: "Error Messages",
+    type: "positive",
+    title: "ERP/API errors are mapped to user-friendly Excel errors",
+    testData: "Example: ERP rejects invalid account, closed period, or restricted ledger.",
+    preconditions: [
+        "A journal with a value the ERP rejects is ready, such as an invalid account or closed period"
+      ],
+    steps: [
+        "Trigger one ERP-side validation error",
+        "Check the error returned to Excel",
+        "Check logs if available"
+      ],
+    expected: [
+        "Excel shows the real business reason in simple language",
+        "Internal API details are not exposed to the user",
+        "Operation is traceable by correlation id if logging exists"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-039",
+    area: "Audit",
+    type: "positive",
+    title: "Successful and failed attempts have correct audit behavior",
+    testData: "ERP audit/history is available.",
+    preconditions: [
+        "ERP audit and history are available",
+        "A valid balanced journal is ready"
+      ],
+    steps: [
+        "Create a valid batch and check audit/history",
+        "Trigger a validation failure and check audit/history"
+      ],
+    expected: [
+        "Successful creation is audited with user, time, source, and batch number",
+        "Failed validation is not audited as a successful creation",
+        "Failed attempt may be logged separately if supported"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-040",
+    area: "Telemetry",
+    type: "positive",
+    title: "Successful writeback is traceable end to end",
+    testData: "Log or telemetry access is available.",
+    preconditions: [
+        "Log or telemetry access is available",
+        "A valid balanced journal is ready"
+      ],
+    steps: [
+        "Run a valid Writeback",
+        "Search logs by operation/correlation id",
+        "Compare log result with ERP batch"
+      ],
+    expected: [
+        "Logs contain operation id, user or safe user reference, batch number, duration, and success status",
+        "ERP response is linked to the same operation",
+        "Logs do not expose secrets"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-041",
+    area: "Telemetry",
+    type: "positive",
+    title: "Failed writeback is logged without sensitive data",
+    testData: "Log or telemetry access is available.",
+    preconditions: [
+        "Log or telemetry access is available",
+        "A journal that triggers validation and technical failures is ready"
+      ],
+    steps: [
+        "Trigger validation failure and technical failure variations",
+        "Search logs by operation/correlation id"
+      ],
+    expected: [
+        "Logs contain failure reason and correlation id",
+        "Logs do not include tokens, passwords, secret connection strings, or full sensitive payloads",
+        "Support can troubleshoot the failure without user data leakage"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-042",
+    area: "API / OData Contract",
+    type: "positive",
+    title: "Request contains correct batch-level and line-level fields",
+    testData: "Payload or telemetry is inspectable.",
+    preconditions: [
+        "The API or OData payload, or telemetry, is inspectable",
+        "A valid balanced journal is ready"
+      ],
+    steps: [
+        "Run a valid Writeback",
+        "Inspect the normalized API/OData request or logs",
+        "Compare request with Excel input"
+      ],
+    expected: [
+        "Request contains correct batch fields: connectionName, transactionDate, postPeriod, ledger, branch, currency, batchDescription",
+        "Request contains correct line fields: account, debit, credit, lineDescription, source line id if available",
+        "Field names and data formats follow the contract"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-043",
+    area: "API / OData Contract",
+    type: "positive",
+    title: "API response is mapped back to the correct Excel result",
+    testData: "Payload and response are inspectable.",
+    preconditions: [
+        "The API payload and response are inspectable",
+        "A valid journal and an invalid journal are ready"
+      ],
+    steps: [
+        "Run one successful operation",
+        "Run one validation-failure operation",
+        "Inspect response mapping to Excel"
+      ],
+    expected: [
+        "Success response returns the correct batch number to Excel",
+        "Validation response returns a clear Excel error",
+        "Correlation id is available for support when possible"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-044",
+    area: "Cross-platform",
+    type: "positive",
+    title: "Supported Excel platforms produce the same result",
+    testData: "Platforms: Windows, macOS, and Excel Web if supported.",
+    preconditions: [
+        "The workbook is available on each supported platform",
+        "A valid balanced journal is ready"
+      ],
+    steps: [
+        "Open the same workbook on each supported platform",
+        "Run the same valid Writeback",
+        "Compare ERP results"
+      ],
+    expected: [
+        "Supported platforms create correct draft batches",
+        "Date and decimal values stay the same",
+        "If Excel Web is not supported, Excel shows a documented limitation instead of failing silently"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-045",
+    area: "Limits",
+    type: "negative",
+    title: "Maximum line count is accepted and max plus one is rejected",
+    testData: "Documented maximum line count is known.",
+    preconditions: [
+        "The documented maximum line count is known",
+        "A balanced journal can be built at that line count"
+      ],
+    steps: [
+        "Create a balanced journal with exactly the max line count",
+        "Run Writeback and check ERP line count",
+        "Create a balanced journal with max + 1 lines",
+        "Run Writeback"
+      ],
+    expected: [
+        "Max line count is accepted and all lines are saved",
+        "Max + 1 is rejected cleanly unless documented chunking exists",
+        "Excel shows a line-count limit error",
+        "No partial batch is created for the rejected run"
+      ],
+    notes: "Merged max and over-max cases."
+  },
+  {
+    id: "TC-046",
+    area: "Limits",
+    type: "positive",
+    title: "Amount precision and size limits follow documented rules",
+    testData: "Use min positive, max allowed, max precision, over-precision, and over-limit values.",
+    preconditions: [
+        "The documented amount precision and size limits are known",
+        "A valid balanced journal is ready"
+      ],
+    steps: [
+        "Run one amount boundary variation at a time",
+        "Check Excel result and ERP values"
+      ],
+    expected: [
+        "Values inside limits are accepted and saved correctly",
+        "Values outside limits are rejected or rounded only by documented rules",
+        "No silent rounding creates an imbalance"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-047",
+    area: "Async / Queue",
+    type: "positive",
+    title: "Async processing creates no duplicates during retry",
+    testData: "Only applicable if architecture uses queue/background processing.",
+    preconditions: [
+        "The architecture uses a queue or background processing",
+        "A temporary ERP failure can be simulated"
+      ],
+    steps: [
+        "Run Writeback for a valid journal",
+        "Simulate temporary ERP failure",
+        "Let retry processing run",
+        "Check ERP and logs"
+      ],
+    expected: [
+        "Only one batch exists after retry",
+        "Retry attempts are traceable",
+        "Excel or operation status does not show misleading success before confirmation"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-048",
+    area: "Async / Queue",
+    type: "negative",
+    title: "Poison message does not block valid operations",
+    testData: "Only applicable if architecture uses queue/background processing.",
+    preconditions: [
+        "The architecture uses a queue or background processing"
+      ],
+    steps: [
+        "Submit one invalid operation",
+        "Submit one valid operation after it",
+        "Process the queue",
+        "Check operation statuses and ERP"
+      ],
+    expected: [
+        "Invalid operation fails or goes to dead-letter handling",
+        "Valid operation is still processed",
+        "Queue is not blocked",
+        "Only the valid batch exists in ERP"
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-049",
+    area: "Smoke / ERP Result",
+    type: "positive",
+    title: "Create one draft journal batch from two balanced lines",
+    testData: "One debit line 100.00 and one credit line 100.00 using the default valid data.",
+    preconditions: [
+        "Default valid data is set",
+        "One debit line and one credit line of 100.00 are ready"
+      ],
+    steps: [
+        "Fill the two journal lines in Excel",
+        "Run the documented Writeback action",
+        "Check the returned batch in ERP"
+      ],
+    expected: [
+        "Excel shows a success message in the documented format: Draft batch #<batch_number> created.",
+        "The returned batch number is not empty.",
+        "ERP contains exactly one new draft batch with the same batch number.",
+        "The batch has exactly two lines.",
+        "Total debit equals total credit.",
+        "The batch status is On Hold.",
+        "The batch is not posted or released."
+      ],
+    notes: ""
+  },
+  {
+    id: "TC-050",
+    area: "Smoke / ERP Mapping",
+    type: "positive",
+    title: "Returned batch number exists and matches the ERP batch",
+    testData: "Use the successful result from TC-001.",
+    preconditions: [
+        "A batch was created successfully in TC-049",
+        "Its returned batch number is available"
+      ],
+    steps: [
+        "Copy the batch number returned in Excel",
+        "Search this batch in ERP",
+        "Compare batch header and line values with Excel input"
+      ],
+    expected: [
+        "ERP contains the same batch number",
+        "Date, period, ledger, currency, description, accounts, debit, credit, and line descriptions match the Excel input",
+        "No extra batch with the same operation data is created"
+      ],
+    notes: ""
+  },
+];
 
-function buildAreaDropdown() {
-  const counts = {};
-  cases.forEach(tc => { counts[tc.area] = (counts[tc.area]||0)+1; });
+let currentType = 'all';
+let currentArea = 'all';
+let selectedId  = null;
+
+function buildAreaFilter() {
+  const areas = [...new Set(cases.map(c => c.area))];
   const sel = document.getElementById('area-filter');
-  Object.keys(counts).sort().forEach(area => {
-    const o = document.createElement('option');
-    o.value = area;
-    o.textContent = area.toUpperCase() + ' (' + counts[area] + ')';
-    sel.appendChild(o);
+  areas.forEach(a => {
+    const opt = document.createElement('option');
+    opt.value = a; opt.textContent = a;
+    sel.appendChild(opt);
   });
 }
 
-function applyFilters() {
-  activeArea = document.getElementById('area-filter').value;
-  renderList();
+function filteredCases() {
+  return cases.filter(c => {
+    if (currentType !== 'all' && c.type !== currentType) return false;
+    if (currentArea !== 'all' && c.area !== currentArea) return false;
+    return true;
+  });
 }
 
-function setScenario(type, button) {
-  activeScenario = type;
-  document.querySelectorAll('.scenario-btn').forEach(item => item.classList.remove('active'));
-  button.classList.add('active');
+function setType(t) {
+  currentType = t;
+  ['chip-all','chip-positive','chip-negative'].forEach(id =>
+    document.getElementById(id).classList.remove('active')
+  );
+  document.getElementById({all:'chip-all',positive:'chip-positive',negative:'chip-negative'}[t]).classList.add('active');
+  applyFilters();
+}
+
+function applyFilters() {
+  currentArea = document.getElementById('area-filter').value;
   renderList();
 }
 
 function renderList() {
-  let filtered = cases;
-  if (activeArea !== 'all') filtered = filtered.filter(tc => tc.area === activeArea);
-  if (activeScenario !== 'all') filtered = filtered.filter(tc => tc.type === activeScenario);
-  document.getElementById('count-label').textContent = filtered.length + ' / ' + cases.length;
-  let lastArea = '';
-  const html = filtered.map(tc => {
-    const heading = tc.area !== lastArea ? `<div class="list-cat-label">${escHtml(tc.area)}</div>` : '';
-    lastArea = tc.area;
-    return `${heading}<article class="tc-item${activeCase===tc.id?' active':''}" id="item-${tc.id}" onclick="openDetail('${tc.id}')">
+  const fc = filteredCases();
+  document.getElementById('count-label').textContent = fc.length + ' / ' + cases.length;
+  const container = document.getElementById('list-scroll');
+  container.innerHTML = '';
+  let lastArea = null;
+  fc.forEach(c => {
+    if (c.area !== lastArea) {
+      const lbl = document.createElement('div');
+      lbl.className = 'list-cat-label';
+      lbl.textContent = c.area.toUpperCase();
+      container.appendChild(lbl);
+      lastArea = c.area;
+    }
+    const item = document.createElement('div');
+    item.className = 'tc-item' + (selectedId === c.id ? ' active' : '');
+    item.onclick = () => openDetail(c.id);
+    const typeCls = c.type === 'positive' ? 'scenario-pos' : 'scenario-neg';
+    const typeLabel = c.type === 'positive' ? '+' : '−';
+    item.innerHTML = `
       <div class="tc-item-row1">
-        <span class="tc-item-id">${tc.id}</span>
-        <span class="tc-item-title">${escHtml(tc.title)}</span>
-      </div>
-      <div class="tc-item-badges">${areaTag(tc.area)}${scenarioTag(tc.type)}</div>
-    </article>`;
-  }).join('');
-  document.getElementById('list-scroll').innerHTML = html || '<div class="empty-filter">NO CASES MATCH FILTER</div>';
+        <span class="tc-item-id">${c.id}</span>
+        <span class="scenario-tag ${typeCls}">${typeLabel}</span>
+        <span class="tc-item-title">${c.title}<\/span>
+      <\/div>
+      <div style="margin-top:4px;padding-left:2px;">
+        <span class="area-tag" style="font-size:8px;letter-spacing:.1em;opacity:.7;">${c.area}<\/span>
+      <\/div>
+    `;
+    container.appendChild(item);
+  });
+  if (fc.length === 0) {
+    container.innerHTML = '<div style="padding:24px;color:var(--text-dim);font-family:Share Tech Mono,monospace;font-size:10px;letter-spacing:.12em">NO CASES MATCH</div>';
+  }
 }
 
-function stepList(items, cssClass) {
-  return `<ol class="${cssClass}">${items.map((item,i) =>
-    `<li class="detail-step"><span class="step-mark" aria-hidden="true"></span><span class="step-text">${escHtml(item)}</span></li>`
-  ).join('')}</ol>`;
+function secLabel(txt) {
+  return `<div class="detail-section-label">${txt}<\/div>`;
+}
+
+function numList(items, cls) {
+  if (!items || !items.length) return '';
+  const rows = items.map((s,i) => `
+    <div class="detail-step">
+      <span class="step-mark"><\/span>
+      <span class="step-text">${s}<\/span>
+    <\/div>`).join('');
+  return `<div class="${cls}">${rows}<\/div>`;
 }
 
 function openDetail(id) {
-  const tc = cases.find(c => c.id === id);
-  if (!tc) return;
-  activeCase = id;
-  renderList();
-  const el = document.getElementById('item-'+id);
-  if (el) el.scrollIntoView({block:'nearest'});
+  selectedId = id;
+  const c = cases.find(x => x.id === id);
+  if (!c) return;
+  document.querySelectorAll('.tc-item').forEach(el => el.classList.remove('active'));
+  const el = [...document.querySelectorAll('.tc-item')].find(el =>
+    el.querySelector('.tc-item-id')?.textContent === id
+  );
+  if (el) { el.classList.add('active'); el.scrollIntoView({ block: 'nearest' }); }
 
   document.getElementById('detail-empty').style.display = 'none';
-  const panel = document.getElementById('detail-content');
-  panel.style.display = 'block';
+  const content = document.getElementById('detail-content');
+  content.style.display = 'block';
 
-  const notesHtml = tc.notes ? `
-    <section class="meta-block">
-      <div class="meta-label">Notes</div>
-      <div class="meta-text">${escHtml(tc.notes)}</div>
-    </section>` : '';
+  const typeCls = c.type === 'positive' ? 'scenario-pos' : 'scenario-neg';
+  const typeLabel = c.type === 'positive' ? '+ POSITIVE' : '− NEGATIVE';
+  const expCls = c.type === 'negative'
+    ? 'detail-results detail-results-err'
+    : 'detail-results';
 
-  panel.innerHTML = `
-    <header class="case-header">
-      <div class="detail-tc-meta"><span class="detail-tc-id">${tc.id}</span></div>
-      <h1 class="detail-title">${escHtml(tc.title)}</h1>
-    </header>
-    <nav class="case-tabs" aria-label="Case sections"><span class="active">Overview</span><span>History</span><span>Attachments</span></nav>
-    <div class="case-grid">
-      <div class="case-main">
-        <section class="case-section">
-          <h2>Test Data</h2>
-          <div class="detail-variation">${escHtml(tc.testData)}</div>
-        </section>
-        <section class="case-section">
-          <h2>Preconditions</h2>
-          ${stepList(tc.preconditions, 'detail-preconditions-list')}
-        </section>
-        <section class="case-section">
-          <h2>Steps</h2>
-          ${stepList(tc.steps, 'detail-steps')}
-        </section>
-        <section class="case-section expected-section">
-          <h2>Expected Result</h2>
-          ${stepList(tc.expected, 'detail-results')}
-        </section>
-      </div>
-      <aside class="case-aside">
-        <section class="meta-block"><div class="meta-label">Area</div>${areaTag(tc.area)}</section>
-        <section class="meta-block"><div class="meta-label">Positive / Negative</div>${scenarioTag(tc.type)}</section>
-        ${notesHtml}
-      </aside>
-    </div>`;
+  let html = `
+    <div class="detail-tc-meta">
+      <span class="scenario-tag ${typeCls}">${typeLabel}<\/span>
+      <span class="area-tag">${c.area}<\/span>
+    <\/div>
+    <div class="detail-tc-id">${c.id}<\/div>
+    <div class="detail-title">${c.title}<\/div>
+  `;
+
+  if (c.preconditions?.length) {
+    html += secLabel('Preconditions');
+    html += `<div class="detail-steps">${c.preconditions.map(p =>
+      `<div class="detail-step"><span class="step-mark"><\/span><span class="step-text">${p}<\/span><\/div>`
+    ).join('')}<\/div>`;
+  }
+
+  if (c.testData) {
+    html += secLabel('Test Data');
+    html += `<div class="detail-variation">${c.testData.replace(/\\n/g,'<br>')}<\/div>`;
+  }
+
+  html += secLabel('Steps');
+  html += numList(c.steps, 'detail-steps');
+
+  html += secLabel('Expected Result');
+  html += numList(c.expected, expCls);
+
+  if (c.notes) {
+    html += secLabel('Notes');
+    html += `<div class="detail-notes">${c.notes}<\/div>`;
+  }
+
+  content.innerHTML = html;
+  document.getElementById('detail-panel').scrollTop = 0;
 }
 
-buildAreaDropdown();
+buildAreaFilter();
 renderList();
-openDetail('TC-001');
 </script>
 </body>
 </html>

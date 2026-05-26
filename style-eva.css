@@ -2851,16 +2851,16 @@ body::before {
   background: linear-gradient(90deg, #E8001A 0 32px, #e8e8e4 32px 100%);
 }
 
-/* ── Case section h2: bold dark, red left rule ── */
+/* ── Case section h2: teal underline only (no red border) ── */
 [data-theme="light"] .case-section h2 {
   color: #111;
-  padding-left: 9px;
-  border-left: 2px solid #E8001A;
+  padding-left: 0;
+  border-left: none;
 }
 
-/* ── Aside meta-label: monospace dark, no color ── */
+/* ── Aside meta-label: monospace subtle ── */
 [data-theme="light"] .meta-label {
-  color: #888;
+  color: #999;
   font-family: 'Share Tech Mono', monospace;
   font-size: 9px;
   letter-spacing: .16em;
@@ -2874,15 +2874,119 @@ body::before {
 /* ── Scrollbar: neutral ── */
 [data-theme="light"] .detail-panel::-webkit-scrollbar-thumb { background: #d0d0cc; }
 
-/* ── TC-ID in list: small red text, feels editorial ── */
-[data-theme="light"] .cases-page .tc-item-id { color: #E8001A; }
+/* ════════════════════════════════════════════════════════════════
+   LIGHT THEME — Modern test list (Allure-inspired)
+════════════════════════════════════════════════════════════════ */
 
-/* ── Active list item: red left border ── */
-[data-theme="light"] .cases-page .tc-item.active {
-  border-left-color: #E8001A;
-  background: #fff8f8;
+/* Category group label: very subtle separator */
+[data-theme="light"] .cases-page .list-cat-label {
+  padding: 14px 18px 5px;
+  color: #bbbec4;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 8.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  margin-top: 4px;
 }
-[data-theme="light"] .cases-page .tc-item-id { font-variant-numeric: tabular-nums; }
+
+/* TC item: clean, generous but not heavy */
+[data-theme="light"] .cases-page .tc-item {
+  padding: 9px 16px 9px 20px;
+  border-left: 2px solid transparent;
+  border-bottom: 1px solid #f0f0ee;
+  background: transparent;
+  margin: 0;
+}
+[data-theme="light"] .cases-page .tc-item:hover {
+  background: #f8f9fa;
+  border-left-color: rgba(25,180,184,0.3);
+}
+[data-theme="light"] .cases-page .tc-item.active {
+  background: #f0fbfb;
+  border-left-color: #19b4b8;
+}
+
+/* TC-ID: subtle gray mono, not red */
+[data-theme="light"] .cases-page .tc-item-id {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 400;
+  color: #aab0b8;
+  letter-spacing: .06em;
+  font-variant-numeric: tabular-nums;
+}
+[data-theme="light"] .cases-page .tc-item.active .tc-item-id { color: #19b4b8; }
+
+/* Title: clear dark */
+[data-theme="light"] .cases-page .tc-item-title {
+  color: #1a2636;
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.38;
+}
+
+/* Badges row: less vertical space */
+[data-theme="light"] .cases-page .tc-item-badges {
+  margin-top: 5px;
+  gap: 5px;
+}
+
+/* Area tag: no border, just a subtle pill */
+[data-theme="light"] .area-tag {
+  padding: 2px 7px;
+  border: none;
+  border-radius: 3px;
+  background: #f0f2f5;
+  color: #5a6a7e;
+  font-size: 10px;
+  letter-spacing: .04em;
+}
+
+/* Scenario tags: small dot + text, no border */
+[data-theme="light"] .scenario-tag {
+  padding: 2px 7px;
+  border: none;
+  border-radius: 3px;
+  font-size: 10px;
+  letter-spacing: .04em;
+}
+[data-theme="light"] .scenario-pos  { background: #edfaf4; color: #1a8c5a; }
+[data-theme="light"] .scenario-neg  { background: #fef2f3; color: #c03050; }
+[data-theme="light"] .scenario-mixed{ background: #fdf8ec; color: #8a6010; }
+
+/* ════════════════════════════════════════════════════════════════
+   LIGHT THEME — Gentle teal ambient glow
+════════════════════════════════════════════════════════════════ */
+
+/* Repurpose body::after (scanlines are off in light) as ambient glow */
+[data-theme="light"] body::after {
+  display: block;
+  content: '';
+  position: fixed;
+  top: -80px; right: -80px;
+  width: 560px; height: 560px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(25,180,184,0.09) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Gentle glow on cards */
+[data-theme="light"] .card {
+  box-shadow: 0 1px 3px rgba(0,0,0,.05), 0 8px 24px rgba(25,180,184,0.05);
+}
+[data-theme="light"] .stat-card {
+  box-shadow: 0 1px 3px rgba(0,0,0,.05), 0 4px 14px rgba(25,180,184,0.06);
+}
+[data-theme="light"] .stat-card:hover {
+  box-shadow: 0 2px 6px rgba(0,0,0,.07), 0 8px 28px rgba(25,180,184,0.11);
+  transform: translateY(-1px);
+}
+
+/* Soft glow on detail panel when case is selected */
+[data-theme="light"] .cases-page .detail-panel {
+  box-shadow: inset 0 0 60px rgba(25,180,184,0.03);
+}
 
 /* Gap items in light mode: subtle left accent by severity */
 [data-theme="light"] .gap-critical { border-left: 3px solid #e03050; }

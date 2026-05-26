@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-eva.css?v=20260526-allure3" />
+  <link rel="stylesheet" href="style-eva.css?v=20260526-allure4" />
   <script src="theme.js?v=20260526-allure2"></script>
 </head>
 <body class="gaps-page">
@@ -46,11 +46,11 @@
       <strong>Why this matters:</strong> Every untested assumption is a potential hidden defect. Making these explicit lets the team confirm with dev/BA before scripting — or add targeted test cases to probe each boundary.
     </div>
 
-    <div class="stats" style="margin-bottom:24px;">
-      <div class="stat-card"><div class="stat-num" style="color:#ff4455;">4</div><div class="stat-label">Critical</div></div>
-      <div class="stat-card"><div class="stat-num" style="color:#F0C030;">21</div><div class="stat-label">High</div></div>
-      <div class="stat-card"><div class="stat-num" style="color:#00BFCF;">7</div><div class="stat-label">Medium</div></div>
-      <div class="stat-card"><div class="stat-num">32</div><div class="stat-label">Total gaps</div></div>
+    <div class="stats gap-filters" style="margin-bottom:24px;" aria-label="Filter specification gaps by severity">
+      <button class="stat-card gap-filter" type="button" data-filter="critical" aria-pressed="false" onclick="filterGaps('critical')"><div class="stat-num" style="color:#ff4455;">4</div><div class="stat-label">Critical</div></button>
+      <button class="stat-card gap-filter" type="button" data-filter="high" aria-pressed="false" onclick="filterGaps('high')"><div class="stat-num" style="color:#F0C030;">21</div><div class="stat-label">High</div></button>
+      <button class="stat-card gap-filter" type="button" data-filter="medium" aria-pressed="false" onclick="filterGaps('medium')"><div class="stat-num" style="color:#00BFCF;">7</div><div class="stat-label">Medium</div></button>
+      <button class="stat-card gap-filter active" type="button" data-filter="all" aria-pressed="true" onclick="filterGaps('all')"><div class="stat-num">32</div><div class="stat-label">Total gaps</div></button>
     </div>
 
     <!-- G-01 -->
@@ -536,5 +536,17 @@
   </div>
 </main>
 
+<script>
+  function filterGaps(severity) {
+    document.querySelectorAll('.gap-filter').forEach(function (button) {
+      const selected = button.dataset.filter === severity;
+      button.classList.toggle('active', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+    document.querySelectorAll('.gap-item').forEach(function (gap) {
+      gap.classList.toggle('is-hidden', severity !== 'all' && !gap.classList.contains('gap-' + severity));
+    });
+  }
+</script>
 </body>
 </html>

@@ -1910,6 +1910,30 @@ body::before {
   padding: 11px 14px;
   line-height: 1.6;
 }
+.gap-filter {
+  position: relative;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  appearance: none;
+}
+.gap-filter:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+[data-theme="light"] .gap-filter {
+  transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
+}
+[data-theme="light"] .gap-filter:hover,
+[data-theme="light"] .gap-filter.active {
+  border-color: #95dcdf;
+  background: #f4fbfb;
+}
+[data-theme="light"] .gap-filter.active {
+  box-shadow: inset 0 -3px 0 #19b4b8;
+}
+.gaps-page .gap-item.is-hidden { display: none; }
 
 [data-theme="light"] .glossary-group {
   position: relative;

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spec Review — WRITEBACKJOURNALDRAFT</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style-eva.css" />
+  <style>
+    .flow-diagram {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin: 16px 0;
+      row-gap: 8px;
+    }
+    .flow-node {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10.5px;
+      letter-spacing: 0.08em;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .flow-node.highlight { border-color: var(--red); color: var(--red); }
+    .flow-arrow {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      color: var(--text-dim);
+      padding: 0 6px;
+      flex-shrink: 0;
+    }
+    .scope-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .scope-col { padding: 14px 16px; border: 1px solid var(--border); }
+    .scope-col-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .scope-col-in  .scope-col-title { color: var(--ok); }
+    .scope-col-out .scope-col-title { color: var(--text-muted); }
+    .scope-col ul { list-style: none; padding: 0; }
+    .scope-col li {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      padding-left: 14px;
+      position: relative;
+    }
+    .scope-col-in  li::before { content: '✓'; position: absolute; left: 0; color: var(--ok); font-size: 11px; }
+    .scope-col-out li::before { content: '×'; position: absolute; left: 0; color: var(--text-dim); font-size: 11px; }
+    .ideal-list {
+      list-style: none;
+      padding: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .ideal-list li {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      display: flex;
+      gap: 8px;
+    }
+    .ideal-num {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9.5px;
+      color: var(--red);
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+    .spec-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    .spec-table th {
+      background: var(--bg2);
+      padding: 8px 11px;
+      text-align: left;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border-bottom: 1px solid var(--border);
+    }
+    .spec-table td {
+      padding: 8px 11px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      color: var(--text-muted);
+      font-size: 12.5px;
+    }
+    .spec-table tr:last-child td { border-bottom: none; }
+    .spec-table td:first-child { color: var(--cyan); font-family: 'Share Tech Mono', monospace; font-size: 11.5px; white-space: nowrap; }
+    .risk-row { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .risk-row:last-child { border-bottom: none; }
+    .risk-pri { flex-shrink: 0; width: 26px; }
+    .risk-title { font-size: 13px; color: var(--text); font-weight: 500; }
+    .risk-desc { font-size: 12px; color: var(--text-muted); margin-top: 3px; line-height: 1.55; }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-eyebrow">// SYSTEM: ACTIVE</div>
+    <div class="sidebar-logo">QA Test Plan</div>
+  </div>
+  <div class="nav-section">:: Navigation</div>
+  <a href="index.html" class="nav-link"><span class="nav-icon">◈</span> Overview</a>
+  <a href="spec.html" class="nav-link active"><span class="nav-icon">◆</span> Spec Review</a>
+  <a href="test-cases.html" class="nav-link"><span class="nav-icon">◉</span> Test Cases</a>
+  <a href="gaps.html" class="nav-link"><span class="nav-icon">◎</span> Spec Gaps</a>
+  <a href="ai-reflection.html" class="nav-link"><span class="nav-icon">◇</span> AI Reflection</a>
+  <div class="theme-toggle">
+    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">◑ &nbsp;SWITCH THEME</button>
+  </div>
+  <div class="sidebar-footer">
+    VELIXO :: QA ASSESSMENT<br/>
+    VERSION 1.0.0 :: MAY 2026
+  </div>
+</aside>
+
+<main class="main">
+  <div class="page-header">
+    <div class="breadcrumb">QA_PLAN / SPEC_REVIEW</div>
+    <div class="page-title">Spec Review</div>
+    <div class="page-desc">Feature analysis · WRITEBACKJOURNALDRAFT · what the spec says and what it should say</div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── Feature Understanding ── -->
+    <div class="card">
+      <div class="card-title"><span class="icon">◈</span> Feature Understanding</div>
+      <p style="font-size:13.5px;color:var(--text-muted);line-height:1.75;margin-bottom:16px;">
+        <code>WRITEBACKJOURNALDRAFT</code> is a custom Excel function that creates <strong style="color:var(--text)">draft GL (General Ledger) journal batches</strong> in an ERP system directly from a spreadsheet. Each function call defines a single journal line. Multiple calls on the same worksheet can form one batch, grouped by shared header fields.
+      </p>
+      <div class="callout callout-warn">
+        <strong>Core insight:</strong> This is not a simple Excel formula — it is a <strong>financial writeback integration</strong> between Excel and a Cloud ERP. The critical risks are not input validation edge cases: they are duplicate batch creation, wrong balance scope, incorrect ledger/period mapping, auto-posting, and timeout/retry behavior.
+      </div>
+    </div>
+
+    <!-- ── Data Flow ── -->
+    <div class="card">
+      <div class="card-title"><span class="icon">◉</span> Data Flow</div>
+      <div class="flow-diagram">
+        <div class="flow-node">Excel Workbook<br/><span style="font-size:9px;color:var(--text-muted);">formula cells</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node highlight">Velixo NX<br/><span style="font-size:9px;">Excel Add-in</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">REST / OData<br/><span style="font-size:9px;color:var(--text-muted);">connector</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">Cloud ERP<br/><span style="font-size:9px;color:var(--text-muted);">Acumatica / MYOB / BC</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node highlight">Draft GL Batch<br/><span style="font-size:9px;">On Hold</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">Excel Cell<br/><span style="font-size:9px;color:var(--text-muted);">return value</span></div>
+      </div>
+      <p style="font-size:12.5px;color:var(--text-muted);line-height:1.65;margin-top:12px;">
+        The function never posts. The created batch always lands in <strong style="color:var(--red)">On Hold</strong> status and requires manual review by an accountant inside the ERP before posting. This constraint must be verified — not assumed.
+      </p>
+    </div>
+
+    <!-- ── Key Terms ── -->
+    <div class="card">
+      <div class="card-title"><span class="icon">◎</span> Key Terms</div>
+      <div class="table-wrap">
+        <table class="spec-table">
+          <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>Batch</td><td>Container document grouping journal lines that share the same transaction date, ledger, and batch description. In an ideal spec, the full grouping key must be defined precisely.</td></tr>
+            <tr><td>Line</td><td>One row inside a batch. Contains an account and exactly one financial side — either a debit or a credit amount, not both.</td></tr>
+            <tr><td>Ledger</td><td>ERP master data entity — a chart-of-accounts register. Not free text. The accepted identifier format (code, name, or internal ID) must be documented.</td></tr>
+            <tr><td>Debit / Credit</td><td>The two sides of a double-entry journal. Total debits across all lines in a batch must equal total credits before the batch can be created.</td></tr>
+            <tr><td>On Hold</td><td>Draft ERP batch status. Saved but not posted or released. Requires manual accountant review. The function must never trigger posting or release.</td></tr>
+            <tr><td>postPeriod</td><td>The accounting period the transaction is attributed to (e.g. "05-2026"). The transaction date must fall within this period. Period must be open in ERP.</td></tr>
+            <tr><td>Idempotency key</td><td>A technical key that prevents duplicate batch creation when the same Writeback operation is retried after a timeout or network failure.</td></tr>
+            <tr><td>Correlation ID</td><td>A unique trace identifier for an operation — used to link Excel events, API/OData logs, telemetry, and ERP audit trail entries for support and debugging.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Ideal Spec Outline ── -->
+    <div class="card">
+      <div class="card-title"><span class="icon">◇</span> Ideal Specification — What Is Missing</div>
+      <p style="font-size:13px;color:var(--text-muted);line-height:1.65;margin-bottom:14px;">
+        A complete specification for this feature should include all of the following sections. Sections absent from the current spec are the source of the 25 gaps documented in the <a href="gaps.html" style="color:var(--yellow);text-decoration:none;">Spec Gaps</a> page.
+      </p>
+      <ul class="ideal-list">
+        <li><span class="ideal-num">01</span>Business goal and user story</li>
+        <li><span class="ideal-num">02</span>Definitions: batch, line, ledger, postPeriod, debit, credit, On Hold</li>
+        <li><span class="ideal-num">03</span>Processing model: explicit Writeback vs. formula recalculation</li>
+        <li><span class="ideal-num">04</span>Excel input rules and accepted date/number formats</li>
+        <li><span class="ideal-num">05</span>Normalized REST/OData/API payload and response contract</li>
+        <li><span class="ideal-num">06</span>ERP field mapping and validation responsibilities</li>
+        <li><span class="ideal-num">07</span>Batch grouping rules — full grouping key definition</li>
+        <li><span class="ideal-num">08</span>Line-level debit/credit rules — mutual exclusion</li>
+        <li><span class="ideal-num">09</span>Balance validation scope — per batch, not global</li>
+        <li><span class="ideal-num">10</span>Idempotency and duplicate prevention</li>
+        <li><span class="ideal-num">11</span>Atomicity and partial failure behavior</li>
+        <li><span class="ideal-num">12</span>Timeout/retry behavior and safe error messages</li>
+        <li><span class="ideal-num">13</span>Permissions model and access control</li>
+        <li><span class="ideal-num">14</span>Telemetry, audit trail, and correlation ID</li>
+        <li><span class="ideal-num">15</span>Cross-platform support: Windows, macOS, Excel Web</li>
+        <li><span class="ideal-num">16</span>Error codes, messages, and validation priority order</li>
+        <li><span class="ideal-num">17</span>Field length limits and numeric precision rules</li>
+        <li><span class="ideal-num">18</span>Out of scope and known limitations</li>
+      </ul>
+    </div>
+
+    <!-- ── Field Spec Table ── -->
+    <div class="card">
+      <div class="card-title"><span class="icon">◻</span> Ideal Field Specification</div>
+      <div class="table-wrap">
+        <table class="spec-table">
+          <thead>
+            <tr>
+              <th>Field</th>
+              <th>Scope</th>
+              <th>Required</th>
+              <th>API Format</th>
+              <th>Validation</th>
+              <th>Default</th>
+              <th>Limit (example)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>connectionName</td>
+              <td>Input / system</td>
+              <td><span class="badge badge-p0">Yes</span></td>
+              <td>string</td>
+              <td>Must exist and be accessible</td>
+              <td>none</td>
+              <td>255 chars</td>
+            </tr>
+            <tr>
+              <td>transactionDate</td>
+              <td>Batch</td>
+              <td><span class="badge badge-p0">Yes</span></td>
+              <td>YYYY-MM-DD</td>
+              <td>Valid date; must belong to postPeriod</td>
+              <td>none</td>
+              <td>ISO date</td>
+            </tr>
+            <tr>
+              <td>postPeriod</td>
+              <td>Batch</td>
+              <td><span class="badge badge-p0">Yes</span></td>
+              <td>MM-YYYY</td>
+              <td>Exists in ERP and is open (not closed)</td>
+              <td>none</td>
+              <td>ERP period code</td>
+            </tr>
+            <tr>
+              <td>batchDescription</td>
+              <td>Batch</td>
+              <td><span class="badge badge-p2">No</span></td>
+              <td>string</td>
+              <td>Safe text; part of grouping key</td>
+              <td>empty / null</td>
+              <td>255 chars</td>
+            </tr>
+            <tr>
+              <td>branch</td>
+              <td>Batch</td>
+              <td><span class="badge badge-p2">No</span></td>
+              <td>branch code / id</td>
+              <td>If provided: exists and is accessible; part of grouping key</td>
+              <td>default / empty</td>
+              <td>30–50 chars</td>
+            </tr>
+            <tr>
+              <td>ledger</td>
+              <td>Batch</td>
+              <td><span class="badge badge-p0">Yes</span></td>
+              <td>ledger code / id</td>
+              <td>Active and accessible ERP ledger</td>
+              <td>none</td>
+              <td>30–50 chars</td>
+            </tr>
+            <tr>
+              <td>currency</td>
+              <td>Batch / Line</td>
+              <td><span class="badge badge-p2">No</span></td>
+              <td>ISO 4217 code</td>
+              <td>Supported by ledger; consistent across all lines</td>
+              <td>ledger base currency</td>
+              <td>3 chars</td>
+            </tr>
+            <tr>
+              <td>account</td>
+              <td>Line</td>
+              <td><span class="badge badge-p0">Yes</span></td>
+              <td>account code / id</td>
+              <td>Active and accessible in chart of accounts</td>
+              <td>none</td>
+              <td>30–50 chars</td>
+            </tr>
+            <tr>
+              <td>debit</td>
+              <td>Line</td>
+              <td>Conditional</td>
+              <td>decimal</td>
+              <td>&gt; 0; valid precision; only if credit is empty</td>
+              <td>null</td>
+              <td>decimal(19,4)</td>
+            </tr>
+            <tr>
+              <td>credit</td>
+              <td>Line</td>
+              <td>Conditional</td>
+              <td>decimal</td>
+              <td>&gt; 0; valid precision; only if debit is empty</td>
+              <td>null</td>
+              <td>decimal(19,4)</td>
+            </tr>
+            <tr>
+              <td>lineDescription</td>
+              <td>Line</td>
+              <td><span class="badge badge-p2">No</span></td>
+              <td>string</td>
+              <td>Safe text; no script or markup execution</td>
+              <td>empty / null</td>
+              <td>255 chars</td>
+            </tr>
+            <tr>
+              <td>idempotencyKey</td>
+              <td>Operation / system</td>
+              <td>Generated</td>
+              <td>string / uuid</td>
+              <td>Unique per Writeback operation; prevents duplicate batches on retry</td>
+              <td>auto-generated</td>
+              <td>36–255 chars</td>
+            </tr>
+            <tr>
+              <td>correlationId</td>
+              <td>Operation / system</td>
+              <td>Generated</td>
+              <td>string / uuid</td>
+              <td>Unique trace ID linking Excel, API logs, telemetry, and ERP audit</td>
+              <td>auto-generated</td>
+              <td>36–255 chars</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Risk Priorities ── -->
+    <div class="card">
+      <div class="card-title"><span class="icon">◈</span> Risk-Based Priority Map</div>
+      <div style="margin-top:4px;">
+        <div class="risk-row">
+          <div class="risk-pri"><span class="badge badge-p0">P0</span></div>
+          <div><div class="risk-title">Duplicate batch creation</div><div class="risk-desc">Excel recalculation, workbook reopen, or timeout retry creates multiple identical GL journal drafts — a critical financial data integrity risk.</div></div>
+        </div>
+        <div class="risk-row">
+          <div class="risk-pri"><span class="badge badge-p0">P0</span></div>
+          <div><div class="risk-title">Wrong status or auto-posting</div><div class="risk-desc">Batch bypasses "On Hold" and gets posted/released automatically — journal entries appear in financial reports without accountant review.</div></div>
+        </div>
+        <div class="risk-row">
+          <div class="risk-pri"><span class="badge badge-p0">P0</span></div>
+          <div><div class="risk-title">Wrong balance validation scope</div><div class="risk-desc">Global-range balance check masks imbalanced individual batches — incorrect financial data passes silently.</div></div>
+        </div>
+        <div class="risk-row">
+          <div class="risk-pri"><span class="badge badge-p0">P0</span></div>
+          <div><div class="risk-title">Partial batch creation (atomicity)</div><div class="risk-desc">One invalid line leaves a partial batch in ERP — an imbalanced orphaned journal entry that is difficult to detect and reverse.</div></div>
+        </div>
+        <div class="risk-row">
+          <div class="risk-pri"><span class="badge badge-p0">P0</span></div>
+          <div><div class="risk-title">Wrong ledger / account / period</div><div class="risk-desc">Financial data posted to incorrect ledger or period corrupts reporting and may require audit-trail investigation to reverse.</div></div>
+        </div>
+        <div class="risk-row">
+          <div class="risk-pri"><span class="badge badge-p1">P1</span></div>
+          <div><div class="risk-title">Date/locale conversion errors</div><div class="risk-desc">Ambiguous text dates (05/06 = May 6 vs June 5) silently produce wrong accounting dates across platforms.</div></div>
+        </div>
+        <div class="risk-row">
+          <div class="risk-pri"><span class="badge badge-p1">P1</span></div>
+          <div><div class="risk-title">Permission bypass</div><div class="risk-desc">Unauthorized financial writes if ERP-side permissions are not enforced server-side.</div></div>
+        </div>
+        <div class="risk-row">
+          <div class="risk-pri"><span class="badge badge-p1">P1</span></div>
+          <div><div class="risk-title">Missing traceability</div><div class="risk-desc">No correlation ID or audit log entry means support cannot investigate ERP/API failures after they occur.</div></div>
+        </div>
+        <div class="risk-row">
+          <div class="risk-pri"><span class="badge badge-p1">P1</span></div>
+          <div><div class="risk-title">Cross-platform inconsistency</div><div class="risk-desc">Different date or decimal behavior between Windows / macOS / Excel Web produces incorrect journal data depending on the user's environment.</div></div>
+        </div>
+        <div class="risk-row">
+          <div class="risk-pri"><span class="badge badge-p1">P1</span></div>
+          <div><div class="risk-title">Script / markup injection via text fields</div><div class="risk-desc">Unsanitized batchDescription or lineDescription could execute in ERP UI — XSS or formula injection risk.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Scope ── -->
+    <div class="card">
+      <div class="card-title"><span class="icon">◎</span> Test Scope</div>
+      <div class="scope-grid">
+        <div class="scope-col scope-col-in">
+          <div class="scope-col-title">In Scope</div>
+          <ul>
+            <li>Excel formula and add-in behavior</li>
+            <li>All field-level validation (required, format, master data)</li>
+            <li>Boundary and equivalence partition tests</li>
+            <li>Batch grouping and per-batch balance validation</li>
+            <li>ERP status: On Hold, no post/release side effects</li>
+            <li>REST/OData/API request-response (if access available)</li>
+            <li>ERP data integrity and field mapping verification</li>
+            <li>Cross-platform: Windows, macOS, Excel Web</li>
+            <li>Telemetry and correlation ID traceability</li>
+            <li>Idempotency, timeout, retry and duplicate prevention</li>
+            <li>Permissions and access control</li>
+            <li>Audit trail verification</li>
+            <li>Security: XSS and formula injection in text fields</li>
+          </ul>
+        </div>
+        <div class="scope-col scope-col-out">
+          <div class="scope-col-title">Out of Scope</div>
+          <ul>
+            <li>Manual accountant posting workflow after draft creation</li>
+            <li>Internal ERP database schema (unless access granted)</li>
+            <li>Full infrastructure load and performance testing</li>
+            <li>Exact queue implementation (unless architecture confirms async)</li>
+            <li>ERP financial reporting after posting</li>
+            <li>Velixo add-in installation and licensing</li>
+            <li>ERP-side UI testing beyond batch/line inspection</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  const saved = localStorage.getItem('eva-theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  const btn = document.getElementById('theme-btn');
+  function updateBtn() {
+    btn.textContent = document.documentElement.getAttribute('data-theme') === 'light'
+      ? '◑  SWITCH TO DARK' : '◑  SWITCH TO LIGHT';
+  }
+  function toggleTheme() {
+    const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('eva-theme', next);
+    updateBtn();
+  }
+  updateBtn();
+</script>
+</body>
+</html>

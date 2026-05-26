@@ -7,7 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-eva.css?v=20260526-allure1" />
+  <link rel="stylesheet" href="style-eva.css?v=20260526-allure2" />
+  <script src="theme.js?v=20260526-allure2"></script>
 </head>
 <body class="glossary-page">
 
@@ -27,7 +28,7 @@
     <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">◑ SWITCH THEME</button>
   </div>
   <div class="sidebar-footer">
-    NERV :: QA DIVISION<br/>
+    QA DOCUMENTATION<br/>
     MAY 2026
   </div>
 </aside>
@@ -46,8 +47,8 @@
     </div>
 
     <!-- ── BATCH-LEVEL PARAMS ── -->
-    <div class="glossary-group">
-      <div class="glossary-group-title">:: Function parameters — batch level</div>
+    <div class="glossary-group glossary-batch">
+      <div class="glossary-group-title"><span class="glossary-chip">Batch input</span> Function parameters — batch level</div>
       <dl class="glossary-dl">
         <dt class="glossary-dt">connectionName</dt>
         <dd class="glossary-dd">Name of the ERP connection the add-in writes to; selects which ERP instance / company receives the batch.</dd>
@@ -70,8 +71,8 @@
     </div>
 
     <!-- ── LINE-LEVEL PARAMS ── -->
-    <div class="glossary-group">
-      <div class="glossary-group-title">:: Function parameters — line level</div>
+    <div class="glossary-group glossary-line">
+      <div class="glossary-group-title"><span class="glossary-chip">Line input</span> Function parameters — line level</div>
       <dl class="glossary-dl">
         <dt class="glossary-dt">currency</dt>
         <dd class="glossary-dd">Currency code for the line; defaults to the ledger currency when empty.</dd>
@@ -91,8 +92,8 @@
     </div>
 
     <!-- ── ACCOUNTING ── -->
-    <div class="glossary-group">
-      <div class="glossary-group-title">:: Accounting concepts</div>
+    <div class="glossary-group glossary-accounting">
+      <div class="glossary-group-title"><span class="glossary-chip">Accounting</span> Core financial concepts</div>
       <dl class="glossary-dl">
         <dt class="glossary-dt">GL (General Ledger)</dt>
         <dd class="glossary-dd">The central record of all financial transactions; financial reports are built from it.</dd>
@@ -130,8 +131,8 @@
     </div>
 
     <!-- ── QA CONCEPTS ── -->
-    <div class="glossary-group">
-      <div class="glossary-group-title">:: QA concepts</div>
+    <div class="glossary-group glossary-qa">
+      <div class="glossary-group-title"><span class="glossary-chip">QA</span> Testing and reliability concepts</div>
       <dl class="glossary-dl">
         <dt class="glossary-dt">Writeback</dt>
         <dd class="glossary-dd">The documented action that sends the prepared range from Excel to the ERP.</dd>
@@ -178,8 +179,8 @@
     </div>
 
     <!-- ── MY TERMS ── -->
-    <div class="glossary-group">
-      <div class="glossary-group-title">:: Terms introduced in the test cases</div>
+    <div class="glossary-group glossary-cases">
+      <div class="glossary-group-title"><span class="glossary-chip">Cases</span> Terms introduced in the test cases</div>
       <div class="callout callout-info" style="margin-bottom:14px;font-size:12px;">
         These phrasings appear in test case titles and expected results. Defining them keeps the document self-consistent.
       </div>
@@ -204,21 +205,5 @@
   </div>
 </main>
 
-<script>
-  const saved = localStorage.getItem('eva-theme-v2');
-  if (saved) document.documentElement.setAttribute('data-theme', saved);
-  const btn = document.getElementById('theme-btn');
-  function updateBtn() {
-    btn.textContent = document.documentElement.getAttribute('data-theme') === 'light'
-      ? '◑  SWITCH TO DARK' : '◑  SWITCH TO LIGHT';
-  }
-  function toggleTheme() {
-    const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('eva-theme-v2', next);
-    updateBtn();
-  }
-  updateBtn();
-</script>
 </body>
 </html>

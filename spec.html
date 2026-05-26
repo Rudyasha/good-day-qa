@@ -7,24 +7,66 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-eva.css?v=20260526-allure1" />
+  <link rel="stylesheet" href="style-eva.css?v=20260526-allure2" />
+  <script src="theme.js?v=20260526-allure2"></script>
   <style>
     .ideal-list {
-      list-style: none;
-      padding: 0;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 6px;
+      gap: 10px;
     }
-    .ideal-list li {
-      font-size: 12.5px;
-      color: var(--text-muted);
-      line-height: 1.6;
-      padding: 7px 10px;
+    .ideal-item {
+      align-self: start;
       border: 1px solid var(--border);
+      border-radius: 6px;
       background: var(--bg2);
+      transition: border-color .18s ease, background .18s ease;
+    }
+    .ideal-item[open] { border-color: var(--cyan); background: var(--bg3); }
+    .ideal-item summary {
       display: flex;
-      gap: 8px;
+      align-items: flex-start;
+      gap: 11px;
+      padding: 13px 14px;
+      color: var(--text-muted);
+      font-size: 13.5px;
+      line-height: 1.45;
+      cursor: pointer;
+      list-style: none;
+    }
+    .ideal-item summary::-webkit-details-marker { display: none; }
+    .ideal-item summary::after {
+      content: '+';
+      margin-left: auto;
+      color: var(--cyan);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 15px;
+    }
+    .ideal-item[open] summary {
+      color: var(--text);
+      font-weight: 500;
+    }
+    .ideal-item[open] summary::after { content: '-'; }
+    .ideal-explain {
+      margin: 0 14px 14px 41px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 12.5px;
+      line-height: 1.6;
+    }
+    .ideal-example {
+      margin-top: 9px;
+      padding: 9px 11px;
+      border-left: 2px solid var(--cyan);
+      background: rgba(25, 180, 184, .07);
+    }
+    .ideal-example strong {
+      color: var(--cyan);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
     }
     .ideal-num {
       font-family: 'Share Tech Mono', monospace;
@@ -79,7 +121,7 @@
     <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">◑ SWITCH THEME</button>
   </div>
   <div class="sidebar-footer">
-    NERV :: QA DIVISION<br/>
+    QA DOCUMENTATION<br/>
     MAY 2026
   </div>
 </aside>
@@ -99,26 +141,80 @@
       <p style="font-size:13px;color:var(--text-muted);line-height:1.65;margin-bottom:14px;">
         A complete specification for this feature should include all of the following sections. Sections absent from the current spec are the source of the 32 gaps documented in the <a href="gaps.html" style="color:var(--yellow);text-decoration:none;">Spec Gaps</a> page.
       </p>
-      <ul class="ideal-list">
-        <li><span class="ideal-num">01</span>Business goal and user story</li>
-        <li><span class="ideal-num">02</span>Definitions: batch, line, ledger, postPeriod, debit, credit, On Hold</li>
-        <li><span class="ideal-num">03</span>Processing model: explicit Writeback vs. formula recalculation</li>
-        <li><span class="ideal-num">04</span>Excel input rules and accepted date/number formats</li>
-        <li><span class="ideal-num">05</span>Normalized REST/OData/API payload and response contract</li>
-        <li><span class="ideal-num">06</span>ERP field mapping and validation responsibilities</li>
-        <li><span class="ideal-num">07</span>Batch grouping rules — full grouping key definition</li>
-        <li><span class="ideal-num">08</span>Line-level debit/credit rules — mutual exclusion</li>
-        <li><span class="ideal-num">09</span>Balance validation scope — per batch, not global</li>
-        <li><span class="ideal-num">10</span>Idempotency and duplicate prevention</li>
-        <li><span class="ideal-num">11</span>Atomicity and partial failure behavior</li>
-        <li><span class="ideal-num">12</span>Timeout/retry behavior and safe error messages</li>
-        <li><span class="ideal-num">13</span>Permissions model and access control</li>
-        <li><span class="ideal-num">14</span>Telemetry, audit trail, and correlation ID</li>
-        <li><span class="ideal-num">15</span>Cross-platform support: Windows, macOS, Excel Web</li>
-        <li><span class="ideal-num">16</span>Error codes, messages, and validation priority order</li>
-        <li><span class="ideal-num">17</span>Field length limits and numeric precision rules</li>
-        <li><span class="ideal-num">18</span>Out of scope and known limitations</li>
-      </ul>
+      <div class="ideal-list">
+        <details class="ideal-item">
+          <summary><span class="ideal-num">01</span>Business goal and user story</summary>
+          <div class="ideal-explain">Defines who uses the feature and why a draft is created instead of an immediately posted transaction.<div class="ideal-example"><strong>Example</strong><br>As an ERP user, I prepare GL journals in Excel for accountant review; writeback always creates an unposted draft.</div></div>
+        </details>
+        <details class="ideal-item">
+          <summary><span class="ideal-num">02</span>Definitions: batch, line, ledger, postPeriod, debit, credit, On Hold</summary>
+          <div class="ideal-explain">Removes interpretation differences between a tester, developer and accountant.<div class="ideal-example"><strong>Example</strong><br>A batch is a group of lines with one grouping key; <em>On Hold</em> means created but not released or posted.</div></div>
+        </details>
+        <details class="ideal-item">
+          <summary><span class="ideal-num">03</span>Processing model: explicit Writeback vs. formula recalculation</summary>
+          <div class="ideal-explain">Clarifies the event that sends data to ERP, which is essential for duplicate prevention.<div class="ideal-example"><strong>Example</strong><br>Recalculating or reopening the workbook must not create a batch; only the explicit Writeback action sends the request.</div></div>
+        </details>
+        <details class="ideal-item">
+          <summary><span class="ideal-num">04</span>Excel input rules and accepted date/number formats</summary>
+          <div class="ideal-explain">Defines what is valid before ERP validation and avoids locale-related defects.<div class="ideal-example"><strong>Example</strong><br><code>DATE(2026,5,19)</code> is accepted and sent as <code>2026-05-19</code>; ambiguous text dates are rejected.</div></div>
+        </details>
+        <details class="ideal-item">
+          <summary><span class="ideal-num">05</span>Normalized REST/OData/API payload and response contract</summary>
+          <div class="ideal-explain">States exactly what the add-in sends and what success or failure response it can display.<div class="ideal-example"><strong>Example</strong><br>Success response contains <code>batchNumber</code>, <code>status=OnHold</code> and <code>correlationId</code>.</div></div>
+        </details>
+        <details class="ideal-item">
+          <summary><span class="ideal-num">06</span>ERP field mapping and validation responsibilities</summary>
+          <div class="ideal-explain">Shows where each Excel value lands and whether Excel or ERP owns validation.<div class="ideal-example"><strong>Example</strong><br><code>ledger</code> maps to ERP Ledger ID; existence and access permissions are checked server-side.</div></div>
+        </details>
+        <details class="ideal-item">
+          <summary><span class="ideal-num">07</span>Batch grouping rules — full grouping key definition</summary>
+          <div class="ideal-explain">Prevents lines for different entities from being silently combined into one journal batch.<div class="ideal-example"><strong>Example</strong><br>Lines are grouped only when connection, date, period, branch, ledger, currency and description all match.</div></div>
+        </details>
+        <details class="ideal-item">
+          <summary><span class="ideal-num">08</span>Line-level debit/credit rules — mutual exclusion</summary>
+          <div class="ideal-explain">Defines valid accounting shape of a single line.<div class="ideal-example"><strong>Example</strong><br>Each line must contain a positive debit or a positive credit, never both and never neither.</div></div>
+        </details>
+        <details class="ideal-item">
+          <summary><span class="ideal-num">09</span>Balance validation scope — per batch, not global</summary>
+          <div class="ideal-explain">Makes clear that one imbalanced group cannot be hidden by another compensating group.<div class="ideal-example"><strong>Example</strong><br>Batch A debit 100 / credit 90 is rejected even if Batch B has debit 90 / credit 100.</div></div>
+        </details>
+        <details class="ideal-item">
+          <summary><span class="ideal-num">10</span>Idempotency and duplicate prevention</summary>
+          <div class="ideal-explain">Protects financial data when a user retries after a delay or lost response.<div class="ideal-example"><strong>Example</strong><br>The same operation ID returns the original batch number and never creates a second batch.</div></div>
+        </details>
+        <details class="ideal-item">
+          <summary><span class="ideal-num">11</span>Atomicity and partial failure behavior</summary>
+          <div class="ideal-explain">Specifies whether all lines must be saved together and how failures roll back.<div class="ideal-example"><strong>Example</strong><br>If line 4 has an invalid account, zero header or line records remain in ERP.</div></div>
+        </details>
+        <details class="ideal-item">
+          <summary><span class="ideal-num">12</span>Timeout/retry behavior and safe error messages</summary>
+          <div class="ideal-explain">Avoids misleading success or blind retries when ERP state is unknown.<div class="ideal-example"><strong>Example</strong><br>On timeout, display an operation ID and advise status lookup; retry uses the same idempotency key.</div></div>
+        </details>
+        <details class="ideal-item">
+          <summary><span class="ideal-num">13</span>Permissions model and access control</summary>
+          <div class="ideal-explain">Determines which users may write and which ledgers or branches they may target.<div class="ideal-example"><strong>Example</strong><br>A user without Create Draft Journal permission receives an authorization error and no ERP record.</div></div>
+        </details>
+        <details class="ideal-item">
+          <summary><span class="ideal-num">14</span>Telemetry, audit trail, and correlation ID</summary>
+          <div class="ideal-explain">Supports investigation of financial operations without exposing sensitive content.<div class="ideal-example"><strong>Example</strong><br>Audit stores user, timestamp, operation ID, batch number and outcome, excluding credentials.</div></div>
+        </details>
+        <details class="ideal-item">
+          <summary><span class="ideal-num">15</span>Cross-platform support: Windows, macOS, Excel Web</summary>
+          <div class="ideal-explain">States environments in which the function is expected to behave consistently.<div class="ideal-example"><strong>Example</strong><br>Windows and macOS desktop are supported; Excel Web either works identically or shows a supported-platform message.</div></div>
+        </details>
+        <details class="ideal-item">
+          <summary><span class="ideal-num">16</span>Error codes, messages, and validation priority order</summary>
+          <div class="ideal-explain">Makes failures predictable when a row violates several rules at once.<div class="ideal-example"><strong>Example</strong><br>Required-field errors appear before balance checks and identify the field and Excel row.</div></div>
+        </details>
+        <details class="ideal-item">
+          <summary><span class="ideal-num">17</span>Field length limits and numeric precision rules</summary>
+          <div class="ideal-explain">Defines boundaries for text and monetary values so no rounding or truncation is silent.<div class="ideal-example"><strong>Example</strong><br>Amounts support two decimal places; over-precision is rejected rather than silently rounded.</div></div>
+        </details>
+        <details class="ideal-item">
+          <summary><span class="ideal-num">18</span>Out of scope and known limitations</summary>
+          <div class="ideal-explain">Prevents reviewers from expecting behavior the feature intentionally does not provide.<div class="ideal-example"><strong>Example</strong><br>Posting, releasing, editing existing batches and exchange-rate calculation are outside this function.</div></div>
+        </details>
+      </div>
     </div>
 
     <!-- ── Field Spec Table ── -->
@@ -352,21 +448,5 @@
   </div>
 </main>
 
-<script>
-  const saved = localStorage.getItem('eva-theme-v2');
-  if (saved) document.documentElement.setAttribute('data-theme', saved);
-  const btn = document.getElementById('theme-btn');
-  function updateBtn() {
-    btn.textContent = document.documentElement.getAttribute('data-theme') === 'light'
-      ? '◑  SWITCH TO DARK' : '◑  SWITCH TO LIGHT';
-  }
-  function toggleTheme() {
-    const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('eva-theme-v2', next);
-    updateBtn();
-  }
-  updateBtn();
-</script>
 </body>
 </html>

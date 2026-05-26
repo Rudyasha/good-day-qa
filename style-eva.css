@@ -1867,3 +1867,116 @@ body::before {
   }
   .meta-block { min-width: 170px; }
 }
+
+/* Navigation cards, spacing repair and reference-page hierarchy */
+.stat-link {
+  color: inherit;
+  text-decoration: none;
+}
+.stat-action {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  color: var(--cyan);
+  font: 10px 'Share Tech Mono', monospace;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  opacity: 0;
+  transform: translateY(3px);
+  transition: opacity .18s ease, transform .18s ease;
+}
+.stat-link:hover .stat-action,
+.stat-link:focus-visible .stat-action {
+  opacity: 1;
+  transform: translateY(0);
+}
+[data-theme="light"] .stat-link {
+  transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+[data-theme="light"] .stat-link:hover,
+[data-theme="light"] .stat-link:focus-visible {
+  border-color: #9adfe1;
+  box-shadow: 0 8px 22px rgba(15, 72, 83, .08);
+  transform: translateY(-2px);
+  outline: none;
+}
+[data-theme="light"] .stat-action { color: #128e95; }
+[data-theme="light"] .callout {
+  padding: 17px 20px;
+  line-height: 1.65;
+}
+[data-theme="light"] .callout strong { margin-right: 4px; }
+
+[data-theme="light"] .glossary-group {
+  position: relative;
+  border-left: 4px solid #1ab4b8;
+}
+[data-theme="light"] .glossary-line { border-left-color: #e75272; }
+[data-theme="light"] .glossary-accounting { border-left-color: #deb04a; }
+[data-theme="light"] .glossary-qa { border-left-color: #627eea; }
+[data-theme="light"] .glossary-cases { border-left-color: #8b63d9; }
+[data-theme="light"] .glossary-group-title {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  color: #172337;
+}
+[data-theme="light"] .glossary-chip {
+  display: inline-flex;
+  padding: 4px 9px;
+  border-radius: 12px;
+  background: #e8f8f7;
+  color: #087f83;
+  font: 10px 'Share Tech Mono', monospace;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+[data-theme="light"] .glossary-line .glossary-chip {
+  background: #fff1f5;
+  color: #b93b5c;
+}
+[data-theme="light"] .glossary-accounting .glossary-chip {
+  background: #fff8e9;
+  color: #91630f;
+}
+[data-theme="light"] .glossary-qa .glossary-chip {
+  background: #eff3ff;
+  color: #4864ca;
+}
+[data-theme="light"] .glossary-cases .glossary-chip {
+  background: #f5efff;
+  color: #704bb8;
+}
+[data-theme="light"] .glossary-dt,
+[data-theme="light"] .glossary-dd {
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+[data-theme="light"] .glossary-dt {
+  padding-left: 13px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: #182b43;
+}
+[data-theme="light"] .glossary-dd {
+  padding-right: 13px;
+  color: #526173;
+}
+[data-theme="light"] .glossary-dt:nth-of-type(odd),
+[data-theme="light"] .glossary-dt:nth-of-type(odd) + .glossary-dd {
+  background: #fafcfd;
+}
+[data-theme="light"] .glossary-dt:hover,
+[data-theme="light"] .glossary-dt:hover + .glossary-dd {
+  background: #f0f8f8;
+}
+
+@media (max-width: 900px) {
+  [data-theme="light"] .content { padding: 25px 25px 50px; }
+  [data-theme="light"] .page-header { padding-left: 25px; padding-right: 25px; }
+  [data-theme="light"] .page-header::after { left: 25px; }
+  [data-theme="light"] .glossary-dl { grid-template-columns: 1fr; }
+  [data-theme="light"] .glossary-dt { border-bottom: 0; padding-bottom: 6px; }
+  [data-theme="light"] .glossary-dd { padding-top: 0; padding-left: 13px; }
+}

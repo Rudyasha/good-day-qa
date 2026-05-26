@@ -7,7 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-eva.css?v=20260526-allure1" />
+  <link rel="stylesheet" href="style-eva.css?v=20260526-allure2" />
+  <script src="theme.js?v=20260526-allure2"></script>
 </head>
 <body class="cases-page">
 
@@ -27,7 +28,7 @@
     <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">◑ SWITCH THEME</button>
   </div>
   <div class="sidebar-footer">
-    NERV :: QA DIVISION<br/>
+    QA DOCUMENTATION<br/>
     MAY 2026
   </div>
 </aside>
@@ -62,20 +63,6 @@
 </div>
 
 <script>
-const savedTheme = localStorage.getItem('eva-theme-v2');
-if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
-function updateThemeBtn() {
-  const t = document.documentElement.getAttribute('data-theme');
-  document.getElementById('theme-btn').textContent = t === 'light' ? '◑ SWITCH TO DARK' : '◑ SWITCH TO LIGHT';
-}
-function toggleTheme() {
-  const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-  document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('eva-theme-v2', next);
-  updateThemeBtn();
-}
-updateThemeBtn();
-
 const areaColors = {
   'Smoke / ERP Result':       'green',
   'Smoke / ERP Mapping':      'green',

@@ -2599,3 +2599,208 @@ body::before {
   margin-top: 3px;
 }
 
+
+
+/* ══════════════════════════════════════════════════════════════════
+   DARK MODE — case detail panel readability fixes
+   All hardcoded light values in case-tabs / case-section / meta
+══════════════════════════════════════════════════════════════════ */
+[data-theme="dark"] .case-tabs {
+  border-bottom-color: #1e2a2e;
+}
+[data-theme="dark"] .case-tabs span {
+  color: var(--text-muted);
+}
+[data-theme="dark"] .case-tabs .active {
+  color: var(--text);
+  border-bottom-color: var(--cyan);
+}
+[data-theme="dark"] .case-section h2,
+[data-theme="dark"] .meta-label {
+  color: var(--text);
+}
+[data-theme="dark"] .case-aside {
+  border-left-color: #1e2a2e;
+}
+[data-theme="dark"] .meta-block {
+  border-bottom-color: #1a2428;
+}
+[data-theme="dark"] .meta-text {
+  color: var(--text-muted);
+}
+[data-theme="dark"] .detail-variation {
+  background: rgba(25,223,219,.04);
+  border: 1px solid #1e2a2e;
+  border-radius: 5px;
+  padding: 12px 15px;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+[data-theme="dark"] .case-section.expected-section {
+  border-top-color: #1e2a2e;
+}
+/* Numbered steps – dark mode counter color fix */
+[data-theme="dark"] .detail-steps .step-text,
+[data-theme="dark"] .detail-preconditions-list .step-text,
+[data-theme="dark"] .detail-results .step-text {
+  color: #cdd8e0;
+  font-size: 14px;
+  line-height: 1.62;
+}
+[data-theme="dark"] .detail-steps .step-mark {
+  background: var(--cyan);
+  color: #040c0e;
+}
+[data-theme="dark"] .detail-preconditions-list .step-mark {
+  background: #39555e;
+  width: 6px; min-width: 6px; height: 6px;
+  border-radius: 50%;
+  margin-top: 8px;
+}
+[data-theme="dark"] .expected-section .detail-results {
+  border-radius: 6px;
+  background: rgba(0,200,112,.05);
+  border: 1px solid rgba(0,200,112,.15);
+}
+[data-theme="dark"] .expected-section .detail-results .detail-step {
+  border-top-color: rgba(0,200,112,.1);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   CATEGORY CHECKBOX DROPDOWN — EVA/Miku style
+══════════════════════════════════════════════════════════════════ */
+.cat-filter-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.cat-filter-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 7px 12px;
+  border: 1px solid var(--line-cyan);
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--text);
+  font: 10px 'Share Tech Mono', monospace;
+  letter-spacing: .12em;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color .15s, background .15s;
+}
+.cat-filter-btn:hover {
+  border-color: var(--cyan);
+  background: rgba(25,223,219,.08);
+}
+.cat-arrow {
+  color: var(--cyan);
+  font-size: 11px;
+  flex-shrink: 0;
+  margin-left: 8px;
+  transition: transform .15s;
+}
+
+.cat-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0; right: 0;
+  z-index: 200;
+  background: var(--bg2);
+  border: 1px solid var(--line-cyan);
+  border-top: 2px solid var(--cyan);
+  border-radius: 4px;
+  max-height: 280px;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+}
+.cat-menu.open { display: block; }
+.cat-menu::-webkit-scrollbar { width: 3px; }
+.cat-menu::-webkit-scrollbar-thumb { background: var(--cyan); border-radius: 2px; }
+
+.cat-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 13px;
+  cursor: pointer;
+  transition: background .12s;
+  font: 10px 'Share Tech Mono', monospace;
+  letter-spacing: .1em;
+  color: var(--text-muted);
+}
+.cat-option:hover { background: rgba(25,223,219,.07); color: var(--text); }
+.cat-option input[type=checkbox] { display: none; }
+
+/* custom checkbox box */
+.cat-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px; height: 14px;
+  flex-shrink: 0;
+  border: 1px solid var(--line-cyan);
+  border-radius: 2px;
+  background: transparent;
+  transition: background .12s, border-color .12s;
+}
+.cat-check::after {
+  content: '';
+  display: none;
+  width: 7px; height: 5px;
+  border-left: 2px solid #040c0e;
+  border-bottom: 2px solid #040c0e;
+  transform: rotate(-45deg) translateY(-1px);
+}
+.cat-option input:checked ~ .cat-check {
+  background: var(--cyan);
+  border-color: var(--cyan);
+}
+.cat-option input:checked ~ .cat-check::after { display: block; }
+.cat-option input:checked ~ .cat-name { color: var(--text); }
+
+.cat-option-all .cat-name { color: var(--text); }
+.cat-divider {
+  height: 1px;
+  background: var(--line-cyan);
+  margin: 2px 0;
+}
+.cat-count {
+  margin-left: auto;
+  color: var(--cyan);
+  font-size: 9px;
+  opacity: .7;
+}
+.cat-name { flex: 1; min-width: 0; }
+
+/* Light theme overrides */
+[data-theme="light"] .cat-filter-btn {
+  border-color: #d0dae6;
+  background: #fff;
+  color: #273448;
+}
+[data-theme="light"] .cat-filter-btn:hover {
+  border-color: #19b4b8;
+  background: #f0fbfb;
+}
+[data-theme="light"] .cat-arrow { color: #19b4b8; }
+[data-theme="light"] .cat-menu {
+  background: #fff;
+  border-color: #d0dae6;
+  border-top-color: #19b4b8;
+  box-shadow: 0 8px 24px rgba(0,30,60,.12);
+}
+[data-theme="light"] .cat-option { color: #526173; }
+[data-theme="light"] .cat-option:hover { background: #f0f8f9; color: #172337; }
+[data-theme="light"] .cat-check { border-color: #b8c9d8; }
+[data-theme="light"] .cat-option input:checked ~ .cat-check {
+  background: #19b4b8;
+  border-color: #19b4b8;
+}
+[data-theme="light"] .cat-option input:checked ~ .cat-name { color: #172337; }
+[data-theme="light"] .cat-option-all .cat-name { color: #172337; }
+[data-theme="light"] .cat-divider { background: #e5eaf1; }
+[data-theme="light"] .cat-count { color: #19b4b8; }
+

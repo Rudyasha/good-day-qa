@@ -780,21 +780,5 @@ rules, defaults, limits. Add columns if needed.</pre>
   </div>
 </main>
 
-<script>
-  const saved = localStorage.getItem('eva-theme');
-  if (saved) document.documentElement.setAttribute('data-theme', saved);
-  const btn = document.getElementById('theme-btn');
-  function updateBtn() {
-    btn.textContent = document.documentElement.getAttribute('data-theme') === 'light'
-      ? '◑  SWITCH TO DARK' : '◑  SWITCH TO LIGHT';
-  }
-  function toggleTheme() {
-    const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', next);
-    localStorage.setItem('eva-theme', next);
-    updateBtn();
-  }
-  updateBtn();
-</script>
 </body>
 </html>

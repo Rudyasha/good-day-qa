@@ -38,10 +38,22 @@
     <div class="list-header">
       <div class="list-title">TEST CASES <span id="count-label" class="list-count"></span></div>
       <div class="filter-bar">
-        <label class="filter-label" for="area-filter">Filter by Area</label>
-        <select class="area-select" id="area-filter" onchange="applyFilters()">
-          <option value="all">ALL AREAS</option>
-        </select>
+        <div class="filter-label">Category</div>
+        <div class="cat-filter-wrap" id="cat-filter-wrap">
+          <button class="cat-filter-btn" id="cat-filter-btn" onclick="toggleCatMenu(event)" type="button">
+            <span id="cat-filter-label">ALL CATEGORIES</span>
+            <span class="cat-arrow" id="cat-arrow">▾</span>
+          </button>
+          <div class="cat-menu" id="cat-menu">
+            <label class="cat-option cat-option-all">
+              <input type="checkbox" id="cat-all" value="__all__" checked onchange="setCatAll(this)">
+              <span class="cat-check"></span>
+              <span class="cat-name">ALL CATEGORIES</span>
+            </label>
+            <div class="cat-divider"></div>
+            <div id="cat-list"></div>
+          </div>
+        </div>
         <div class="filter-label scenario-label">Positive / Negative</div>
         <div class="scenario-filter" aria-label="Positive / Negative">
           <button class="scenario-btn active" data-type="all" onclick="setScenario('all', this)">ALL</button>
@@ -1193,7 +1205,7 @@ const areaColors = {
 };
 
 let activeCase     = null;
-let activeArea     = 'all';
+let activeArea     = 'all'; /* kept for compat; actual multi-select uses selectedAreas */
 let activeScenario = 'all';
 
 function escHtml(v) {
@@ -1209,21 +1221,78 @@ function scenarioTag(type) {
   return `<span class="scenario-tag ${className}">${escHtml(type)}<\/span>`;
 }
 
+/* ── Category checkbox multi-select ─────────────────────────── */
+let selectedAreas = new Set(); /* empty = all */
+
 function buildAreaDropdown() {
   const counts = {};
   cases.forEach(tc => { counts[tc.area] = (counts[tc.area]||0)+1; });
-  const sel = document.getElementById('area-filter');
+  const list = document.getElementById('cat-list');
   Object.keys(counts).sort().forEach(area => {
-    const o = document.createElement('option');
-    o.value = area;
-    o.textContent = area.toUpperCase() + ' (' + counts[area] + ')';
-    sel.appendChild(o);
+    const lbl = document.createElement('label');
+    lbl.className = 'cat-option';
+    lbl.innerHTML = `
+      <input type="checkbox" value="${escHtml(area)}" onchange="onCatChange(this)">
+      <span class="cat-check"><\/span>
+      <span class="cat-name">${escHtml(area)}<\/span>
+      <span class="cat-count">${counts[area]}<\/span>`;
+    list.appendChild(lbl);
   });
 }
 
-function applyFilters() {
-  activeArea = document.getElementById('area-filter').value;
+function toggleCatMenu(e) {
+  e.stopPropagation();
+  const menu = document.getElementById('cat-menu');
+  const arrow = document.getElementById('cat-arrow');
+  const open = menu.classList.toggle('open');
+  arrow.textContent = open ? '▴' : '▾';
+}
+
+document.addEventListener('click', function(e) {
+  const wrap = document.getElementById('cat-filter-wrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('cat-menu').classList.remove('open');
+    document.getElementById('cat-arrow').textContent = '▾';
+  }
+});
+
+function setCatAll(cb) {
+  if (cb.checked) {
+    selectedAreas.clear();
+    document.querySelectorAll('#cat-list input[type=checkbox]').forEach(c => c.checked = false);
+    updateCatLabel();
+    renderList();
+  } else {
+    cb.checked = true; /* can't deselect "all" directly */
+  }
+}
+
+function onCatChange(cb) {
+  const allCb = document.getElementById('cat-all');
+  if (cb.checked) {
+    selectedAreas.add(cb.value);
+    allCb.checked = false;
+  } else {
+    selectedAreas.delete(cb.value);
+    if (selectedAreas.size === 0) allCb.checked = true;
+  }
+  updateCatLabel();
   renderList();
+}
+
+function updateCatLabel() {
+  const lbl = document.getElementById('cat-filter-label');
+  if (selectedAreas.size === 0) {
+    lbl.textContent = 'ALL CATEGORIES';
+  } else if (selectedAreas.size === 1) {
+    lbl.textContent = [...selectedAreas][0].toUpperCase();
+  } else {
+    lbl.textContent = selectedAreas.size + ' CATEGORIES';
+  }
+}
+
+function applyFilters() {
+  renderList(); /* area now driven by selectedAreas */
 }
 
 function setScenario(type, button) {
@@ -1235,7 +1304,7 @@ function setScenario(type, button) {
 
 function renderList() {
   let filtered = cases;
-  if (activeArea !== 'all') filtered = filtered.filter(tc => tc.area === activeArea);
+  if (selectedAreas.size > 0) filtered = filtered.filter(tc => selectedAreas.has(tc.area));
   if (activeScenario !== 'all') filtered = filtered.filter(tc => tc.type === activeScenario);
   document.getElementById('count-label').textContent = filtered.length + ' / ' + cases.length;
   let lastArea = '';
@@ -1303,7 +1372,7 @@ function openDetail(id) {
         <\/section>
       <\/div>
       <aside class="case-aside">
-        <section class="meta-block"><div class="meta-label">Area<\/div>${areaTag(tc.area)}<\/section>
+        <section class="meta-block"><div class="meta-label">Category<\/div>${areaTag(tc.area)}<\/section>
         <section class="meta-block"><div class="meta-label">Positive \/ Negative<\/div>${scenarioTag(tc.type)}<\/section>
         ${notesHtml}
       <\/aside>

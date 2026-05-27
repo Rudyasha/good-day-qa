@@ -70,6 +70,7 @@
       .report-section:last-of-type { break-after: auto; page-break-after: auto; }
       .gap-item, .ai-section, .ideal-item,
       .risk-row, .contract-item, .ac-item { break-inside: avoid; page-break-inside: avoid; }
+      .spec-export .card:nth-child(2) { break-before: page; page-break-before: always; }
       .report-footer { display: flex; }
     }
 
@@ -723,7 +724,7 @@
       <div>
         <div class="summary-grid">
           <div class="summary-item"><div class="summary-value">52</div><div class="summary-label">Test cases</div></div>
-          <div class="summary-item"><div class="summary-value">28</div><div class="summary-label">Test areas</div></div>
+          <div class="summary-item"><div class="summary-value">28</div><div class="summary-label">Test categories</div></div>
           <div class="summary-item"><div class="summary-value">32</div><div class="summary-label">Spec gaps</div></div>
           <div class="summary-item"><div class="summary-value">10</div><div class="summary-label">Risk map</div></div>
         </div>
@@ -796,13 +797,6 @@
       target.querySelectorAll('.gap-item').forEach(function (item) {
         item.classList.remove('is-hidden');
       });
-      if (file === 'overview.html') {
-        target.querySelectorAll('.card').forEach(function (card) {
-          if (card.querySelector('.card-title') && card.querySelector('.card-title').textContent.includes('Glossary')) {
-            card.remove();
-          }
-        });
-      }
       if (file === 'ai-reflection.html') {
         target.querySelectorAll('.prompt-step').forEach(function (item) {
           item.remove();

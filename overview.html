@@ -44,7 +44,7 @@
 
     <div class="stats">
       <a class="stat-card stat-link" href="test-cases.html" aria-label="Open all 52 test cases"><div class="stat-num">52</div><div class="stat-label">Test cases</div><div class="stat-action" aria-hidden="true">→</div></a>
-      <a class="stat-card stat-link" href="test-cases.html" aria-label="Review the 28 test areas"><div class="stat-num">28</div><div class="stat-label">Test areas</div><div class="stat-action" aria-hidden="true">→</div></a>
+      <a class="stat-card stat-link" href="test-cases.html" aria-label="Review the 28 test categories"><div class="stat-num">28</div><div class="stat-label">Test categories</div><div class="stat-action" aria-hidden="true">→</div></a>
       <a class="stat-card stat-link" href="gaps.html" aria-label="Open 32 specification gaps"><div class="stat-num">32</div><div class="stat-label">Spec gaps</div><div class="stat-action" aria-hidden="true">→</div></a>
       <a class="stat-card stat-link" href="spec.html#risk-map" aria-label="Open risk map with 10 identified risks"><div class="stat-num">10</div><div class="stat-label">Risk map</div><div class="stat-action" aria-hidden="true">→</div></a>
     </div>
@@ -90,7 +90,7 @@
             <tr><td><span class="param-name">batchDescription</span></td><td>string</td><td><span class="badge badge-scripted">No</span></td><td>Batch-level description</td></tr>
             <tr><td><span class="param-name">branch</span></td><td>string</td><td><span class="badge badge-scripted">No</span></td><td>Branch identifier</td></tr>
             <tr><td><span class="param-name">ledger</span></td><td>string</td><td><span class="badge badge-required">Yes</span></td><td>Target ledger in the ERP</td></tr>
-            <tr><td><span class="param-name">currency</span></td><td>string</td><td><span class="badge badge-scripted">No</span></td><td>Currency code; defaults to ledger's base currency</td></tr>
+            <tr><td><span class="param-name">currency</span></td><td>string</td><td><span class="badge badge-scripted">No</span></td><td>Currency code; if empty, defaults to the selected ledger currency</td></tr>
             <tr><td><span class="param-name">account</span></td><td>string</td><td><span class="badge badge-required">Yes</span></td><td>GL account number for this line</td></tr>
             <tr><td><span class="param-name">debit</span></td><td>number</td><td><span class="badge badge-scripted">No</span></td><td>Debit amount for this line</td></tr>
             <tr><td><span class="param-name">credit</span></td><td>number</td><td><span class="badge badge-scripted">No</span></td><td>Credit amount for this line</td></tr>

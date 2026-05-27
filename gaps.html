@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-eva.css?v=20260526-allure14" />
+  <link rel="stylesheet" href="style-eva.css?v=20260526-allure15" />
   <script src="theme.js?v=20260526-allure2"></script>
 </head>
 <body class="gaps-page">
@@ -429,12 +429,12 @@
         <span class="gap-tag">G-26</span>
         <span class="gap-tag gap-sev-high">HIGH</span>
       </div>
-      <div class="gap-title">API Or OData Contract Is Not Described</div>
+      <div class="gap-title">API Contract Is Not Described</div>
       <div class="gap-sections">
         <div class="gap-sec gap-sec-unclear"><span class="gap-sec-label">What is unclear</span><div class="gap-sec-text">The spec does not define the API payload, response schema, field mapping, or error code mapping between Excel, backend, and ERP.</div></div>
         <div class="gap-sec gap-sec-assume"><span class="gap-sec-label">Assumption</span><div class="gap-sec-text">The product should document request fields, response fields, required fields, data types, and error format.</div></div>
         <div class="gap-sec gap-sec-why"><span class="gap-sec-label">Why it matters</span><div class="gap-sec-text">Without a contract, API tests are based on guesses instead of confirmed behavior.</div></div>
-        <div class="gap-sec gap-sec-coverage"><span class="gap-sec-label">Test coverage</span><div class="gap-sec-text">API/OData and telemetry cases.</div></div>
+        <div class="gap-sec gap-sec-coverage"><span class="gap-sec-label">Test coverage</span><div class="gap-sec-text">API contract and request/response mapping cases.</div></div>
       </div>
     </div>
 
@@ -444,12 +444,12 @@
         <span class="gap-tag">G-27</span>
         <span class="gap-tag gap-sev-high">HIGH</span>
       </div>
-      <div class="gap-title">Audit Trail And Telemetry Are Not Specified</div>
+      <div class="gap-title">Audit Trail Is Not Specified</div>
       <div class="gap-sections">
-        <div class="gap-sec gap-sec-unclear"><span class="gap-sec-label">What is unclear</span><div class="gap-sec-text">The spec does not say what is logged for successful and failed Writeback operations.</div></div>
-        <div class="gap-sec gap-sec-assume"><span class="gap-sec-label">Assumption</span><div class="gap-sec-text">Each operation should have a correlation ID. Logs should include user, timestamp, source, result, error code, and created batch number when available.</div></div>
+        <div class="gap-sec gap-sec-unclear"><span class="gap-sec-label">What is unclear</span><div class="gap-sec-text">The spec does not say what is recorded in the audit trail for successful and failed Writeback operations.</div></div>
+        <div class="gap-sec gap-sec-assume"><span class="gap-sec-label">Assumption</span><div class="gap-sec-text">Each operation should be auditable: user, timestamp, source, result, error code, and created batch number when available.</div></div>
         <div class="gap-sec gap-sec-why"><span class="gap-sec-label">Why it matters</span><div class="gap-sec-text">Support needs traceability to investigate duplicates, failed operations, and wrong ERP data.</div></div>
-        <div class="gap-sec gap-sec-coverage"><span class="gap-sec-label">Test coverage</span><div class="gap-sec-text">Audit and telemetry cases.</div></div>
+        <div class="gap-sec gap-sec-coverage"><span class="gap-sec-label">Test coverage</span><div class="gap-sec-text">Audit trail cases.</div></div>
       </div>
     </div>
 

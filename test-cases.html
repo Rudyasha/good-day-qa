@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-eva.css?v=20260526-allure14" />
+  <link rel="stylesheet" href="style-eva.css?v=20260526-allure15" />
   <script src="theme.js?v=20260526-allure2"></script>
 </head>
 <body class="cases-page">
@@ -53,13 +53,6 @@
             <div id="cat-list"></div>
           </div>
         </div>
-        <div class="filter-label scenario-label">Positive / Negative</div>
-        <div class="scenario-filter" aria-label="Positive / Negative">
-          <button class="scenario-btn active" data-type="all" onclick="setScenario('all', this)">ALL</button>
-          <button class="scenario-btn" data-type="Positive" onclick="setScenario('Positive', this)">POSITIVE</button>
-          <button class="scenario-btn" data-type="Negative" onclick="setScenario('Negative', this)">NEGATIVE</button>
-          <button class="scenario-btn" data-type="Positive / Negative" onclick="setScenario('Positive / Negative', this)">MIXED</button>
-        </div>
         <div class="filter-label tag-filter-label">Tags</div>
         <div class="cat-filter-wrap" id="tag-filter-wrap">
           <button class="cat-filter-btn" id="tag-filter-btn" onclick="toggleTagMenu(event)" type="button">
@@ -75,6 +68,13 @@
             <div class="cat-divider"></div>
             <div id="tag-list"></div>
           </div>
+        </div>
+        <div class="filter-label scenario-label">Positive / Negative</div>
+        <div class="scenario-filter" aria-label="Positive / Negative">
+          <button class="scenario-btn active" data-type="all" onclick="setScenario('all', this)">ALL</button>
+          <button class="scenario-btn" data-type="Positive" onclick="setScenario('Positive', this)">POSITIVE</button>
+          <button class="scenario-btn" data-type="Negative" onclick="setScenario('Negative', this)">NEGATIVE</button>
+          <button class="scenario-btn" data-type="Positive / Negative" onclick="setScenario('Positive / Negative', this)">MIXED</button>
         </div>
       </div>
     </div>

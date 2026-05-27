@@ -2977,7 +2977,7 @@ body::before {
   width: 720px;
   height: 720px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(25,180,184,0.28) 0%, rgba(25,180,184,0.10) 35%, transparent 70%);
+  background: radial-gradient(circle, rgba(25,180,184,0.14) 0%, rgba(25,180,184,0.05) 35%, transparent 70%);
   pointer-events: none;
   z-index: 9999;
 }

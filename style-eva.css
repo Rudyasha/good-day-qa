@@ -1110,7 +1110,7 @@ body::before {
   overflow: hidden;
 }
 .page-header::before {
-  content: '01  //  ARCHIVE SIGNAL';
+  content: '';
   position: absolute;
   right: 52px;
   top: 42px;
@@ -1118,6 +1118,11 @@ body::before {
   font: 10px 'Share Tech Mono', monospace;
   letter-spacing: 0.32em;
 }
+.overview-page .page-header::before { content: '01  //  SOURCE SPEC'; }
+.spec-page .page-header::before { content: '02  //  PROPOSED SPEC'; }
+.gaps-page .page-header::before { content: '03  //  GAP REGISTER'; }
+.glossary-page .page-header::before { content: '04  //  TERMINOLOGY'; }
+.ai-page .page-header::before { content: '05  //  AI TRACE'; }
 .page-header::after {
   left: 52px;
   right: 52px;
@@ -3071,4 +3076,3 @@ body::before {
 [data-theme="light"] .filter-label.tag-filter-label {
   margin-top: 6px;
 }
-

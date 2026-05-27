@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="favicon.ico?v=20260527" />
-  <link rel="stylesheet" href="style-eva.css?v=20260526-allure15" />
+  <link rel="stylesheet" href="style-eva.css?v=20260527-pagecodes" />
   <script src="theme.js?v=20260526-allure2"></script>
 </head>
 <body class="gaps-page">
@@ -283,7 +283,7 @@
       <div class="gap-title">Allowed Currencies For Each Ledger Are Not Defined</div>
       <div class="gap-sections">
         <div class="gap-sec gap-sec-unclear"><span class="gap-sec-label">What is unclear</span><div class="gap-sec-text">The spec says currency can default from the ledger, but it does not say which currencies are allowed for each ledger.</div></div>
-        <div class="gap-sec gap-sec-assume"><span class="gap-sec-label">Assumption</span><div class="gap-sec-text">The system should validate currency against the selected ledger. If currency is empty, the system should use the ledger default currency.</div></div>
+        <div class="gap-sec gap-sec-assume"><span class="gap-sec-label">Assumption</span><div class="gap-sec-text">The system should validate currency against the selected ledger. If currency is empty, the system should use the currency configured for that ledger.</div></div>
         <div class="gap-sec gap-sec-why"><span class="gap-sec-label">Why it matters</span><div class="gap-sec-text">A ledger may not allow every currency. A wrong ledger and currency combination should not create a batch.</div></div>
         <div class="gap-sec gap-sec-coverage"><span class="gap-sec-label">Test coverage</span><div class="gap-sec-text">Currency and ledger combination cases.</div></div>
       </div>

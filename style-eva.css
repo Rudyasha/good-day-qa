@@ -3203,8 +3203,15 @@ body::before {
   .stat-label { font-size: 8.5px !important; flex: 1; letter-spacing: .14em; margin-top: 0 !important; }
   .stat-action { font-size: 13px !important; flex-shrink: 0; }
 
-  /* Tables: horizontal scroll wrapper */
-  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  /* Tables: horizontal scroll wrapper.
+     Light theme sets overflow: hidden on .table-wrap (line ~1518),
+     which kills horizontal scroll. Override with !important. */
+  .table-wrap,
+  [data-theme="light"] .table-wrap {
+    overflow-x: auto !important;
+    overflow-y: visible !important;
+    -webkit-overflow-scrolling: touch;
+  }
   .table-wrap .param-table { min-width: 520px; }
 
   /* AI Reflection columns */

@@ -3252,15 +3252,21 @@ body::before {
     width: 100% !important;
   }
 
-  /* Drill-down: list hidden, detail full-screen */
-  body.tc-detail-open .cases-page .list-panel { display: none !important; }
-  body.tc-detail-open .cases-page .detail-panel {
+  /* Drill-down: list hidden, detail full-screen.
+     Note: .cases-page IS the body element, so use compound selector
+     (.cases-page.tc-detail-open) not descendant — otherwise it never matches. */
+  .cases-page.tc-detail-open .list-panel { display: none !important; }
+  .cases-page.tc-detail-open .detail-panel {
     display: block !important;
     width: 100% !important;
     height: auto !important;
     overflow: visible !important;
+    padding-top: 0 !important;
   }
-  body.tc-detail-open .cases-page .detail-empty { display: none !important; }
+  .cases-page.tc-detail-open .detail-empty { display: none !important; }
+  .cases-page.tc-detail-open .split-layout {
+    padding-top: 56px !important;
+  }
 
   .cases-page .detail-content { padding: 18px 18px 50px !important; }
 
@@ -3290,44 +3296,62 @@ body::before {
     background: rgba(25,180,184,0.06);
   }
 
-  /* Filter bar — Category + Tags in one row, Pos/Neg buttons compact */
+  /* Filter bar — clean vertical stack: label above each control */
   .cases-page .filter-bar {
     display: flex;
-    flex-wrap: wrap;
-    gap: 6px 8px;
-    align-items: center;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 6px;
   }
   .cases-page .filter-label {
-    font-size: 8px !important;
-    letter-spacing: .15em;
-    flex: 0 0 100%;
-    margin-bottom: -2px;
+    font-size: 8.5px !important;
+    letter-spacing: 0.18em !important;
+    text-transform: uppercase;
+    margin: 0 0 4px !important;
+    padding: 0 !important;
+    line-height: 1.2;
   }
-  .cases-page .cat-filter-wrap {
-    flex: 1 1 calc(50% - 4px) !important;
-    width: auto !important;
-    min-width: 0;
+  .cases-page .filter-bar > .cat-filter-wrap,
+  .cases-page .filter-bar > .scenario-filter {
+    width: 100% !important;
+    margin: 0 !important;
   }
   .cases-page .cat-filter-btn {
     width: 100% !important;
-    padding: 7px 9px !important;
-    font-size: 10px !important;
+    padding: 9px 12px !important;
+    font-size: 10.5px !important;
     min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
   .cases-page .cat-menu { width: 100%; left: 0; right: 0; }
+
+  /* Positive / Negative buttons — 4 equal cells in one row */
   .cases-page .scenario-filter {
-    flex: 1 1 100%;
-    display: flex;
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
     gap: 4px;
+    width: 100%;
   }
   .cases-page .scenario-btn {
-    flex: 1 1 0 !important;
-    padding: 6px 4px !important;
+    flex: none !important;
+    padding: 8px 2px !important;
     font-size: 9px !important;
+    letter-spacing: 0.04em !important;
+    text-align: center;
     min-width: 0;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .cases-page .list-title { font-size: 13px !important; }
   .cases-page .list-count { font-size: 11px !important; }
+  .cases-page .list-header { padding: 14px 16px 16px !important; }
 
   /* Case detail grid */
   .case-grid { grid-template-columns: 1fr !important; gap: 22px; }

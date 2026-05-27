@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WRITEBACKJOURNALDRAFT - Manual QA Assessment</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #172337;
+      --muted: #50637a;
+      --soft: #74849a;
+      --cyan: #16aeb4;
+      --cyan-soft: #eaf7f7;
+      --cyan-line: #bfebeb;
+      --red: #cb3350;
+      --red-soft: #fff1f4;
+      --gold: #a77819;
+      --gold-soft: #fff9ea;
+      --green: #18875a;
+      --green-soft: #eefaf3;
+      --paper: #ffffff;
+      --wash: #f6f9fb;
+      --border: #dde6ee;
+      --mono: 'Share Tech Mono', 'SFMono-Regular', Menlo, monospace;
+      --sans: 'Inter', Arial, sans-serif;
+      --display: 'Bebas Neue', 'Arial Narrow', Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); }
+    body {
+      font-family: var(--sans);
+      font-size: 12px;
+      line-height: 1.56;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    a { color: inherit; text-decoration: none; }
+    code, pre { font-family: var(--mono); }
+    code {
+      padding: 1px 4px;
+      color: #087c85;
+      background: var(--cyan-soft);
+      border-radius: 3px;
+      font-size: .92em;
+    }
+    pre {
+      margin: 0;
+      padding: 15px 17px;
+      border: 1px solid #d8e6eb;
+      border-left: 3px solid var(--cyan);
+      border-radius: 6px;
+      background: #f4f9fa;
+      color: #284257;
+      white-space: pre-wrap;
+      line-height: 1.65;
+      font-size: 10.8px;
+    }
+
+    @page {
+      size: A4;
+      margin: 15mm 14mm 17mm;
+    }
+    @media print {
+      .screen-note { display: none; }
+      .cover, .report-section { break-after: page; page-break-after: always; }
+      .report-section:last-of-type { break-after: auto; page-break-after: auto; }
+      .gap-item, .glossary-group, .ai-section, .ideal-item,
+      .risk-row, .contract-item, .ac-item { break-inside: avoid; page-break-inside: avoid; }
+      .report-footer { display: flex; }
+    }
+
+    .report-footer {
+      position: fixed;
+      display: none;
+      bottom: -11mm;
+      left: 0;
+      right: 0;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 4mm;
+      border-top: 1px solid #e3edf1;
+      color: #8090a4;
+      font: 9px/1 var(--mono);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .report-footer .counter::after { content: counter(page); }
+
+    .screen-note {
+      max-width: 980px;
+      margin: 18px auto 0;
+      padding: 12px 16px;
+      border: 1px solid var(--cyan-line);
+      border-radius: 8px;
+      background: var(--cyan-soft);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .page {
+      max-width: 184mm;
+      margin: 0 auto;
+    }
+    .cover {
+      min-height: 260mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+      padding: 12mm 0 6mm;
+    }
+    .cover::before {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      top: -74mm;
+      right: -56mm;
+      width: 156mm;
+      height: 156mm;
+      border: 1px solid rgba(22,174,180,.18);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, rgba(22,174,180,.13), rgba(22,174,180,.035) 45%, transparent 64%),
+        repeating-linear-gradient(90deg, transparent, transparent 7px, rgba(22,174,180,.025) 8px);
+    }
+    .cover::after {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      left: 0;
+      right: 0;
+      bottom: 34mm;
+      height: 1px;
+      background: linear-gradient(90deg, var(--cyan), var(--cyan-line) 28%, transparent);
+    }
+    .cover-kicker {
+      color: var(--cyan);
+      font: 11px/1 var(--mono);
+      letter-spacing: .24em;
+      text-transform: uppercase;
+    }
+    .cover-index {
+      display: inline-flex;
+      align-items: center;
+      gap: 13px;
+      margin-top: 20mm;
+      color: var(--red);
+      font: 10px/1 var(--mono);
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+    .cover-index::before {
+      content: '';
+      width: 34px;
+      height: 2px;
+      background: var(--red);
+    }
+    .cover h1 {
+      max-width: 155mm;
+      margin: 8mm 0 4mm;
+      color: var(--ink);
+      font-family: var(--display);
+      font-weight: 400;
+      font-size: 60px;
+      line-height: .92;
+      letter-spacing: .035em;
+    }
+    .cover-subtitle {
+      max-width: 94mm;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.65;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 14mm;
+    }
+    .summary-item {
+      min-height: 76px;
+      padding: 14px 14px 11px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: rgba(255,255,255,.88);
+    }
+    .summary-value {
+      color: var(--cyan);
+      font-family: var(--display);
+      font-size: 37px;
+      line-height: 1;
+    }
+    .summary-label {
+      margin-top: 7px;
+      color: var(--soft);
+      font: 9px/1.3 var(--mono);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .deliverable-band {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 15px 17px;
+      border-left: 3px solid var(--cyan);
+      background: #f4fafb;
+    }
+    .deliverable-band strong { display: block; margin-bottom: 3px; color: var(--ink); }
+    .deliverable-band div { color: var(--muted); font-size: 11px; }
+    .deliverable-band .meta {
+      min-width: 116px;
+      text-align: right;
+      color: var(--cyan);
+      font: 9px/1.7 var(--mono);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .toc {
+      min-height: 255mm;
+      padding-top: 11mm;
+    }
+    .section-marker {
+      margin-bottom: 9px;
+      color: var(--red);
+      font: 9px/1 var(--mono);
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+    .toc h2, .report-heading h2 {
+      margin: 0;
+      color: var(--ink);
+      font-family: var(--display);
+      font-weight: 400;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+    .toc h2 { font-size: 38px; }
+    .toc-list {
+      margin-top: 20mm;
+      border-top: 1px solid var(--border);
+    }
+    .toc-item {
+      display: grid;
+      grid-template-columns: 39px 1fr auto;
+      align-items: baseline;
+      gap: 16px;
+      padding: 17px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .toc-num { color: var(--red); font: 11px/1 var(--mono); }
+    .toc-label { color: var(--ink); font-size: 16px; font-weight: 600; }
+    .toc-desc { color: var(--soft); font-size: 11px; }
+    .toc-pill {
+      border: 1px solid var(--cyan-line);
+      border-radius: 40px;
+      padding: 5px 9px;
+      color: var(--cyan);
+      font: 9px/1 var(--mono);
+      text-transform: uppercase;
+    }
+
+    .report-section { padding-top: 4mm; }
+    .report-heading {
+      display: flex;
+      align-items: flex-end;
+      gap: 15px;
+      margin-bottom: 20px;
+      padding-bottom: 13px;
+      border-bottom: 2px solid var(--cyan);
+    }
+    .report-no {
+      color: rgba(22,174,180,.19);
+      font: 50px/.8 var(--display);
+    }
+    .report-heading h2 { font-size: 33px; line-height: 1; }
+    .report-heading p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 11.5px;
+    }
+    .source-content { width: 100%; }
+
+    .card {
+      margin-bottom: 18px;
+      padding: 18px 19px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: var(--paper);
+    }
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 14px;
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .card-title .icon { color: var(--cyan); font-family: var(--mono); }
+    p { margin: 0 0 13px; color: var(--muted); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 19px;
+    }
+    .stat-card {
+      display: block;
+      min-height: 67px;
+      padding: 12px 12px 10px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: var(--wash);
+    }
+    .stat-num { color: var(--cyan) !important; font: 32px/1 var(--display); }
+    .stat-label {
+      margin-top: 6px;
+      color: var(--soft);
+      font: 8.5px/1 var(--mono);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .stat-action { display: none; }
+    .callout {
+      padding: 11px 13px;
+      border-left: 3px solid var(--cyan);
+      background: #f3fbfb;
+      color: var(--muted);
+    }
+    .callout strong { color: var(--ink); }
+    .table-wrap { width: 100%; overflow: visible !important; }
+    table {
+      width: 100% !important;
+      min-width: 0 !important;
+      border-collapse: collapse;
+      table-layout: auto;
+    }
+    th {
+      padding: 8px 7px;
+      border-bottom: 1px solid var(--border);
+      background: var(--wash);
+      color: var(--soft);
+      text-align: left;
+      font: 8px/1.35 var(--mono);
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+    td {
+      padding: 7px;
+      border-bottom: 1px solid #e6edf2;
+      color: var(--muted);
+      font-size: 10px;
+      vertical-align: top;
+      word-break: break-word;
+    }
+    td:first-child { color: #078d95; }
+    .param-name { color: #078d95; font-family: var(--mono); }
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 20px;
+      font: 8px/1.3 var(--mono);
+      text-transform: uppercase;
+    }
+    .badge-required { color: var(--red); background: var(--red-soft); }
+    .badge-scripted { color: var(--soft); background: #f0f4f7; }
+    .ac-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+    .ac-item {
+      padding: 11px 12px;
+      border-radius: 5px;
+      background: var(--wash);
+    }
+    .ac-title { margin-bottom: 5px; color: var(--green) !important; font-weight: 600; }
+    .ac-body { color: var(--muted); font-size: 10.5px; }
+
+    /* Expanded specification review */
+    .ideal-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+    .ideal-item {
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--cyan);
+      border-radius: 5px;
+      background: var(--paper);
+    }
+    .ideal-item summary {
+      display: flex;
+      gap: 9px;
+      padding: 10px 11px;
+      list-style: none;
+      color: var(--ink);
+      font-weight: 600;
+      font-size: 10.5px;
+    }
+    .ideal-item summary::-webkit-details-marker { display: none; }
+    .ideal-num {
+      flex-shrink: 0;
+      color: var(--red);
+      font: 9px/1.5 var(--mono);
+    }
+    .ideal-explain {
+      margin: 0 11px 11px 31px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 9.5px;
+    }
+    .ideal-example {
+      margin-top: 7px;
+      padding: 7px 8px;
+      border-left: 2px solid var(--cyan);
+      background: var(--cyan-soft);
+    }
+    .ideal-example strong {
+      color: var(--cyan);
+      font: 8px/1 var(--mono);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .field-model, .contract-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin: 13px 0;
+    }
+    .field-layer, .contract-item {
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      background: var(--wash);
+    }
+    .field-layer-num {
+      color: var(--cyan);
+      font: 8px/1 var(--mono);
+      letter-spacing: .13em;
+    }
+    .field-layer-title { margin: 7px 0 4px; color: var(--ink); font-weight: 600; }
+    .field-layer-text, .contract-item div { color: var(--muted); font-size: 9.5px; }
+    .qa-assessment {
+      display: grid;
+      grid-template-columns: 34% 1fr;
+      gap: 12px;
+      margin: 13px 0;
+      padding: 11px 12px;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--cyan);
+      background: var(--wash);
+    }
+    .qa-verdict { color: var(--ink); font-weight: 600; }
+    .qa-verdict span {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--cyan);
+      font: 8px/1 var(--mono);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .qa-needs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+      font-size: 9.5px;
+    }
+    .qa-needs strong { display: block; color: var(--ink); }
+    .spec-origin-note {
+      margin: 12px 0;
+      padding: 9px 11px;
+      background: var(--cyan-soft);
+      color: var(--muted);
+      font-size: 9.5px;
+    }
+    .contract-grid { grid-template-columns: 1fr 1fr; }
+    .contract-list-title { margin: 13px 0 9px; color: var(--ink); font-weight: 700; }
+    .contract-item strong { display: block; color: var(--cyan); }
+    .risk-row {
+      display: flex;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .risk-pri { width: 10px; flex-shrink: 0; }
+    .risk-dot-critical, .risk-dot-high {
+      display: block;
+      width: 7px;
+      height: 7px;
+      margin-top: 5px;
+      border-radius: 50%;
+      background: var(--red);
+    }
+    .risk-dot-high { background: var(--gold); }
+    .risk-title { color: var(--ink); font-weight: 600; }
+    .risk-desc { color: var(--muted); font-size: 10px; }
+
+    /* Gaps */
+    .gap-filters .stat-card { pointer-events: none; }
+    .gap-item {
+      margin: 0 0 11px;
+      padding: 13px 14px 14px;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--gold);
+      border-radius: 6px;
+      background: var(--paper);
+    }
+    .gap-item.gap-critical { border-left-color: var(--red); }
+    .gap-item.gap-medium { border-left-color: var(--cyan); }
+    .gap-tag {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 20px;
+      color: var(--cyan);
+      background: var(--cyan-soft);
+      font: 8px/1.35 var(--mono);
+      letter-spacing: .08em;
+    }
+    .gap-sev-critical { color: var(--red); background: var(--red-soft); }
+    .gap-sev-high { color: var(--gold); background: var(--gold-soft); }
+    .gap-sev-medium { color: var(--cyan); background: var(--cyan-soft); }
+    .gap-title {
+      margin: 7px 0 10px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .gap-sections {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .gap-sec {
+      padding: 8px 9px;
+      border-radius: 4px;
+      background: var(--wash);
+    }
+    .gap-sec-label {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--cyan);
+      font: 7.5px/1.3 var(--mono);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .gap-sec-assume .gap-sec-label { color: var(--gold); }
+    .gap-sec-why .gap-sec-label { color: var(--red); }
+    .gap-sec-text { color: var(--muted); font-size: 9.4px; line-height: 1.46; }
+
+    /* Glossary */
+    .glossary-group {
+      margin-bottom: 14px;
+      padding: 14px 15px;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--cyan);
+      border-radius: 6px;
+    }
+    .glossary-line { border-left-color: var(--red); }
+    .glossary-accounting { border-left-color: var(--gold); }
+    .glossary-qa { border-left-color: #597ad7; }
+    .glossary-cases { border-left-color: #8963d0; }
+    .glossary-group-title {
+      margin-bottom: 10px;
+      color: var(--ink);
+      font-weight: 700;
+    }
+    .glossary-chip {
+      display: inline-block;
+      margin-right: 7px;
+      padding: 3px 7px;
+      border-radius: 20px;
+      background: var(--cyan-soft);
+      color: var(--cyan);
+      font: 8px/1.4 var(--mono);
+      text-transform: uppercase;
+    }
+    .glossary-dl {
+      display: grid;
+      grid-template-columns: 31% 1fr;
+      margin: 0;
+    }
+    .glossary-dt, .glossary-dd {
+      margin: 0;
+      padding: 7px 8px;
+      border-bottom: 1px solid #edf2f5;
+      font-size: 10px;
+    }
+    .glossary-dt { color: #078d95; font-family: var(--mono); }
+    .glossary-dd { color: var(--muted); }
+
+    /* AI reflection */
+    .ai-section { margin-bottom: 21px; break-inside: avoid-page; }
+    .ai-section-head {
+      display: flex;
+      align-items: flex-end;
+      gap: 0;
+      margin-bottom: 11px;
+    }
+    .ai-num {
+      width: 36px;
+      color: rgba(22,174,180,.19);
+      font: 37px/1 var(--display);
+    }
+    .ai-head-text {
+      flex: 1;
+      padding-bottom: 7px;
+      border-bottom: 1px solid var(--cyan-line);
+    }
+    .ai-tag { color: var(--red); font: 7px/1 var(--mono); letter-spacing: .18em; }
+    .ai-title { margin-top: 3px; color: var(--ink); font-size: 14px; font-weight: 700; }
+    .ai-body { padding-left: 36px; }
+    .ai-para { color: var(--muted); font-size: 10.5px; line-height: 1.6; }
+    .ai-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin: 0 0 9px;
+      padding: 0;
+      list-style: none;
+    }
+    .ai-list li { display: flex; gap: 8px; color: var(--muted); font-size: 10px; }
+    .ai-list .n { color: var(--soft); font: 8px/1.5 var(--mono); }
+    .prompt-box {
+      margin-bottom: 11px;
+      overflow: hidden;
+      border: 1px solid var(--cyan-line);
+      border-top: 2px solid var(--cyan);
+      border-radius: 5px;
+      background: #f3fafb;
+    }
+    .prompt-box-lbl {
+      padding: 6px 9px;
+      border-bottom: 1px solid var(--cyan-line);
+      color: var(--cyan);
+      font: 8px/1 var(--mono);
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+    .prompt-box pre {
+      padding: 9px 11px;
+      border: 0;
+      background: transparent;
+      color: #3b5268;
+      font-size: 9px;
+    }
+    .ai-cols, .ai-cols-2 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+      margin-bottom: 9px;
+    }
+    .ai-cols-2 { grid-template-columns: 1fr 1fr; }
+    .ai-col {
+      padding: 8px 9px;
+      border-top: 2px solid var(--cyan);
+      background: var(--wash);
+    }
+    .ai-col-ok { border-top-color: var(--green); }
+    .ai-col-err { border-top-color: var(--red); }
+    .ai-col-fix { border-top-color: var(--gold); }
+    .ai-col-lbl {
+      margin-bottom: 5px;
+      color: var(--cyan);
+      font: 7px/1.2 var(--mono);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+    .ai-col-ok .ai-col-lbl { color: var(--green); }
+    .ai-col-err .ai-col-lbl { color: var(--red); }
+    .ai-col-fix .ai-col-lbl { color: var(--gold); }
+    .ai-col-items { margin: 0; padding: 0 0 0 12px; }
+    .ai-col-items li { margin-bottom: 4px; color: var(--muted); font-size: 9px; }
+    .ai-accent-block, .ai-final {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-top: 2px solid var(--cyan);
+      background: var(--wash);
+      color: var(--muted);
+      font-size: 10px;
+    }
+    .ai-accent-block.ok { border-top-color: var(--green); }
+    .ai-accent-block.err { border-top-color: var(--red); }
+    .ai-final { border-top-color: var(--gold); }
+    .ai-role-row { display: flex; gap: 8px; margin-bottom: 4px; color: var(--muted); }
+    .ai-role-key { min-width: 75px; color: var(--cyan); font: 8px/1.6 var(--mono); text-transform: uppercase; }
+    .ai-role-sep { color: var(--soft); }
+    .ai-hr { height: 1px; background: var(--cyan-line); margin-bottom: 10px; }
+
+    .cases-delivery {
+      min-height: 160mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 24mm 15mm;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background:
+        linear-gradient(120deg, rgba(22,174,180,.06), transparent 42%),
+        var(--paper);
+    }
+    .cases-delivery h3 {
+      margin: 0 0 12px;
+      font: 40px/.95 var(--display);
+      letter-spacing: .045em;
+      color: var(--ink);
+    }
+    .cases-delivery p { max-width: 125mm; font-size: 13px; }
+    .file-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 13px;
+      width: fit-content;
+      margin-top: 18px;
+      padding: 12px 16px;
+      border: 1px solid var(--cyan-line);
+      background: var(--cyan-soft);
+      color: var(--cyan);
+      font: 11px/1.4 var(--mono);
+    }
+    .file-chip::before {
+      content: 'XLSX';
+      padding: 5px 7px;
+      background: var(--cyan);
+      color: white;
+      font-size: 9px;
+    }
+    .loading {
+      padding: 20px;
+      color: var(--muted);
+      border: 1px dashed var(--border);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="report-footer">
+    <span>WRITEBACKJOURNALDRAFT / Manual QA Assessment</span>
+    <span class="counter">Page </span>
+  </div>
+
+  <div class="screen-note">Print-ready export: all expandable specification items are opened in this document. Test cases are delivered as a separate Excel workbook.</div>
+
+  <div class="page">
+    <section class="cover">
+      <div>
+        <div class="cover-kicker">QA DOCUMENTATION / MAY 2026</div>
+        <div class="cover-index">Manual Testing Assessment</div>
+        <h1>WRITEBACK<br>JOURNAL<br>DRAFT</h1>
+        <div class="cover-subtitle">Quality assurance analysis for a custom Excel function that creates draft GL journal batches for manual review.</div>
+      </div>
+      <div>
+        <div class="summary-grid">
+          <div class="summary-item"><div class="summary-value">50</div><div class="summary-label">Test cases</div></div>
+          <div class="summary-item"><div class="summary-value">28</div><div class="summary-label">Test areas</div></div>
+          <div class="summary-item"><div class="summary-value">32</div><div class="summary-label">Spec gaps</div></div>
+          <div class="summary-item"><div class="summary-value">10</div><div class="summary-label">Risk map</div></div>
+        </div>
+        <div class="deliverable-band">
+          <div><strong>Submission package</strong>Review document in PDF format plus a separate Excel workbook containing the complete test case suite.</div>
+          <div class="meta">Light Edition<br>Expanded View</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="toc report-section">
+      <div class="section-marker">// document map</div>
+      <h2>Contents</h2>
+      <div class="toc-list">
+        <div class="toc-item"><span class="toc-num">01</span><div><div class="toc-label">Overview</div><div class="toc-desc">Feature description, signature, parameters and acceptance criteria</div></div><span class="toc-pill">Context</span></div>
+        <div class="toc-item"><span class="toc-num">02</span><div><div class="toc-label">Spec Review</div><div class="toc-desc">Ideal specification outline, field contract and risk map</div></div><span class="toc-pill">Expanded</span></div>
+        <div class="toc-item"><span class="toc-num">03</span><div><div class="toc-label">Spec Gaps &amp; Assumptions</div><div class="toc-desc">All 32 identified ambiguities with assumptions and coverage</div></div><span class="toc-pill">32 items</span></div>
+        <div class="toc-item"><span class="toc-num">04</span><div><div class="toc-label">Glossary</div><div class="toc-desc">Parameters, accounting concepts and QA terminology</div></div><span class="toc-pill">Reference</span></div>
+        <div class="toc-item"><span class="toc-num">05</span><div><div class="toc-label">AI Reflection</div><div class="toc-desc">Prompts, review process, limitations and manual decisions</div></div><span class="toc-pill">Process</span></div>
+        <div class="toc-item"><span class="toc-num">06</span><div><div class="toc-label">Test Cases Workbook</div><div class="toc-desc">Separate Excel file designed for filtering and execution</div></div><span class="toc-pill">XLSX</span></div>
+      </div>
+    </section>
+
+    <section class="report-section" data-source="overview.html">
+      <header class="report-heading"><span class="report-no">01</span><div><h2>Overview</h2><p>Feature understanding and source acceptance criteria</p></div></header>
+      <div class="source-content loading">Loading overview...</div>
+    </section>
+
+    <section class="report-section spec-export" data-source="spec.html">
+      <header class="report-heading"><span class="report-no">02</span><div><h2>Spec Review</h2><p>Expanded ideal specification, field contract and financial risk map</p></div></header>
+      <div class="source-content loading">Loading specification review...</div>
+    </section>
+
+    <section class="report-section gaps-export" data-source="gaps.html">
+      <header class="report-heading"><span class="report-no">03</span><div><h2>Spec Gaps &amp; Assumptions</h2><p>Complete list - all severity levels included</p></div></header>
+      <div class="source-content loading">Loading gaps...</div>
+    </section>
+
+    <section class="report-section glossary-export" data-source="glossary.html">
+      <header class="report-heading"><span class="report-no">04</span><div><h2>Glossary</h2><p>Parameter, accounting and testing vocabulary used in this assessment</p></div></header>
+      <div class="source-content loading">Loading glossary...</div>
+    </section>
+
+    <section class="report-section ai-export" data-source="ai-reflection.html">
+      <header class="report-heading"><span class="report-no">05</span><div><h2>AI Reflection</h2><p>Transparent account of assisted work and human review</p></div></header>
+      <div class="source-content loading">Loading reflection...</div>
+    </section>
+
+    <section class="report-section">
+      <header class="report-heading"><span class="report-no">06</span><div><h2>Test Cases</h2><p>Execution-ready workbook supplied separately</p></div></header>
+      <div class="cases-delivery">
+        <div class="section-marker">// separate deliverable</div>
+        <h3>Test Cases Workbook</h3>
+        <p>The full test case suite is provided as a separate Excel workbook so that areas, test data, preconditions, steps and expected results remain easy to filter, scan and execute.</p>
+        <div class="file-chip">WRITEBACKJOURNALDRAFT_Test_Cases.xlsx</div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    async function insertSource(section) {
+      const file = section.dataset.source;
+      const target = section.querySelector('.source-content');
+      const response = await fetch('../' + file);
+      if (!response.ok) throw new Error(file + ' could not be loaded');
+      const html = await response.text();
+      const source = new DOMParser().parseFromString(html, 'text/html');
+      const content = source.querySelector('.content');
+      if (!content) throw new Error(file + ' has no content block');
+      target.classList.remove('loading');
+      target.innerHTML = content.innerHTML;
+
+      target.querySelectorAll('details').forEach(function (item) {
+        item.open = true;
+      });
+      target.querySelectorAll('.gap-item').forEach(function (item) {
+        item.classList.remove('is-hidden');
+      });
+      target.querySelectorAll('button').forEach(function (button) {
+        button.disabled = true;
+      });
+      target.querySelectorAll('a').forEach(function (link) {
+        link.removeAttribute('href');
+      });
+    }
+
+    Promise.all(Array.from(document.querySelectorAll('[data-source]')).map(insertSource))
+      .then(function () {
+        document.documentElement.dataset.ready = 'true';
+      })
+      .catch(function (error) {
+        document.documentElement.dataset.ready = 'error';
+        document.body.insertAdjacentHTML('afterbegin', '<div class="screen-note">Export error: ' + error.message + '</div>');
+      });
+  </script>
+</body>
+</html>

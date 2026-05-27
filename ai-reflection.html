@@ -750,10 +750,13 @@ still leaves open. Group findings by:
 - Processing rules: grouping-key fields, idempotency scope, audit
   and security handling.
 
-Separately propose three reliability fields the task does not
-include but a real implementation would need: externalLineId,
-idempotencyKey, correlationId. Mark them clearly as proposed
-controls, not source requirements.
+Separately propose a small set of reliability fields the task does
+not include but a real implementation would need. Choose them
+yourself based on what the writeback flow actually requires (duplicate
+prevention, retry safety, support traceability, line-level recovery,
+etc.). For each proposed field state the concrete failure mode it
+prevents. Mark every such field as a proposed control, not a source
+requirement.
 
 Anything the task does not state is an assumption, not a fact.
 Phrase as "Assumption: ... unless the spec confirms otherwise."

@@ -584,11 +584,11 @@ Apply standard test-design techniques explicitly:
   auto-post, no auto-release).
 - Pairwise combinations when multiple optional fields interact.
 - Error guessing for locale, timezone, decimal separator,
-  Excel-specific quirks (F9 recalc, copy/paste, formula spill).
+  Excel-specific quirks.
 - Negative cases for every validation rule, not just happy paths.
 
 Treat the feature as an end-to-end integration, not a formula. Cover:
-- Excel - Add-in - API/OData - ERP - response back to Excel.
+- Excel - Add-in - API - ERP - response back to Excel.
 - Idempotency and retry safety (no duplicate batches on retry).
 - Atomicity for multi-line operations (all-or-nothing).
 - Auditability, traceability, correlation IDs.
@@ -665,16 +665,14 @@ Look for gaps across these dimensions:
 - Validation order and ownership: Excel vs Add-in vs Backend vs ERP.
 - Error handling: messages, surface (Excel vs logs), recovery paths,
   user-facing wording.
-- Integration boundaries: API/OData contract, response mapping,
+- Integration boundaries: API contract, response mapping,
   timeout, retry, partial success.
-- Non-functional: limits, decimal precision, performance,
-  concurrency, cross-platform (Windows / macOS / Excel Web).
+- Non-functional: limits, decimal precision, concurrency.
 - Security and privacy: permissions, sensitive data in logs,
   injection-safe text fields, formula execution risk.
-- Auditability and telemetry: correlation IDs, who-did-what-when,
+- Auditability: correlation IDs, who-did-what-when,
   alerting on repeated failures.
-- Excel-specific risk: F9 recalculation, workbook reopen, copy/paste,
-  formula spill, locale and date format.
+- Excel-specific risk: workbook reopen, locale and date format.
 - Edge cases: empty/blank ranges, blank rows inside range,
   mixed valid/invalid groups in one selection.
 
@@ -726,14 +724,41 @@ or from the spec itself.</pre>
       <div class="ai-body">
         <div class="prompt-box">
           <div class="prompt-box-lbl">&gt; prompt used</div>
-          <pre>Evaluate this field specification table and make it clearer.
+          <pre>You are a senior QA analyst doing a field-level contract review.
+Goal: turn the field list into an unambiguous data dictionary that a
+developer, tester, and product analyst can use as a single source of
+truth - no test cases, no gap analysis here, just the schema itself.
 
-Fields: connectionName, transactionDate, postPeriod, batchDescription,
+Fields to review:
+connectionName, transactionDate, postPeriod, batchDescription,
 branch, ledger, currency, account, debit, credit, lineDescription,
 externalLineId, idempotencyKey, correlationId.
 
-Review as a senior QA analyst. Clarify format, API mapping, validation,
-defaults, limits. Add columns if needed.</pre>
+For each field, clarify:
+- Canonical format and data type. If the spec hints at "code / name /
+  ID", pick exactly one and call out the choice; do not leave it
+  open.
+- User-entered vs system-generated. Generated fields must not appear
+  in the user-facing function signature.
+- Required vs optional. If optional, state the documented default
+  and where the default comes from (constant, ledger setting, ERP).
+- Length and precision limits, with the unit (characters, decimal
+  places, currency precision). State where the limit is enforced.
+- Normalization rules: trimming, case sensitivity, allowed charset,
+  Unicode handling.
+- Batch-level vs line-level placement in the request payload.
+- Validation owner per rule: Excel Add-in, Backend, or ERP. One
+  owner per rule - shared ownership is a defect.
+- Sensitive / loggable flag: which fields can appear in logs, which
+  must be masked or excluded.
+- Failure mode when the field is invalid: rejection message, error
+  code, recovery hint for the user.
+
+Add columns where useful (Validation Owner, Default, Normalization,
+Generated-By, Sensitive, Error Code).
+
+Anything the spec leaves ambiguous is an assumption, not a fact.
+Phrase as "Assumption: ... unless the spec confirms otherwise."</pre>
         </div>
         <div class="ai-cols">
           <div class="ai-col ai-col-ok">
@@ -780,7 +805,7 @@ defaults, limits. Add columns if needed.</pre>
             <li><span class="n">02.</span><span>Detecting hidden product risks without direct guidance</span></li>
             <li><span class="n">03.</span><span>Avoiding assumptions when the spec left something open</span></li>
             <li><span class="n">04.</span><span>Deciding which cases to merge versus keep separate</span></li>
-            <li><span class="n">05.</span><span>Treating Excel recalculation as dangerous when the formula has real ERP side effects</span></li>
+            <li><span class="n">05.</span><span>Treating Excel-triggered side effects as financial risk, not a UI inconvenience</span></li>
           </ul>
         </div>
         <p class="ai-para" style="margin-bottom:0;">

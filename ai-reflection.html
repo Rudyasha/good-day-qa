@@ -528,7 +528,7 @@ idempotency, retry/timeout, permissions, audit, errors, cross-platform.</pre>
               <li>Mapped the main areas quickly: happy path, validation, balance, status, errors</li>
               <li>Spotted the naming mismatch (<strong>date/reportingPeriod</strong> vs <strong>transactionDate/postPeriod</strong>)</li>
               <li>Suggested decimal-precision risks - important for financial data</li>
-              <li>Treated the function as a system integration, not just a formula</li>
+              <li>Treated the function as a system integration end-to-end</li>
             </ul>
           </div>
           <div class="ai-col ai-col-err">
@@ -589,7 +589,7 @@ Apply standard test-design techniques explicitly:
   Excel-specific quirks.
 - Negative cases for every validation rule, not just happy paths.
 
-Treat the feature as an end-to-end integration, not a formula. Cover:
+Treat the feature as an end-to-end integration. Cover:
 - Excel - Add-in - API - ERP - response back to Excel.
 - Idempotency and retry safety (no duplicate batches on retry).
 - Atomicity for multi-line operations (all-or-nothing).

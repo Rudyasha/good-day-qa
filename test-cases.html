@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style-eva.css?v=20260526-allure12" />
+  <link rel="stylesheet" href="style-eva.css?v=20260526-allure13" />
   <script src="theme.js?v=20260526-allure2"></script>
 </head>
 <body class="cases-page">
@@ -207,7 +207,7 @@ const cases = [
       ],
     steps: [
         'Use an Excel DATE formula for transactionDate',
-        'Run Writeback > Open the batch in ERP'
+        'Run Writeback > Open the batch in ERP / API / DB'
       ],
     expected: [
         'Batch is created',
@@ -303,8 +303,8 @@ const cases = [
     steps: [
         'Fill all optional fields with valid values',
         'Run Writeback',
-        'Open the batch and lines in ERP',
-        'Compare ERP values with Excel input'
+        'Open the batch and lines in ERP / API / DB',
+        'Compare ERP / API / DB values with Excel input'
       ],
     expected: [
         'Batch is created',
@@ -478,7 +478,7 @@ const cases = [
     steps: [
         'Build each balanced pattern',
         'Run Writeback for each pattern',
-        'Open ERP batch lines'
+        'Open ERP / API / DB batch lines'
       ],
     expected: [
         'Batch is created for each balanced pattern',
@@ -501,11 +501,11 @@ const cases = [
         'The batch group is internally imbalanced'
       ],
     steps: [
-        'Prepare one debit line with 100.00',
-        'Prepare one credit line with 90.00',
+        'Line A: debit = 100.00',
+        'Line B: credit = 90.00',
         'Run Writeback',
         'Read the Excel error',
-        'Check ERP for created batches'
+        'Check ERP / API / DB for created batches'
       ],
     expected: [
         'No draft batch is created in ERP',
@@ -617,12 +617,12 @@ const cases = [
         'The selected range contains several balanced lines with the same grouping fields'
       ],
     steps: [
-        'Prepare debit line 1 with 60.00',
-        'Prepare debit line 2 with 40.00',
-        'Prepare credit line with 100.00',
+        'Line A: debit = 60.00',
+        'Line B: debit = 40.00',
+        'Line C: credit = 100.00',
         'Keep connectionName, transactionDate, postPeriod, ledger, branch, currency, and batchDescription the same for all lines',
         'Run Writeback',
-        'Open the created batch in ERP'
+        'Open the created batch in ERP / API / DB'
       ],
     expected: [
         'Exactly one draft batch is created in ERP',
@@ -646,11 +646,11 @@ const cases = [
         'Each group is balanced inside itself'
       ],
     steps: [
-        'Prepare Group A with debit 100.00 and credit 100.00',
-        'Prepare Group B with debit 50.00 and credit 50.00',
+        'Prepare Group A with debit = 100.00 and credit = 100.00',
+        'Prepare Group B with debit = 50.00 and credit = 50.00',
         'Change exactly one grouping field between Group A and Group B',
         'Run Writeback',
-        'Open ERP and check created batches',
+        'Open ERP / API / DB and check created batches',
         'Repeat for each grouping field variation'
       ],
     expected: [
@@ -677,13 +677,13 @@ const cases = [
         'At least one batch group is internally imbalanced'
       ],
     steps: [
-        'Prepare Group A with debit 100.00 and credit 90.00',
-        'Prepare Group B with debit 90.00 and credit 100.00',
+        'Prepare Group A with debit = 100.00 and credit = 90.00',
+        'Prepare Group B with debit = 90.00 and credit = 100.00',
         'Make sure the global debit total is 190.00',
         'Make sure the global credit total is 190.00',
         'Run Writeback',
         'Read the Excel error',
-        'Check ERP for created batches'
+        'Check ERP / API / DB for created batches'
       ],
     expected: [
         'Writeback is rejected',
@@ -738,13 +738,13 @@ const cases = [
         'The journal is balanced'
       ],
     steps: [
-        'Prepare one debit line with 100.00',
-        'Prepare one credit line with 100.00',
+        'Line A: debit = 100.00',
+        'Line B: credit = 100.00',
         'Use ledger LEDGER_NO_DEFAULT_CURRENCY',
         'Leave currency empty',
         'Run Writeback',
         'Check the Excel result',
-        'Check ERP for created batches'
+        'Check ERP / API / DB for created batches'
       ],
     expected: [
         'No draft batch is created in ERP',
@@ -1317,12 +1317,13 @@ const cases = [
     testData: 'One debit line 100.00 and one credit line 100.00 using the default valid data.',
     preconditions: [
         'Default valid data is set',
-        'One debit line and one credit line of 100.00 are ready'
+        'Line A: debit = 100.00',
+        'Line B: credit = 100.00'
       ],
     steps: [
         'Fill the two journal lines in Excel',
         'Run Writeback',
-        'Check the returned batch in ERP'
+        'Check the returned batch in ERP / API / DB'
       ],
     expected: [
         'Excel shows a success message in this format: Draft batch #<batch_number> created',
@@ -1349,7 +1350,7 @@ const cases = [
       ],
     steps: [
         'Copy the batch number returned in Excel',
-        'Search this batch in ERP',
+        'Search this batch in ERP / API / DB',
         'Compare batch header and line values with Excel input'
       ],
     expected: [

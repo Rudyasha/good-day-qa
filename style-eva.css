@@ -2962,15 +2962,15 @@ body::before {
    LIGHT THEME — Gentle teal ambient glow
 ════════════════════════════════════════════════════════════════ */
 
-/* Ambient teal glow — floats above all content via z-index 9999, pointer-events none so it never blocks clicks */
+/* Ambient teal glow — top-right corner, floats above content via z-index 9999 */
 [data-theme="light"] body::after {
   display: block;
   content: '';
   position: fixed;
-  top: -80px; right: -80px;
-  width: 600px; height: 600px;
+  top: -200px; right: -200px;
+  width: 720px; height: 720px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(25,180,184,0.14) 0%, transparent 62%);
+  background: radial-gradient(circle, rgba(25,180,184,0.28) 0%, rgba(25,180,184,0.10) 35%, transparent 70%);
   pointer-events: none;
   z-index: 9999;
 }

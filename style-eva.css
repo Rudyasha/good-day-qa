@@ -3076,3 +3076,220 @@ body::before {
 [data-theme="light"] .filter-label.tag-filter-label {
   margin-top: 6px;
 }
+
+/* ════════════════════════════════════════════════════════════════
+   RESPONSIVE LAYER — tablet & mobile
+   Goal: usable, not just rendered. Sidebar collapses to a top bar;
+   split layout stacks; cards/tables breathe; touch targets stay big.
+════════════════════════════════════════════════════════════════ */
+
+/* Tablet & smaller phones (≤ 860px) */
+@media (max-width: 860px) {
+  /* Sidebar → compact sticky top bar.
+     HTML order is: header, nav-section, 5 nav-links, theme-toggle, footer.
+     Layout: header (row 1), nav-links horizontal strip (row 2),
+             theme button (row 3), nav-section + footer hidden. */
+  .sidebar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid #1a1a1a;
+    overflow: visible;
+    /* Reset to block flow + custom flex-wrap inside for nav links */
+    display: block;
+    z-index: 200;
+  }
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  .sidebar-eyebrow {
+    font-size: 8px;
+    margin-bottom: 0;
+    white-space: nowrap;
+  }
+  .sidebar-logo {
+    font-size: 13px;
+    line-height: 1;
+    margin: 0;
+  }
+  .sidebar-logo br { display: none; }
+  .sidebar-logo::after { content: ' '; }
+  .nav-section { display: none; }
+
+  /* Horizontal scrolling nav strip via inline-block on each link */
+  .sidebar .nav-link {
+    display: inline-block;
+    padding: 10px 14px;
+    margin: 0;
+    font-size: 11px;
+    border-left: none;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+  .sidebar .nav-link.active {
+    border-bottom-color: var(--red);
+    border-left: none;
+    background: transparent;
+  }
+  .sidebar .nav-icon { margin-right: 6px; font-size: 10px; display: inline; }
+
+  /* Wrap nav-links area: target them as a group via consecutive selector
+     fallback. Since they're siblings, give them a shared horizontal flow
+     with overflow on the sidebar's nav region — simplest: white-space nowrap
+     on sidebar, links inline-block, sidebar scrolls horizontally if needed. */
+  .sidebar {
+    white-space: nowrap;
+    overflow-x: auto;
+  }
+  .sidebar-header { white-space: normal; }
+
+  .theme-toggle {
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid #1a1a1a;
+    display: inline-block;
+    white-space: nowrap;
+  }
+  .theme-btn {
+    padding: 8px 14px;
+    font-size: 9.5px;
+    width: auto;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .sidebar-footer { display: none; }
+
+  /* Main content: no left margin */
+  .main {
+    margin-left: 0;
+    width: 100%;
+  }
+  .page-header {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+  [data-theme="light"] .page-header { padding-left: 18px !important; }
+  .page-title { font-size: clamp(26px, 7vw, 38px) !important; }
+  .content {
+    padding: 20px 18px 60px !important;
+  }
+  [data-theme="light"] .content { padding: 20px 18px 60px !important; }
+
+  /* Cards */
+  .card, .ai-block, .glossary-group {
+    padding: 18px 18px;
+  }
+  pre {
+    font-size: 11px;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* Stats: collapse 4-card grid to 2 columns, then 1 if very narrow */
+  .stats { gap: 10px; }
+  .stat-card { min-width: 0; flex: 1 1 calc(50% - 6px); }
+
+  /* Tables: horizontal scroll */
+  .table-wrap, .param-table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .param-table { display: block; min-width: 540px; }
+  table.spec-table, .spec-table { display: block; overflow-x: auto; }
+
+  /* AI Reflection columns — collapse 3-col to 1 */
+  .ai-cols, .ai-cols-2 { grid-template-columns: 1fr !important; }
+  .ai-num { font-size: 30px; width: 38px; }
+  .ai-body { padding-left: 38px; }
+  .ai-title { font-size: 16px; }
+
+  /* Gaps: side-by-side sections become one column */
+  .gaps-page .gap-sections { grid-template-columns: 1fr !important; }
+  .gaps-page .gap-item { padding: 20px 18px 20px 22px; }
+
+  /* Ideal Spec list (spec.html) — single column */
+  .ideal-list { grid-template-columns: 1fr !important; }
+
+  /* AC grid in overview */
+  .ac-grid { grid-template-columns: 1fr !important; gap: 10px; }
+
+  /* Test cases page: stack list + detail vertically, list collapsible */
+  .cases-page .split-layout {
+    margin-left: 0;
+    flex-direction: column;
+    height: auto;
+    overflow: visible;
+  }
+  .cases-page .list-panel {
+    width: 100%;
+    max-height: 50vh;
+    border-right: none;
+    border-bottom: 1px solid #e5eaf1;
+  }
+  .cases-page .detail-panel { width: 100%; }
+  .cases-page .detail-content { padding: 24px 18px 50px !important; }
+  .cases-page .filter-bar { gap: 8px; }
+  .cases-page .filter-bar .scenario-filter { flex-wrap: wrap; }
+  .cases-page .filter-bar .scenario-btn { flex: 1 1 calc(50% - 4px); }
+
+  /* Case detail grid */
+  .case-grid { grid-template-columns: 1fr !important; gap: 22px; }
+  .case-aside {
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    border-left: none !important;
+    border-top: 1px solid #e5eaf1;
+    padding: 22px 0 0 !important;
+    gap: 18px !important;
+  }
+  .meta-block { flex: 1 1 calc(50% - 9px); min-width: 0 !important; }
+
+  /* Filter dropdowns: full width */
+  .cat-filter-wrap, .cat-filter-btn { width: 100%; }
+  .cat-menu { width: 100%; left: 0; right: 0; }
+
+  /* Disable softer corner glow on tiny screens — keeps contrast */
+  [data-theme="light"] body::after {
+    width: 480px;
+    height: 480px;
+    top: -160px;
+    right: -160px;
+    background: radial-gradient(circle, rgba(25,180,184,0.10) 0%, transparent 65%);
+  }
+}
+
+/* Phone (≤ 520px) — tighten further */
+@media (max-width: 520px) {
+  .page-title { font-size: 24px !important; }
+  .content { padding: 16px 14px 50px !important; }
+  [data-theme="light"] .content { padding: 16px 14px 50px !important; }
+  .page-header { padding-left: 14px !important; padding-right: 14px !important; }
+  [data-theme="light"] .page-header { padding-left: 14px !important; }
+
+  .stats { flex-wrap: wrap; gap: 8px; }
+  .stat-card { flex: 1 1 100%; min-width: 0; padding: 14px 16px; }
+  .stat-num { font-size: 24px; }
+
+  .card, .ai-block, .glossary-group { padding: 16px 14px; }
+  .ai-num { font-size: 26px; width: 34px; padding-right: 8px; }
+  .ai-body { padding-left: 34px; }
+  .ai-title { font-size: 14.5px; }
+
+  /* Test cases list items: tighter */
+  .cases-page .tc-item { padding: 10px 12px; }
+  .cases-page .list-panel { max-height: 45vh; }
+
+  /* Hide stat-action arrow on tiny screens */
+  .stat-action { display: none; }
+
+  /* Theme button + footer text smaller */
+  .theme-btn { font-size: 9px; padding: 5px 10px; }
+}

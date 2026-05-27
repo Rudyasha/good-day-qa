@@ -724,64 +724,50 @@ or from the spec itself.</pre>
       <div class="ai-body">
         <div class="prompt-box">
           <div class="prompt-box-lbl">&gt; prompt used</div>
-          <pre>You are a senior QA analyst doing a field-level contract review.
-Goal: turn the field list into an unambiguous data dictionary that a
-developer, tester, and product analyst can use as a single source of
-truth - no test cases, no gap analysis here, just the schema itself.
+          <pre>Review the Parameters table from the spec as a senior QA analyst.
 
-Fields to review:
-connectionName, transactionDate, postPeriod, batchDescription,
-branch, ledger, currency, account, debit, credit, lineDescription,
-externalLineId, idempotencyKey, correlationId.
+Fields (exactly as in the spec - Type, Required, Description given):
+connectionName, transactionDate, postPeriod, batchDescription, branch,
+ledger, currency, account, debit, credit, lineDescription.
 
-For each field, clarify:
-- Canonical format and data type. If the spec hints at "code / name /
-  ID", pick exactly one and call out the choice; do not leave it
-  open.
-- User-entered vs system-generated. Generated fields must not appear
-  in the user-facing function signature.
-- Required vs optional. If optional, state the documented default
-  and where the default comes from (constant, ledger setting, ERP).
-- Length and precision limits, with the unit (characters, decimal
-  places, currency precision). State where the limit is enforced.
-- Normalization rules: trimming, case sensitivity, allowed charset,
-  Unicode handling.
-- Batch-level vs line-level placement in the request payload.
-- Validation owner per rule: Excel Add-in, Backend, or ERP. One
-  owner per rule - shared ownership is a defect.
-- Sensitive / loggable flag: which fields can appear in logs, which
-  must be masked or excluded.
-- Failure mode when the field is invalid: rejection message, error
-  code, recovery hint for the user.
+For each field, clarify what the spec leaves implicit:
+- Canonical format and one concrete example value. If a string could
+  mean code, name, or ID, pick one - do not leave it open.
+- Validation rules and where each is enforced.
+- Defaults when the field is optional, and where the default comes
+  from (constant, ledger setting, ERP).
+- Length and precision limits, with the unit.
+- Batch-level vs line-level placement.
 
-Add columns where useful (Validation Owner, Default, Normalization,
-Generated-By, Sensitive, Error Code).
+Add columns where helpful (Default, Limits, Validation Owner,
+Normalization).
 
-Anything the spec leaves ambiguous is an assumption, not a fact.
+Anything the spec does not state is an assumption, not a fact.
 Phrase as "Assumption: ... unless the spec confirms otherwise."</pre>
         </div>
         <div class="ai-cols">
           <div class="ai-col ai-col-ok">
             <div class="ai-col-lbl">+ what worked</div>
             <ul class="ai-col-items">
-              <li>Found fields with unclear definitions</li>
-              <li>Flagged that <strong>ledger</strong> and <strong>account</strong> shouldn't accept code/name/ID unless the spec confirms all three</li>
-              <li>Suggested a Validation Owner column (Add-in / Backend / ERP)</li>
-              <li>Clarified that generated fields must not be user-entered</li>
+              <li>Spotted fields whose Description in the spec is too short to test against</li>
+              <li>Flagged that <strong>ledger</strong> and <strong>account</strong> shouldn't accept code/name/ID interchangeably - one canonical form is needed</li>
+              <li>Suggested Default, Limits, Validation Owner columns to extend the Parameters table</li>
+              <li>Gave one concrete example value per field so the table stops being abstract</li>
             </ul>
           </div>
           <div class="ai-col ai-col-err">
             <div class="ai-col-lbl">- what fell short</div>
             <ul class="ai-col-items">
               <li>Left some limits as if confirmed, when they were only assumptions</li>
+              <li>Sometimes invented validation rules the spec doesn't actually require</li>
             </ul>
           </div>
           <div class="ai-col ai-col-fix">
             <div class="ai-col-lbl">&gt; what I did with it</div>
             <ul class="ai-col-items">
               <li>Made the table stricter - removed vague "code/name/ID" for one canonical form</li>
-              <li>Marked unconfirmed limits as assumptions, not facts</li>
-              <li>Added global validation rules below the table for shared constraints</li>
+              <li>Marked every unconfirmed limit as an assumption, not a fact</li>
+              <li>Kept the column set close to the spec's original table; only added what the testing actually needed</li>
             </ul>
           </div>
         </div>

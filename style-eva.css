@@ -3079,163 +3079,147 @@ body::before {
 
 /* ════════════════════════════════════════════════════════════════
    RESPONSIVE LAYER — tablet & mobile
-   Goal: usable, not just rendered. Sidebar collapses to a top bar;
-   split layout stacks; cards/tables breathe; touch targets stay big.
+   Approach: drop position:fixed on the sidebar, let it sit in normal
+   document flow as a top strip, and let the main content stack below.
+   Keep it simple — no sticky, no scroll-jacked nav.
 ════════════════════════════════════════════════════════════════ */
 
-/* Tablet & smaller phones (≤ 860px) */
-@media (max-width: 860px) {
-  /* Sidebar → compact sticky top bar.
-     HTML order is: header, nav-section, 5 nav-links, theme-toggle, footer.
-     Layout: header (row 1), nav-links horizontal strip (row 2),
-             theme button (row 3), nav-section + footer hidden. */
+/* Tablet & smaller phones (≤ 900px) */
+@media (max-width: 900px) {
+  /* === SIDEBAR — top strip in normal flow === */
   .sidebar {
-    position: sticky;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: auto;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
     border-right: none;
     border-bottom: 1px solid #1a1a1a;
-    overflow: visible;
-    /* Reset to block flow + custom flex-wrap inside for nav links */
-    display: block;
-    z-index: 200;
+    overflow: visible !important;
+    z-index: 50;
+    display: block !important;
+    padding: 0 !important;
   }
+  .sidebar::after { display: none !important; }
   .sidebar-header {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 8px 16px;
+    padding: 10px 16px;
     border-bottom: 1px solid #1a1a1a;
   }
-  .sidebar-eyebrow {
-    font-size: 8px;
-    margin-bottom: 0;
-    white-space: nowrap;
-  }
-  .sidebar-logo {
-    font-size: 13px;
-    line-height: 1;
-    margin: 0;
-  }
+  .sidebar-eyebrow { font-size: 8px; margin-bottom: 0; white-space: nowrap; }
+  .sidebar-logo { font-size: 13px; line-height: 1; margin: 0; }
   .sidebar-logo br { display: none; }
   .sidebar-logo::after { content: ' '; }
-  .nav-section { display: none; }
+  .nav-section { display: none !important; }
+  .sidebar-footer { display: none !important; }
 
-  /* Horizontal scrolling nav strip via inline-block on each link */
-  .sidebar .nav-link {
+  /* Nav-links flow inline; sidebar scrolls horizontally if needed */
+  .sidebar-nav-wrap,
+  .sidebar > .nav-link {
     display: inline-block;
-    padding: 10px 14px;
-    margin: 0;
-    font-size: 11px;
-    border-left: none;
-    border-bottom: 2px solid transparent;
+  }
+  .nav-link {
+    display: inline-block !important;
+    padding: 9px 13px !important;
+    margin: 0 !important;
+    font-size: 11px !important;
+    border-left: none !important;
+    border-bottom: 2px solid transparent !important;
     white-space: nowrap;
     vertical-align: middle;
   }
-  .sidebar .nav-link.active {
-    border-bottom-color: var(--red);
-    border-left: none;
-    background: transparent;
+  .nav-link.active {
+    border-bottom-color: var(--red) !important;
+    border-left: none !important;
+    background: transparent !important;
   }
-  .sidebar .nav-icon { margin-right: 6px; font-size: 10px; display: inline; }
-
-  /* Wrap nav-links area: target them as a group via consecutive selector
-     fallback. Since they're siblings, give them a shared horizontal flow
-     with overflow on the sidebar's nav region — simplest: white-space nowrap
-     on sidebar, links inline-block, sidebar scrolls horizontally if needed. */
-  .sidebar {
-    white-space: nowrap;
-    overflow-x: auto;
-  }
-  .sidebar-header { white-space: normal; }
+  .nav-icon { margin-right: 5px; font-size: 10px; display: inline-block; }
 
   .theme-toggle {
-    margin: 0;
-    padding: 0;
-    border-top: 1px solid #1a1a1a;
-    display: inline-block;
-    white-space: nowrap;
+    display: inline-block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-top: none !important;
+    vertical-align: middle;
   }
   .theme-btn {
-    padding: 8px 14px;
-    font-size: 9.5px;
-    width: auto;
-    text-align: center;
+    padding: 7px 12px !important;
+    font-size: 9.5px !important;
+    width: auto !important;
     white-space: nowrap;
   }
-  .sidebar-footer { display: none; }
 
-  /* Main content: no left margin */
+  /* === MAIN CONTENT — drop sidebar offset === */
   .main {
-    margin-left: 0;
-    width: 100%;
+    margin-left: 0 !important;
+    width: 100% !important;
+    display: block;
   }
-  .page-header {
-    padding-left: 18px !important;
-    padding-right: 18px !important;
-  }
+  .page-header { padding-left: 18px !important; padding-right: 18px !important; }
   [data-theme="light"] .page-header { padding-left: 18px !important; }
   .page-title { font-size: clamp(26px, 7vw, 38px) !important; }
-  .content {
-    padding: 20px 18px 60px !important;
-  }
+  .content { padding: 20px 18px 60px !important; }
   [data-theme="light"] .content { padding: 20px 18px 60px !important; }
 
-  /* Cards */
-  .card, .ai-block, .glossary-group {
-    padding: 18px 18px;
-  }
-  pre {
-    font-size: 11px;
-    overflow-x: auto;
-    white-space: pre;
-  }
+  /* Cards / code blocks */
+  .card, .ai-block, .glossary-group { padding: 18px 18px; }
+  pre { font-size: 11px; overflow-x: auto; white-space: pre; }
 
-  /* Stats: collapse 4-card grid to 2 columns, then 1 if very narrow */
-  .stats { gap: 10px; }
-  .stat-card { min-width: 0; flex: 1 1 calc(50% - 6px); }
+  /* Stats grid */
+  .stats { gap: 10px; flex-wrap: wrap; }
+  .stat-card { flex: 1 1 calc(50% - 6px); min-width: 0; }
 
-  /* Tables: horizontal scroll */
-  .table-wrap, .param-table {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  .param-table { display: block; min-width: 540px; }
-  table.spec-table, .spec-table { display: block; overflow-x: auto; }
+  /* Tables: horizontal scroll wrapper */
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table-wrap .param-table { min-width: 520px; }
 
-  /* AI Reflection columns — collapse 3-col to 1 */
+  /* AI Reflection columns */
   .ai-cols, .ai-cols-2 { grid-template-columns: 1fr !important; }
   .ai-num { font-size: 30px; width: 38px; }
   .ai-body { padding-left: 38px; }
-  .ai-title { font-size: 16px; }
+  .ai-title { font-size: 16px !important; }
 
-  /* Gaps: side-by-side sections become one column */
+  /* Gaps page */
   .gaps-page .gap-sections { grid-template-columns: 1fr !important; }
   .gaps-page .gap-item { padding: 20px 18px 20px 22px; }
 
-  /* Ideal Spec list (spec.html) — single column */
+  /* Spec page Ideal Spec list */
   .ideal-list { grid-template-columns: 1fr !important; }
 
-  /* AC grid in overview */
+  /* Overview AC grid */
   .ac-grid { grid-template-columns: 1fr !important; gap: 10px; }
 
-  /* Test cases page: stack list + detail vertically, list collapsible */
+  /* === TEST CASES — stack vertically === */
   .cases-page .split-layout {
-    margin-left: 0;
-    flex-direction: column;
-    height: auto;
-    overflow: visible;
+    margin-left: 0 !important;
+    flex-direction: column !important;
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
   }
   .cases-page .list-panel {
-    width: 100%;
-    max-height: 50vh;
-    border-right: none;
+    width: 100% !important;
+    max-height: none !important;
+    height: auto !important;
+    border-right: none !important;
     border-bottom: 1px solid #e5eaf1;
+    display: block;
   }
-  .cases-page .detail-panel { width: 100%; }
+  .cases-page .list-header { position: static; }
+  .cases-page .list-scroll {
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+  .cases-page .detail-panel {
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    display: block;
+  }
   .cases-page .detail-content { padding: 24px 18px 50px !important; }
+
+  /* Filter bar inside list-header */
   .cases-page .filter-bar { gap: 8px; }
   .cases-page .filter-bar .scenario-filter { flex-wrap: wrap; }
   .cases-page .filter-bar .scenario-btn { flex: 1 1 calc(50% - 4px); }
@@ -3252,16 +3236,14 @@ body::before {
   }
   .meta-block { flex: 1 1 calc(50% - 9px); min-width: 0 !important; }
 
-  /* Filter dropdowns: full width */
+  /* Filter dropdowns full width */
   .cat-filter-wrap, .cat-filter-btn { width: 100%; }
   .cat-menu { width: 100%; left: 0; right: 0; }
 
-  /* Disable softer corner glow on tiny screens — keeps contrast */
+  /* Glow softer on small screens */
   [data-theme="light"] body::after {
-    width: 480px;
-    height: 480px;
-    top: -160px;
-    right: -160px;
+    width: 480px; height: 480px;
+    top: -160px; right: -160px;
     background: radial-gradient(circle, rgba(25,180,184,0.10) 0%, transparent 65%);
   }
 }
@@ -3274,22 +3256,17 @@ body::before {
   .page-header { padding-left: 14px !important; padding-right: 14px !important; }
   [data-theme="light"] .page-header { padding-left: 14px !important; }
 
-  .stats { flex-wrap: wrap; gap: 8px; }
-  .stat-card { flex: 1 1 100%; min-width: 0; padding: 14px 16px; }
+  .stat-card { flex: 1 1 100%; padding: 14px 16px; }
   .stat-num { font-size: 24px; }
 
   .card, .ai-block, .glossary-group { padding: 16px 14px; }
   .ai-num { font-size: 26px; width: 34px; padding-right: 8px; }
   .ai-body { padding-left: 34px; }
-  .ai-title { font-size: 14.5px; }
+  .ai-title { font-size: 14.5px !important; }
 
-  /* Test cases list items: tighter */
   .cases-page .tc-item { padding: 10px 12px; }
-  .cases-page .list-panel { max-height: 45vh; }
-
-  /* Hide stat-action arrow on tiny screens */
+  .cases-page .list-scroll { max-height: 45vh; }
   .stat-action { display: none; }
-
-  /* Theme button + footer text smaller */
-  .theme-btn { font-size: 9px; padding: 5px 10px; }
+  .nav-link { padding: 7px 10px !important; font-size: 10px !important; }
+  .theme-btn { font-size: 9px !important; padding: 6px 10px !important; }
 }

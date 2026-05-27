@@ -68,7 +68,7 @@
       .screen-note { display: none; }
       .cover, .report-section { break-after: page; page-break-after: always; }
       .report-section:last-of-type { break-after: auto; page-break-after: auto; }
-      .gap-item, .glossary-group, .ai-section, .ideal-item,
+      .gap-item, .ai-section, .ideal-item,
       .risk-row, .contract-item, .ac-item { break-inside: avoid; page-break-inside: avoid; }
       .report-footer { display: flex; }
     }
@@ -560,47 +560,6 @@
     .gap-sec-why .gap-sec-label { color: var(--red); }
     .gap-sec-text { color: var(--muted); font-size: 9.4px; line-height: 1.46; }
 
-    /* Glossary */
-    .glossary-group {
-      margin-bottom: 14px;
-      padding: 14px 15px;
-      border: 1px solid var(--border);
-      border-left: 3px solid var(--cyan);
-      border-radius: 6px;
-    }
-    .glossary-line { border-left-color: var(--red); }
-    .glossary-accounting { border-left-color: var(--gold); }
-    .glossary-qa { border-left-color: #597ad7; }
-    .glossary-cases { border-left-color: #8963d0; }
-    .glossary-group-title {
-      margin-bottom: 10px;
-      color: var(--ink);
-      font-weight: 700;
-    }
-    .glossary-chip {
-      display: inline-block;
-      margin-right: 7px;
-      padding: 3px 7px;
-      border-radius: 20px;
-      background: var(--cyan-soft);
-      color: var(--cyan);
-      font: 8px/1.4 var(--mono);
-      text-transform: uppercase;
-    }
-    .glossary-dl {
-      display: grid;
-      grid-template-columns: 31% 1fr;
-      margin: 0;
-    }
-    .glossary-dt, .glossary-dd {
-      margin: 0;
-      padding: 7px 8px;
-      border-bottom: 1px solid #edf2f5;
-      font-size: 10px;
-    }
-    .glossary-dt { color: #078d95; font-family: var(--mono); }
-    .glossary-dd { color: var(--muted); }
-
     /* AI reflection */
     .ai-section { margin-bottom: 21px; break-inside: avoid-page; }
     .ai-section-head {
@@ -763,7 +722,7 @@
       </div>
       <div>
         <div class="summary-grid">
-          <div class="summary-item"><div class="summary-value">50</div><div class="summary-label">Test cases</div></div>
+          <div class="summary-item"><div class="summary-value">52</div><div class="summary-label">Test cases</div></div>
           <div class="summary-item"><div class="summary-value">28</div><div class="summary-label">Test areas</div></div>
           <div class="summary-item"><div class="summary-value">32</div><div class="summary-label">Spec gaps</div></div>
           <div class="summary-item"><div class="summary-value">10</div><div class="summary-label">Risk map</div></div>
@@ -782,9 +741,8 @@
         <div class="toc-item"><span class="toc-num">01</span><div><div class="toc-label">Overview</div><div class="toc-desc">Feature description, signature, parameters and acceptance criteria</div></div><span class="toc-pill">Context</span></div>
         <div class="toc-item"><span class="toc-num">02</span><div><div class="toc-label">Spec Review</div><div class="toc-desc">Ideal specification outline, field contract and risk map</div></div><span class="toc-pill">Expanded</span></div>
         <div class="toc-item"><span class="toc-num">03</span><div><div class="toc-label">Spec Gaps &amp; Assumptions</div><div class="toc-desc">All 32 identified ambiguities with assumptions and coverage</div></div><span class="toc-pill">32 items</span></div>
-        <div class="toc-item"><span class="toc-num">04</span><div><div class="toc-label">Glossary</div><div class="toc-desc">Parameters, accounting concepts and QA terminology</div></div><span class="toc-pill">Reference</span></div>
-        <div class="toc-item"><span class="toc-num">05</span><div><div class="toc-label">AI Reflection</div><div class="toc-desc">Prompts, review process, limitations and manual decisions</div></div><span class="toc-pill">Process</span></div>
-        <div class="toc-item"><span class="toc-num">06</span><div><div class="toc-label">Test Cases Workbook</div><div class="toc-desc">Separate Excel file designed for filtering and execution</div></div><span class="toc-pill">XLSX</span></div>
+        <div class="toc-item"><span class="toc-num">04</span><div><div class="toc-label">AI Reflection</div><div class="toc-desc">Prompts, review process, limitations and manual decisions</div></div><span class="toc-pill">Process</span></div>
+        <div class="toc-item"><span class="toc-num">05</span><div><div class="toc-label">Test Cases Workbook</div><div class="toc-desc">Separate Excel file designed for filtering and execution</div></div><span class="toc-pill">XLSX</span></div>
       </div>
     </section>
 
@@ -803,18 +761,13 @@
       <div class="source-content loading">Loading gaps...</div>
     </section>
 
-    <section class="report-section glossary-export" data-source="glossary.html">
-      <header class="report-heading"><span class="report-no">04</span><div><h2>Glossary</h2><p>Parameter, accounting and testing vocabulary used in this assessment</p></div></header>
-      <div class="source-content loading">Loading glossary...</div>
-    </section>
-
     <section class="report-section ai-export" data-source="ai-reflection.html">
-      <header class="report-heading"><span class="report-no">05</span><div><h2>AI Reflection</h2><p>Transparent account of assisted work and human review</p></div></header>
+      <header class="report-heading"><span class="report-no">04</span><div><h2>AI Reflection</h2><p>Transparent account of assisted work and human review</p></div></header>
       <div class="source-content loading">Loading reflection...</div>
     </section>
 
     <section class="report-section">
-      <header class="report-heading"><span class="report-no">06</span><div><h2>Test Cases</h2><p>Execution-ready workbook supplied separately</p></div></header>
+      <header class="report-heading"><span class="report-no">05</span><div><h2>Test Cases</h2><p>Execution-ready workbook supplied separately</p></div></header>
       <div class="cases-delivery">
         <div class="section-marker">// separate deliverable</div>
         <h3>Test Cases Workbook</h3>
@@ -843,6 +796,18 @@
       target.querySelectorAll('.gap-item').forEach(function (item) {
         item.classList.remove('is-hidden');
       });
+      if (file === 'overview.html') {
+        target.querySelectorAll('.card').forEach(function (card) {
+          if (card.querySelector('.card-title') && card.querySelector('.card-title').textContent.includes('Glossary')) {
+            card.remove();
+          }
+        });
+      }
+      if (file === 'ai-reflection.html') {
+        target.querySelectorAll('.prompt-step').forEach(function (item) {
+          item.remove();
+        });
+      }
       target.querySelectorAll('button').forEach(function (button) {
         button.disabled = true;
       });

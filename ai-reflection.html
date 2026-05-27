@@ -423,7 +423,7 @@
           <div class="ai-col-lbl" style="color:var(--green);font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;margin-bottom:10px;">What I leaned on AI for</div>
           <ul class="ai-list" style="margin-bottom:0;">
             <li><span class="n">01.</span><span>Getting up to speed on a domain I didn't know well - ERP, GL journals, ledgers, periods, debit/credit</span></li>
-            <li><span class="n">02.</span><span>Seeing the feature as an end-to-end flow (Excel - add-in - API - ERP - draft batch - result), not just a formula</span></li>
+            <li><span class="n">02.</span><span>Seeing the feature as an end-to-end flow</span></li>
             <li><span class="n">03.</span><span>Brainstorming test categories and surfacing early risks before I wrote anything</span></li>
             <li><span class="n">04.</span><span>Drafting a first version of the cases and gap descriptions in bulk</span></li>
             <li><span class="n">05.</span><span>Merging near-duplicates and making the suite leaner</span></li>
@@ -494,8 +494,6 @@ What risks should a QA engineer think about before writing test cases?</pre>
       </div>
     </div>
 
-    <div class="prompt-step"><div class="prompt-step-line"></div><div class="prompt-step-txt">NEXT PROMPT</div></div>
-
     <!-- 04 - Prompt 2 -->
     <div class="ai-section">
       <div class="ai-section-head">
@@ -552,8 +550,6 @@ idempotency, retry/timeout, permissions, audit, errors, cross-platform.</pre>
       </div>
     </div>
 
-    <div class="prompt-step"><div class="prompt-step-line"></div><div class="prompt-step-txt">NEXT PROMPT</div></div>
-
     <!-- 05 - Prompt 3 -->
     <div class="ai-section">
       <div class="ai-section-head">
@@ -566,12 +562,45 @@ idempotency, retry/timeout, permissions, audit, errors, cross-platform.</pre>
       <div class="ai-body">
         <div class="prompt-box">
           <div class="prompt-box-lbl">&gt; prompt used</div>
-          <pre>Write formal test cases using this structure:
+          <pre>You are a senior QA engineer with strong test-design background.
+Write formal test cases for WRITEBACKJOURNALDRAFT.
+
+Format:
 TC-ID - Category - Title - Preconditions - Test Data - Steps - Expected Result.
 
-No Priority or Severity. Simple English. Numbered lists for
-Preconditions, Steps, Expected Result. Preconditions specific to each
-case, not a shared header. Group duplicates. Smoke tests at the end.</pre>
+Constraints:
+- Simple English. No Priority or Severity.
+- Numbered lists for Preconditions, Steps, Expected Result.
+- Preconditions specific to each case, not a shared header.
+- Group duplicates into one parameterized case.
+- Use concrete test data (actual values), not "valid input".
+
+Apply standard test-design techniques explicitly:
+- Equivalence partitioning and boundary value analysis for amounts,
+  dates, periods, and text-length limits.
+- Decision tables for required-field combinations and
+  debit/credit/account mutual exclusion.
+- State transitions around batch status (On Hold lifecycle, no
+  auto-post, no auto-release).
+- Pairwise combinations when multiple optional fields interact.
+- Error guessing for locale, timezone, decimal separator,
+  Excel-specific quirks (F9 recalc, copy/paste, formula spill).
+- Negative cases for every validation rule, not just happy paths.
+
+Treat the feature as an end-to-end integration, not a formula. Cover:
+- Excel - Add-in - API/OData - ERP - response back to Excel.
+- Idempotency and retry safety (no duplicate batches on retry).
+- Atomicity for multi-line operations (all-or-nothing).
+- Auditability, traceability, correlation IDs.
+- Permissions and master-data scoping (ledger, branch, account).
+- ERP side effects: status, totals, account balances.
+- Sensitive data: never leak secrets to logs, Excel, or responses.
+
+Think like a product analyst too:
+- What does the business actually risk if this case fails?
+- Which user persona triggers this path (accountant, controller,
+  auditor, support)?
+- Map each case to an acceptance criterion or business rule.</pre>
         </div>
         <div class="ai-cols">
           <div class="ai-col ai-col-ok">
@@ -602,8 +631,6 @@ case, not a shared header. Group duplicates. Smoke tests at the end.</pre>
       </div>
     </div>
 
-    <div class="prompt-step"><div class="prompt-step-line"></div><div class="prompt-step-txt">NEXT PROMPT</div></div>
-
     <!-- 06 - Prompt 4 -->
     <div class="ai-section">
       <div class="ai-section-head">
@@ -616,14 +643,48 @@ case, not a shared header. Group duplicates. Smoke tests at the end.</pre>
       <div class="ai-body">
         <div class="prompt-box">
           <div class="prompt-box-lbl">&gt; prompt used</div>
-          <pre>Review the gaps and assumptions as a senior QA analyst.
-Make them easier to understand, no complex English.
-Add missing gaps from my Miro notes.
+          <pre>You are a senior QA analyst doing a requirements review on the spec.
+Goal: produce a gap-and-assumption analysis that QA, devs, and product
+can act on without further clarification.
 
-Structure:
+Format (one entry per gap):
 Gap - What is unclear - Assumption - Why it matters - Test coverage.
 
-Add your own gaps if something important is missing.</pre>
+Constraints:
+- Simple English, no over-explanation.
+- Each gap is one concrete, testable concern (not a vague worry).
+- Mark severity: Critical / High / Medium, based on financial and
+  business risk, not engineering effort.
+- Map each gap to specific test categories or TC-IDs when possible.
+- Do not present assumptions as confirmed facts. Phrase as
+  "Assumption: ... unless the spec confirms otherwise."
+
+Look for gaps across these dimensions:
+- Functional rules left implicit: grouping keys, field normalization,
+  default values, idempotency, atomicity.
+- Validation order and ownership: Excel vs Add-in vs Backend vs ERP.
+- Error handling: messages, surface (Excel vs logs), recovery paths,
+  user-facing wording.
+- Integration boundaries: API/OData contract, response mapping,
+  timeout, retry, partial success.
+- Non-functional: limits, decimal precision, performance,
+  concurrency, cross-platform (Windows / macOS / Excel Web).
+- Security and privacy: permissions, sensitive data in logs,
+  injection-safe text fields, formula execution risk.
+- Auditability and telemetry: correlation IDs, who-did-what-when,
+  alerting on repeated failures.
+- Excel-specific risk: F9 recalculation, workbook reopen, copy/paste,
+  formula spill, locale and date format.
+- Edge cases: empty/blank ranges, blank rows inside range,
+  mixed valid/invalid groups in one selection.
+
+For each gap also capture:
+- Stakeholders affected (user, accountant, support, dev, product).
+- What the business loses if the assumption is wrong.
+- A concrete test scenario that would expose the gap.
+
+Add your own gaps if something important is missing from my Miro notes
+or from the spec itself.</pre>
         </div>
         <div class="ai-cols">
           <div class="ai-col ai-col-ok">
@@ -652,8 +713,6 @@ Add your own gaps if something important is missing.</pre>
         </div>
       </div>
     </div>
-
-    <div class="prompt-step"><div class="prompt-step-line"></div><div class="prompt-step-txt">NEXT PROMPT</div></div>
 
     <!-- 07 - Prompt 5 -->
     <div class="ai-section">

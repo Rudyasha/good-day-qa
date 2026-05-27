@@ -374,13 +374,13 @@
 <main class="main">
   <div class="page-header">
     <div class="breadcrumb">QA_PLAN / AI_REFLECTION</div>
-    <div class="page-title">AI Usage &amp; Research Process</div>
-    <div class="page-desc">Tool used: Claude (Anthropic) · Honest account of what worked, what didn't, and what required human judgment</div>
+    <div class="page-title">AI Tooling Reflection</div>
+    <div class="page-desc">How I used AI on this task, the exact prompts in order, what each one got right and wrong, and what I changed by hand</div>
   </div>
 
   <div class="content">
 
-    <!-- 01 ─ Input Materials -->
+    <!-- 01 - Input materials used during the analysis -->
     <div class="ai-section">
       <div class="ai-section-head">
         <div class="ai-num">01</div>
@@ -391,24 +391,24 @@
       </div>
       <div class="ai-body">
         <p class="ai-para">
-          The analysis used several sources. The spec defined what the function should do. Research and notes added context, open questions, and edge cases that weren't in the spec.
+          Several sources fed the analysis. The spec defined what the function should do; my research and notes added context, open questions, and edge cases that the spec did not cover.
         </p>
         <ul class="ai-list">
-          <li><span class="n">01.</span><span>The original specification for WRITEBACKJOURNALDRAFT</span></li>
+          <li><span class="n">01.</span><span>The original WRITEBACKJOURNALDRAFT specification</span></li>
           <li><span class="n">02.</span><span>My own research into ERP systems, GL journals, writeback flows, and financial terminology</span></li>
-          <li><span class="n">03.</span><span>Google Docs notes - questions, draft ideas, risks I spotted while reading the spec</span></li>
-          <li><span class="n">04.</span><span>Miro brainstorming board - end-to-end flow (Excel - add-in - API - ERP - draft batch - result), unclear behaviors, edge cases, and missing rules</span></li>
+          <li><span class="n">03.</span><span>Google Docs notes - questions, draft ideas, and risks I spotted while reading the spec</span></li>
+          <li><span class="n">04.</span><span>Miro board - end-to-end flow (Excel - add-in - API - ERP - draft batch - result), unclear behaviors, edge cases, and missing rules</span></li>
           <li><span class="n">05.</span><span>AI-assisted explanations of how similar systems may work under the hood</span></li>
-          <li><span class="n">06.</span><span>Manual QA thinking on Excel behavior, ERP side effects, financial risks, and integration edge cases</span></li>
+          <li><span class="n">06.</span><span>My own QA thinking on Excel behavior, ERP side effects, financial risk, and integration edge cases</span></li>
         </ul>
         <div class="ai-hr"></div>
         <p class="ai-para" style="margin-bottom:0;">
-          The goal wasn't only to write test cases. It was to understand whether the requirement was <strong>complete, safe, and testable</strong> before writing a single step.
+          The goal was not only to write test cases, but to judge whether the requirement was <strong>complete, safe, and testable</strong> before writing a single step.
         </p>
       </div>
     </div>
 
-    <!-- 02 ─ How AI Was Used -->
+    <!-- 02 - How I used AI -->
     <div class="ai-section">
       <div class="ai-section-head">
         <div class="ai-num">02</div>
@@ -422,7 +422,7 @@
           Honestly, AI saved me the mechanical first-draft work and let me start reacting to something concrete instead of a blank page. I leaned on it most for these things:
         </p>
         <div class="ai-accent-block ok" style="margin-bottom:16px;">
-          <div class="ai-col-lbl" style="color:var(--green);font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;margin-bottom:10px;">What I asked AI to do</div>
+          <div class="ai-col-lbl" style="color:var(--green);font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;margin-bottom:10px;">What I leaned on AI for</div>
           <ul class="ai-list" style="margin-bottom:0;">
             <li><span class="n">01.</span><span>Getting up to speed on a domain I didn't know well - ERP, GL journals, ledgers, periods, debit/credit</span></li>
             <li><span class="n">02.</span><span>Seeing the feature as an end-to-end flow (Excel - add-in - API - ERP - draft batch - result), not just a formula</span></li>
@@ -433,7 +433,7 @@
           </ul>
         </div>
         <p class="ai-para" style="margin-bottom:0;">
-          I didn't take any output at face value: each result was kept, rewritten, or thrown out. AI just gave me something to react to. Concretely, it saved up to an hour of boilerplate - time that went into the parts that actually needed thinking.
+          I didn't take any output at face value: each result was kept, rewritten, or thrown out. AI just gave me something to react to. Concretely, it saved <strong>up to an hour</strong> of boilerplate - time that went into the parts that actually needed thinking.
         </p>
       </div>
     </div>
@@ -441,16 +441,16 @@
     <!-- Prompt log header -->
     <div style="margin-bottom:20px; padding-left:48px;">
       <div style="font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;color:var(--red);margin-bottom:6px;">// PROMPT LOG</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.07em;color:var(--text-muted);">Five prompts · in order of use</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.07em;color:var(--text-muted);">Five prompts, in order of use</div>
     </div>
 
-    <!-- 03 ─ Prompt 1 -->
+    <!-- 03 - Prompt 1 -->
     <div class="ai-section">
       <div class="ai-section-head">
         <div class="ai-num">03</div>
         <div class="ai-head-text">
           <div class="ai-tag">// PROMPT 01 OF 05</div>
-          <div class="ai-title">Domain and System Understanding</div>
+          <div class="ai-title">Domain &amp; System Understanding</div>
         </div>
       </div>
       <div class="ai-body">
@@ -462,33 +462,32 @@ Before writing test cases, explain how similar Excel-to-ERP writeback
 systems usually work. Explain ERP, GL journal batch, journal line,
 ledger, account, postPeriod, debit, and credit in simple terms.
 
-Show the possible flow: Excel → add-in → API → ERP → draft batch → result back.
+Show the possible flow: Excel - add-in - API - ERP - draft batch - result.
 
 What risks should a QA engineer think about before writing test cases?</pre>
         </div>
         <div class="ai-cols">
           <div class="ai-col ai-col-ok">
-            <div class="ai-col-lbl">✓ what worked</div>
+            <div class="ai-col-lbl">+ what worked</div>
             <ul class="ai-col-items">
               <li>Made me see the feature as a system flow, not just an Excel formula</li>
               <li>Explained ERP terms in plain language - ledger, account, period, journal line</li>
               <li>Separated user-entered fields from generated technical fields</li>
-              <li>Made it clear that writeback has <strong>real ERP side effects</strong></li>
               <li>Surfaced early risks: duplicate creation, wrong status, timeout and retry</li>
             </ul>
           </div>
           <div class="ai-col ai-col-err">
-            <div class="ai-col-lbl">✗ what fell short</div>
+            <div class="ai-col-lbl">- what fell short</div>
             <ul class="ai-col-items">
-              <li>Explained generic ERP concepts without connecting them to the spec</li>
+              <li>Explained generic ERP concepts without tying them to the spec</li>
               <li>Presented some assumptions as if they were confirmed behavior</li>
-              <li>Needed extra prompting to shift from explaining theory to thinking about testability</li>
+              <li>Needed extra prompting to move from theory to testability</li>
             </ul>
           </div>
           <div class="ai-col ai-col-fix">
-            <div class="ai-col-lbl">→ what I did with it</div>
+            <div class="ai-col-lbl">&gt; what I did with it</div>
             <ul class="ai-col-items">
-              <li>Tied explanations back to the actual WRITEBACKJOURNALDRAFT fields</li>
+              <li>Tied the explanations back to the actual WRITEBACKJOURNALDRAFT fields</li>
               <li>Turned unclear points into gap entries instead of accepting them</li>
               <li>Kept the research as background context, not as final spec</li>
             </ul>
@@ -499,7 +498,7 @@ What risks should a QA engineer think about before writing test cases?</pre>
 
     <div class="prompt-step"><div class="prompt-step-line"></div><div class="prompt-step-txt">NEXT PROMPT</div></div>
 
-    <!-- 04 ─ Prompt 2 -->
+    <!-- 04 - Prompt 2 -->
     <div class="ai-section">
       <div class="ai-section-head">
         <div class="ai-num">04</div>
@@ -514,7 +513,7 @@ What risks should a QA engineer think about before writing test cases?</pre>
           <pre>I'm a QA engineer writing test cases for WRITEBACKJOURNALDRAFT.
 
 Each call defines one journal line. Multiple calls form one batch.
-The batch must always be On Hold. Must not post automatically.
+The batch must always be On Hold. It must not post automatically.
 
 Here is the full spec: [pasted]
 
@@ -526,29 +525,29 @@ idempotency, retry/timeout, permissions, audit, errors, cross-platform.</pre>
         </div>
         <div class="ai-cols">
           <div class="ai-col ai-col-ok">
-            <div class="ai-col-lbl">✓ what worked</div>
+            <div class="ai-col-lbl">+ what worked</div>
             <ul class="ai-col-items">
-              <li>Quickly mapped the main test areas: happy path, validation, balance, ERP status, error handling</li>
-              <li>Spotted the naming mismatch between <strong>date/reportingPeriod</strong> and <strong>transactionDate/postPeriod</strong></li>
-              <li>Suggested decimal precision risks - important for financial data</li>
-              <li>Treated WRITEBACKJOURNALDRAFT as a system integration, not just a formula</li>
+              <li>Mapped the main areas quickly: happy path, validation, balance, status, errors</li>
+              <li>Spotted the naming mismatch (<strong>date/reportingPeriod</strong> vs <strong>transactionDate/postPeriod</strong>)</li>
+              <li>Suggested decimal-precision risks - important for financial data</li>
+              <li>Treated the function as a system integration, not just a formula</li>
             </ul>
           </div>
           <div class="ai-col ai-col-err">
-            <div class="ai-col-lbl">✗ what fell short</div>
+            <div class="ai-col-lbl">- what fell short</div>
             <ul class="ai-col-items">
-              <li>Accepted "at least one line required" literally - a single debit can't balance without a credit line</li>
-              <li>Didn't challenge the batch grouping key: branch? currency? postPeriod?</li>
-              <li>Assumed all Excel cells return the same batch number - spec doesn't confirm this</li>
-              <li>Some suggested cases were too generic, no concrete test data</li>
+              <li>Took "at least one line required" literally - a single debit can't balance</li>
+              <li>Didn't challenge the grouping key (branch? currency? postPeriod?)</li>
+              <li>Assumed all cells return the same batch number - the spec doesn't confirm it</li>
+              <li>Some suggested cases were too generic, with no concrete test data</li>
             </ul>
           </div>
           <div class="ai-col ai-col-fix">
-            <div class="ai-col-lbl">→ what I did with it</div>
+            <div class="ai-col-lbl">&gt; what I did with it</div>
             <ul class="ai-col-items">
-              <li>Added gap analysis for grouping, return value scope, and selected range behavior</li>
-              <li>Rewrote vague assumptions as explicit gaps with test coverage links</li>
-              <li>Simplified the language so gaps are useful to QA, devs, and product</li>
+              <li>Added gap analysis for grouping, return-value scope, and range behavior</li>
+              <li>Rewrote vague assumptions as explicit gaps linked to test coverage</li>
+              <li>Simplified the language so the gaps are useful to QA, devs, and product</li>
             </ul>
           </div>
         </div>
@@ -557,51 +556,48 @@ idempotency, retry/timeout, permissions, audit, errors, cross-platform.</pre>
 
     <div class="prompt-step"><div class="prompt-step-line"></div><div class="prompt-step-txt">NEXT PROMPT</div></div>
 
-    <!-- 05 ─ Prompt 3 -->
+    <!-- 05 - Prompt 3 -->
     <div class="ai-section">
       <div class="ai-section-head">
         <div class="ai-num">05</div>
         <div class="ai-head-text">
           <div class="ai-tag">// PROMPT 03 OF 05</div>
-          <div class="ai-title">Formal Test Case Generation</div>
+          <div class="ai-title">Formal Test-Case Generation</div>
         </div>
       </div>
       <div class="ai-body">
         <div class="prompt-box">
           <div class="prompt-box-lbl">&gt; prompt used</div>
           <pre>Write formal test cases using this structure:
-TC-ID · Category · Title · Preconditions · Test Data · Steps · Expected Result
+TC-ID - Category - Title - Preconditions - Test Data - Steps - Expected Result.
 
-No Priority or Severity. Simple English.
-Numbered lists for Preconditions, Steps, Expected Result.
-Preconditions specific to each case - not a shared header block.
-Group duplicates. Smoke tests go at the end.</pre>
+No Priority or Severity. Simple English. Numbered lists for
+Preconditions, Steps, Expected Result. Preconditions specific to each
+case, not a shared header. Group duplicates. Smoke tests at the end.</pre>
         </div>
         <div class="ai-cols">
           <div class="ai-col ai-col-ok">
-            <div class="ai-col-lbl">✓ what worked</div>
+            <div class="ai-col-lbl">+ what worked</div>
             <ul class="ai-col-items">
               <li>Produced a clean, structured suite quickly</li>
-              <li>Covered the main flows: creation, On Hold status, no auto-posting, required fields, balance, duplicate prevention</li>
-              <li>Consistent structure across all 50 cases with separate columns</li>
+              <li>Covered the main flows: creation, On Hold, no auto-post, required fields, balance, dedupe</li>
+              <li>Consistent structure across all cases with separate columns</li>
             </ul>
           </div>
           <div class="ai-col ai-col-err">
-            <div class="ai-col-lbl">✗ what fell short</div>
+            <div class="ai-col-lbl">- what fell short</div>
             <ul class="ai-col-items">
               <li>First version had too many near-duplicates - needed manual merging</li>
               <li>Some preconditions were still vague ("valid ERP data exists")</li>
-              <li>Verification steps mixed into Steps instead of Expected Result</li>
-              <li>Called the field "Case Data / Variation" - renamed to <strong>Test Data</strong></li>
+              <li>Verification steps were mixed into Steps instead of Expected Result</li>
             </ul>
           </div>
           <div class="ai-col ai-col-fix">
-            <div class="ai-col-lbl">→ what I did with it</div>
+            <div class="ai-col-lbl">&gt; what I did with it</div>
             <ul class="ai-col-items">
-              <li>Merged near-duplicate cases into grouped scenarios</li>
+              <li>Merged near-duplicates into grouped scenarios</li>
               <li>Rewrote preconditions to be specific per case</li>
-              <li>Moved all verification into Expected Result</li>
-              <li>Renamed fields, removed Priority/Severity entirely</li>
+              <li>Moved all verification into Expected Result; removed Priority/Severity</li>
             </ul>
           </div>
         </div>
@@ -610,43 +606,49 @@ Group duplicates. Smoke tests go at the end.</pre>
 
     <div class="prompt-step"><div class="prompt-step-line"></div><div class="prompt-step-txt">NEXT PROMPT</div></div>
 
-    <!-- 06 ─ Prompt 4 -->
+    <!-- 06 - Prompt 4 -->
     <div class="ai-section">
       <div class="ai-section-head">
         <div class="ai-num">06</div>
         <div class="ai-head-text">
           <div class="ai-tag">// PROMPT 04 OF 05</div>
-          <div class="ai-title">Gap Analysis Improvement</div>
+          <div class="ai-title">Gap-Analysis Improvement</div>
         </div>
       </div>
       <div class="ai-body">
         <div class="prompt-box">
           <div class="prompt-box-lbl">&gt; prompt used</div>
           <pre>Review the gaps and assumptions as a senior QA analyst.
-Make them easier to understand. No complex English.
+Make them easier to understand, no complex English.
 Add missing gaps from my Miro notes.
 
-Structure: Gap · What is unclear · Assumption · Why it matters · Test coverage
+Structure:
+Gap - What is unclear - Assumption - Why it matters - Test coverage.
 
 Add your own gaps if something important is missing.</pre>
         </div>
-        <div class="ai-cols-2">
+        <div class="ai-cols">
           <div class="ai-col ai-col-ok">
-            <div class="ai-col-lbl">✓ what worked</div>
+            <div class="ai-col-lbl">+ what worked</div>
             <ul class="ai-col-items">
-              <li>Restructured gaps into a cleaner, more readable format</li>
-              <li>Made gaps understandable for non-technical readers</li>
+              <li>Restructured the gaps into a cleaner, more readable format</li>
               <li>Connected each gap to practical test coverage</li>
-              <li>Added missing areas: Excel error behavior, Slack/Sentry alerting, selected range edge cases, duplicate business data, allowed currencies per ledger, partial success, validation order, sensitive data in logs</li>
+              <li>Added missing areas: Excel error behavior, alerting, range edge cases, duplicate business data, allowed currencies per ledger, partial success, validation order, and sensitive data in logs</li>
+            </ul>
+          </div>
+          <div class="ai-col ai-col-err">
+            <div class="ai-col-lbl">- what fell short</div>
+            <ul class="ai-col-items">
+              <li>Sometimes over-explained in technical wording that added no value</li>
+              <li>Still framed a few assumptions as confirmed facts</li>
             </ul>
           </div>
           <div class="ai-col ai-col-fix">
-            <div class="ai-col-lbl">→ what I corrected manually</div>
+            <div class="ai-col-lbl">&gt; what I did with it</div>
             <ul class="ai-col-items">
-              <li>Removed overly technical wording where it added no value</li>
-              <li>Kept only gaps that were useful for testing and requirement clarification</li>
-              <li>Made sure each gap described the <strong>business risk</strong>, not just a technical detail</li>
-              <li>Removed assumptions presented as confirmed facts</li>
+              <li>Removed wording that didn't help testing or requirement clarity</li>
+              <li>Kept each gap focused on business risk, not just a technical detail</li>
+              <li>Removed assumptions that were presented as facts</li>
             </ul>
           </div>
         </div>
@@ -655,7 +657,7 @@ Add your own gaps if something important is missing.</pre>
 
     <div class="prompt-step"><div class="prompt-step-line"></div><div class="prompt-step-txt">NEXT PROMPT</div></div>
 
-    <!-- 07 ─ Prompt 5 -->
+    <!-- 07 - Prompt 5 -->
     <div class="ai-section">
       <div class="ai-section-head">
         <div class="ai-num">07</div>
@@ -671,25 +673,31 @@ Add your own gaps if something important is missing.</pre>
 
 Fields: connectionName, transactionDate, postPeriod, batchDescription,
 branch, ledger, currency, account, debit, credit, lineDescription,
-externalLineId, idempotencyKey, correlationId
+externalLineId, idempotencyKey, correlationId.
 
-Review as senior QA analyst. Clarify: format, API mapping, validation
-rules, defaults, limits. Add columns if needed.</pre>
+Review as a senior QA analyst. Clarify format, API mapping, validation,
+defaults, limits. Add columns if needed.</pre>
         </div>
-        <div class="ai-cols-2">
+        <div class="ai-cols">
           <div class="ai-col ai-col-ok">
-            <div class="ai-col-lbl">✓ what worked</div>
+            <div class="ai-col-lbl">+ what worked</div>
             <ul class="ai-col-items">
               <li>Found fields with unclear definitions</li>
-              <li>Flagged that <strong>ledger</strong> and <strong>account</strong> shouldn't accept code/name/ID unless spec confirms all three</li>
-              <li>Suggested adding a Validation Owner column (Excel Add-in / Backend / ERP)</li>
-              <li>Clarified generated fields must not be user-entered</li>
+              <li>Flagged that <strong>ledger</strong> and <strong>account</strong> shouldn't accept code/name/ID unless the spec confirms all three</li>
+              <li>Suggested a Validation Owner column (Add-in / Backend / ERP)</li>
+              <li>Clarified that generated fields must not be user-entered</li>
+            </ul>
+          </div>
+          <div class="ai-col ai-col-err">
+            <div class="ai-col-lbl">- what fell short</div>
+            <ul class="ai-col-items">
+              <li>Left some limits as if confirmed, when they were only assumptions</li>
             </ul>
           </div>
           <div class="ai-col ai-col-fix">
-            <div class="ai-col-lbl">→ what I improved manually</div>
+            <div class="ai-col-lbl">&gt; what I did with it</div>
             <ul class="ai-col-items">
-              <li>Made the table stricter - removed vague "code/name/ID" where one canonical form should be specified</li>
+              <li>Made the table stricter - removed vague "code/name/ID" for one canonical form</li>
               <li>Marked unconfirmed limits as assumptions, not facts</li>
               <li>Added global validation rules below the table for shared constraints</li>
             </ul>
@@ -698,93 +706,30 @@ rules, defaults, limits. Add columns if needed.</pre>
       </div>
     </div>
 
-    <!-- 08 ─ Where AI Was Useful -->
+    <!-- 08 - Where AI Fell Short -->
     <div class="ai-section">
       <div class="ai-section-head">
         <div class="ai-num">08</div>
         <div class="ai-head-text">
           <div class="ai-tag">// SECTION 08</div>
-          <div class="ai-title">Where AI Was Useful</div>
-        </div>
-      </div>
-      <div class="ai-body">
-        <div class="ai-accent-block ok" style="margin-bottom:16px;">
-          <div class="ai-col-lbl" style="color:var(--green);font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;margin-bottom:10px;">Saved the most time on</div>
-          <ul class="ai-list" style="margin-bottom:0;">
-            <li><span class="n">01.</span><span>Getting up to speed on a domain I hadn't worked with before</span></li>
-            <li><span class="n">02.</span><span>Visualizing the system flow from Excel to ERP and back</span></li>
-            <li><span class="n">03.</span><span>Giving me a first structure to react to - instead of starting from nothing</span></li>
-            <li><span class="n">04.</span><span>Suggesting test categories I could evaluate and filter</span></li>
-            <li><span class="n">05.</span><span>Drafting validation cases and gap descriptions in bulk</span></li>
-            <li><span class="n">06.</span><span>Improving wording and turning raw notes into readable sections</span></li>
-          </ul>
-        </div>
-        <p class="ai-para" style="margin-bottom:0;">
-          Most concretely: AI saved up to an hour of boilerplate. That freed up time for the parts that actually needed thinking.
-        </p>
-      </div>
-    </div>
-
-    <!-- 09 ─ Where AI Was Not Enough -->
-    <div class="ai-section">
-      <div class="ai-section-head">
-        <div class="ai-num">09</div>
-        <div class="ai-head-text">
-          <div class="ai-tag">// SECTION 09</div>
-          <div class="ai-title">Where AI Was Not Enough</div>
+          <div class="ai-title">Where AI Fell Short</div>
         </div>
       </div>
       <div class="ai-body">
         <div class="ai-accent-block err" style="margin-bottom:16px;">
-          <div class="ai-col-lbl" style="color:var(--red);font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;margin-bottom:10px;">AI was consistently weaker at</div>
+          <div class="ai-col-lbl" style="color:var(--red);font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;margin-bottom:10px;">Across every prompt, AI was consistently weaker at</div>
           <ul class="ai-list" style="margin-bottom:0;">
-            <li><span class="n">01.</span><span>Challenging the spec without being explicitly told to</span></li>
+            <li><span class="n">01.</span><span>Challenging the spec unless explicitly told to</span></li>
             <li><span class="n">02.</span><span>Detecting hidden product risks without direct guidance</span></li>
-            <li><span class="n">03.</span><span>Avoiding assumptions when the spec left things open</span></li>
-            <li><span class="n">04.</span><span>Deciding which test cases to merge vs. keep separate</span></li>
-            <li><span class="n">05.</span><span>Understanding that Excel recalculation is <strong>dangerous</strong> when formulas have real ERP side effects</span></li>
+            <li><span class="n">03.</span><span>Avoiding assumptions when the spec left something open</span></li>
+            <li><span class="n">04.</span><span>Deciding which cases to merge versus keep separate</span></li>
+            <li><span class="n">05.</span><span>Treating Excel recalculation as <strong>dangerous</strong> when the formula has real ERP side effects</span></li>
           </ul>
         </div>
-        <p class="ai-para" style="margin-bottom:0;">
-          AI reads specifications charitably. It fills gaps with plausible assumptions rather than flagging them as risks. The most valuable part of this task required me to read carefully and ask: does this actually make sense?
+        <p class="ai-para">
+          The pattern: AI reads a specification charitably. It fills gaps with plausible assumptions instead of flagging them as risks. The most valuable part of this task was the opposite instinct - reading carefully and asking, every time: does this actually make sense?
         </p>
-      </div>
-    </div>
-
-    <!-- 10 ─ Why a Website -->
-    <div class="ai-section">
-      <div class="ai-section-head">
-        <div class="ai-num">10</div>
-        <div class="ai-head-text">
-          <div class="ai-tag">// SECTION 10</div>
-          <div class="ai-title">Why I Decided to Create a Website</div>
-        </div>
-      </div>
-      <div class="ai-body">
-        <p class="ai-para">As the analysis grew, one flat document became too overloaded. There were test cases, gaps, assumptions, field specifications, validation rules, AI usage notes, and review comments.</p>
-        <p class="ai-para">Because of that, I decided that a small structured website would be a better format. It would let the reader switch between sections instead of scrolling through one long document.</p>
-      </div>
-    </div>
-
-    <!-- 11 ─ Overall Assessment -->
-    <div class="ai-section">
-      <div class="ai-section-head">
-        <div class="ai-num">11</div>
-        <div class="ai-head-text">
-          <div class="ai-tag">// SECTION 11</div>
-          <div class="ai-title">Overall Assessment</div>
-        </div>
-      </div>
-      <div class="ai-body">
-        <p class="ai-para">AI was most valuable as a speed multiplier. It helped create the first draft faster - but the final QA value came from manual review. The parts that mattered required human judgment:</p>
-        <ul class="ai-list" style="margin-bottom:24px;">
-          <li><span class="n">01.</span><span>Understanding what financial risks actually look like in an ERP context</span></li>
-          <li><span class="n">02.</span><span>Challenging unclear or untestable requirements</span></li>
-          <li><span class="n">03.</span><span>Deciding what is redundant and what must be tested separately</span></li>
-          <li><span class="n">04.</span><span>Making sure errors are visible to the user in Excel, not just written to a log</span></li>
-          <li><span class="n">05.</span><span>Separating confirmed behavior from open assumptions throughout</span></li>
-          <li><span class="n">06.</span><span>Improving the artifact so it is useful for a real review, not just submitted</span></li>
-        </ul>
+        <div class="ai-hr"></div>
         <p class="ai-para" style="margin-bottom:0;">
           Looking back now, there are things I would still rewrite with more time. Either way, I really enjoyed working in a new domain. Thank you.
         </p>

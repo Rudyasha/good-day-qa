@@ -15,7 +15,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      align-items: stretch;
+      align-items: start;
     }
     .ideal-item {
       display: flex;
@@ -25,9 +25,16 @@
       background: var(--bg2);
       transition: border-color .18s ease, background .18s ease;
     }
-    /* When closed, let the summary fill the card height so paired cards
-       in the same row stay visually balanced even if one wraps two lines. */
-    .ideal-item:not([open]) summary { flex: 1; align-items: center; }
+    /* Closed cards get a min-height that fits a 2-line title so a one-line
+       neighbour doesn't look stunted. Open cards keep their natural height,
+       so expanding one card does NOT stretch its closed sibling. */
+    .ideal-item:not([open]) {
+      min-height: 64px;
+    }
+    .ideal-item:not([open]) summary {
+      align-items: center;
+      min-height: 100%;
+    }
     .ideal-item[open] { border-color: var(--cyan); background: var(--bg3); }
     .ideal-item summary {
       display: flex;

@@ -8,10 +8,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="favicon.ico?v=20260527" />
-  <link rel="stylesheet" href="style-eva.css?v=20260527-mobile2" />
-  <script src="theme.js?v=20260526-allure2"></script>
+  <link rel="stylesheet" href="style-eva.css?v=20260527-burger1" />
+  <script src="theme.js?v=20260527-burger1"></script>
 </head>
 <body class="cases-page">
+
+<button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle menu" type="button">☰</button>
 
 <aside class="sidebar">
   <div class="sidebar-header">
@@ -1630,6 +1632,7 @@ function openDetail(id) {
     <\/section>` : '';
 
   panel.innerHTML = `
+    <button class="tc-back-btn" onclick="closeDetailMobile()" type="button">&larr; Back to cases<\/button>
     <header class="case-header">
       <div class="detail-tc-meta"><span class="detail-tc-id">${tc.id}<\/span><\/div>
       <h1 class="detail-title">${escHtml(tc.title)}<\/h1>
@@ -1673,12 +1676,38 @@ window.openDetail = function(id) {
     panel.offsetHeight;
     panel.style.animation = '';
   }
+  /* On mobile: switch into drill-down detail view */
+  if (window.matchMedia('(max-width: 900px)').matches) {
+    document.body.classList.add('tc-detail-open');
+    window.scrollTo({top: 0, behavior: 'auto'});
+  }
 };
+
+window.closeDetailMobile = function() {
+  document.body.classList.remove('tc-detail-open');
+  const el = document.getElementById('item-' + activeCase);
+  if (el) {
+    setTimeout(function() { el.scrollIntoView({block: 'center'}); }, 0);
+  }
+};
+
+/* Auto-leave drill-down when viewport grows back to desktop */
+window.addEventListener('resize', function() {
+  if (!window.matchMedia('(max-width: 900px)').matches) {
+    document.body.classList.remove('tc-detail-open');
+  }
+});
 
 buildAreaDropdown();
 buildTagDropdown();
 renderList();
-openDetail('TC-001');
+/* On desktop only: auto-open first case. On mobile: keep list view as entry point. */
+if (!window.matchMedia('(max-width: 900px)').matches) {
+  openDetail('TC-001');
+} else {
+  activeCase = null;
+  document.getElementById('detail-empty').style.display = 'flex';
+}
 </script>
 
 </body>

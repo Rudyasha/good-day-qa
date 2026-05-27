@@ -29,4 +29,32 @@
   } else {
     updateButton();
   }
+
+  /* ─── Mobile drawer toggle ─── */
+  window.toggleMobileMenu = function () {
+    document.body.classList.toggle('menu-open');
+  };
+
+  function closeMobileMenu() {
+    document.body.classList.remove('menu-open');
+  }
+
+  /* Close drawer on backdrop click or nav-link tap or Esc */
+  document.addEventListener('click', function (e) {
+    if (!document.body.classList.contains('menu-open')) return;
+    const sidebar = document.querySelector('.sidebar');
+    const toggle = document.querySelector('.mobile-menu-toggle');
+    /* Tap on a nav link inside the drawer → close after navigation */
+    if (e.target.closest('.sidebar .nav-link')) {
+      closeMobileMenu();
+      return;
+    }
+    /* Click outside drawer + button → close */
+    if (sidebar && !sidebar.contains(e.target) && (!toggle || !toggle.contains(e.target))) {
+      closeMobileMenu();
+    }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeMobileMenu();
+  });
 }());

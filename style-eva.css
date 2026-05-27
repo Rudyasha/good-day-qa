@@ -3079,82 +3079,94 @@ body::before {
 
 /* ════════════════════════════════════════════════════════════════
    RESPONSIVE LAYER — tablet & mobile
-   Approach: drop position:fixed on the sidebar, let it sit in normal
-   document flow as a top strip, and let the main content stack below.
-   Keep it simple — no sticky, no scroll-jacked nav.
+   Pattern: sidebar becomes a slide-in drawer behind a hamburger button.
+   Main content takes the full viewport. Test cases use a drill-down
+   navigation (list → tap → full-screen detail with back button),
+   matching Allure / Linear / Jira mobile.
 ════════════════════════════════════════════════════════════════ */
 
-/* Tablet & smaller phones (≤ 900px) */
+/* Hamburger button + back button — desktop hides them */
+.mobile-menu-toggle,
+.tc-back-btn {
+  display: none;
+}
+
+/* Mobile: ≤ 900px */
 @media (max-width: 900px) {
-  /* === SIDEBAR — top strip in normal flow === */
-  .sidebar {
-    position: static !important;
-    width: 100% !important;
-    height: auto !important;
-    min-height: 0 !important;
-    border-right: none;
-    border-bottom: 1px solid #1a1a1a;
-    overflow: visible !important;
-    z-index: 50;
-    display: block !important;
-    padding: 0 !important;
-  }
-  .sidebar::after { display: none !important; }
-  .sidebar-header {
+  /* ───────── Hamburger button (fixed top-left) ───────── */
+  .mobile-menu-toggle {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    border-bottom: 1px solid #1a1a1a;
+    justify-content: center;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    width: 42px;
+    height: 42px;
+    background: #0a0a0a;
+    border: 1px solid #1f1f1f;
+    color: #ffffff;
+    font-size: 18px;
+    line-height: 1;
+    z-index: 300;
+    cursor: pointer;
+    border-radius: 3px;
+    padding: 0;
+    font-family: 'Share Tech Mono', monospace;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
   }
-  .sidebar-eyebrow { font-size: 8px; margin-bottom: 0; white-space: nowrap; }
-  .sidebar-logo { font-size: 13px; line-height: 1; margin: 0; }
-  .sidebar-logo br { display: none; }
-  .sidebar-logo::after { content: ' '; }
-  .nav-section { display: none !important; }
-  .sidebar-footer { display: none !important; }
+  [data-theme="light"] .mobile-menu-toggle {
+    background: #ffffff;
+    border-color: #dce4ed;
+    color: #172337;
+    box-shadow: 0 2px 8px rgba(15,30,55,0.08);
+  }
+  .mobile-menu-toggle:hover {
+    border-color: var(--red);
+    color: var(--red);
+  }
 
-  /* Nav-links flow inline; sidebar scrolls horizontally if needed */
-  .sidebar-nav-wrap,
-  .sidebar > .nav-link {
-    display: inline-block;
-  }
-  .nav-link {
-    display: inline-block !important;
-    padding: 9px 13px !important;
-    margin: 0 !important;
-    font-size: 11px !important;
-    border-left: none !important;
-    border-bottom: 2px solid transparent !important;
-    white-space: nowrap;
-    vertical-align: middle;
-  }
-  .nav-link.active {
-    border-bottom-color: var(--red) !important;
-    border-left: none !important;
-    background: transparent !important;
-  }
-  .nav-icon { margin-right: 5px; font-size: 10px; display: inline-block; }
-
-  .theme-toggle {
-    display: inline-block !important;
-    margin: 0 !important;
+  /* ───────── Sidebar = slide-in drawer ───────── */
+  .sidebar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 260px !important;
+    height: 100vh !important;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease-out;
+    z-index: 280;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
     padding: 0 !important;
-    border-top: none !important;
-    vertical-align: middle;
+    border-right: 1px solid #1a1a1a;
+    border-bottom: none;
   }
-  .theme-btn {
-    padding: 7px 12px !important;
-    font-size: 9.5px !important;
-    width: auto !important;
-    white-space: nowrap;
+  body.menu-open .sidebar {
+    transform: translateX(0);
+    box-shadow: 6px 0 24px rgba(0,0,0,0.45);
   }
+  /* Backdrop when menu open */
+  body.menu-open::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 260;
+    pointer-events: auto;
+  }
+  body.menu-open {
+    overflow: hidden;
+  }
+  .sidebar::after { display: none !important; }
 
-  /* === MAIN CONTENT — drop sidebar offset === */
+  /* ───────── Main content takes the viewport ───────── */
   .main {
     margin-left: 0 !important;
     width: 100% !important;
-    display: block;
+    padding-top: 56px; /* room for hamburger button */
   }
   .page-header { padding-left: 18px !important; padding-right: 18px !important; }
   [data-theme="light"] .page-header { padding-left: 18px !important; }
@@ -3190,11 +3202,14 @@ body::before {
   /* Overview AC grid */
   .ac-grid { grid-template-columns: 1fr !important; gap: 10px; }
 
-  /* === TEST CASES — stack vertically === */
+  /* ───────── TEST CASES — drill-down navigation ─────────
+     Default: only list visible.
+     body.tc-detail-open: hide list, show full-screen detail with back btn. */
   .cases-page .split-layout {
     margin-left: 0 !important;
     flex-direction: column !important;
     height: auto !important;
+    min-height: calc(100vh - 56px);
     overflow: visible !important;
     display: block !important;
   }
@@ -3203,21 +3218,55 @@ body::before {
     max-height: none !important;
     height: auto !important;
     border-right: none !important;
-    border-bottom: 1px solid #e5eaf1;
+    border-bottom: none;
     display: block;
   }
-  .cases-page .list-header { position: static; }
   .cases-page .list-scroll {
-    max-height: 50vh;
-    overflow-y: auto;
+    max-height: none;
+    overflow-y: visible;
   }
   .cases-page .detail-panel {
+    display: none !important;
+    width: 100% !important;
+  }
+
+  /* Drill-down: list hidden, detail full-screen */
+  body.tc-detail-open .cases-page .list-panel { display: none !important; }
+  body.tc-detail-open .cases-page .detail-panel {
+    display: block !important;
     width: 100% !important;
     height: auto !important;
     overflow: visible !important;
-    display: block;
   }
-  .cases-page .detail-content { padding: 24px 18px 50px !important; }
+  body.tc-detail-open .cases-page .detail-empty { display: none !important; }
+
+  .cases-page .detail-content { padding: 18px 18px 50px !important; }
+
+  /* Back button — shown at top of detail when drill-down is active */
+  .tc-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 16px;
+    padding: 9px 14px;
+    background: transparent;
+    border: 1px solid #dce4ed;
+    color: #19b4b8;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  [data-theme="dark"] .tc-back-btn {
+    border-color: #1e2630;
+    color: var(--cyan);
+  }
+  .tc-back-btn:hover {
+    border-color: #19b4b8;
+    background: rgba(25,180,184,0.06);
+  }
 
   /* Filter bar inside list-header */
   .cases-page .filter-bar { gap: 8px; }
@@ -3265,8 +3314,6 @@ body::before {
   .ai-title { font-size: 14.5px !important; }
 
   .cases-page .tc-item { padding: 10px 12px; }
-  .cases-page .list-scroll { max-height: 45vh; }
   .stat-action { display: none; }
-  .nav-link { padding: 7px 10px !important; font-size: 10px !important; }
-  .theme-btn { font-size: 9px !important; padding: 6px 10px !important; }
+  .sidebar { width: 240px !important; }
 }

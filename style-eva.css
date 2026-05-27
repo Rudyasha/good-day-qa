@@ -2962,17 +2962,17 @@ body::before {
    LIGHT THEME — Gentle teal ambient glow
 ════════════════════════════════════════════════════════════════ */
 
-/* Repurpose body::after (scanlines are off in light) as ambient glow */
+/* Ambient teal glow — floats above all content via z-index 9999, pointer-events none so it never blocks clicks */
 [data-theme="light"] body::after {
   display: block;
   content: '';
   position: fixed;
   top: -80px; right: -80px;
-  width: 560px; height: 560px;
+  width: 600px; height: 600px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(25,180,184,0.09) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(25,180,184,0.14) 0%, transparent 62%);
   pointer-events: none;
-  z-index: 0;
+  z-index: 9999;
 }
 
 /* Gentle glow on cards */
@@ -3030,4 +3030,38 @@ body::before {
 [data-theme="dark"] .detail-steps .step-text,
 [data-theme="dark"] .detail-results .step-text,
 [data-theme="dark"] .detail-preconditions-list .step-text { font-size: 12.5px; }
+
+/* ── Field tags in case aside ── */
+.meta-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+.field-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-family: 'Share Tech Mono', monospace;
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.02em;
+}
+[data-theme="light"] .field-tag {
+  background: #f0f4f8;
+  color: #4a6080;
+  border: 1px solid #dce4ed;
+}
+[data-theme="dark"] .field-tag {
+  background: rgba(25,180,184,0.08);
+  color: #19b4b8;
+  border: 1px solid rgba(25,180,184,0.2);
+}
+
+/* ── Tag filter label spacing ── */
+.tag-filter-label {
+  margin-top: 6px;
+}
+[data-theme="light"] .filter-label.tag-filter-label {
+  margin-top: 6px;
+}
 

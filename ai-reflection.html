@@ -397,7 +397,7 @@
           <li><span class="n">01.</span><span>The original specification for WRITEBACKJOURNALDRAFT</span></li>
           <li><span class="n">02.</span><span>My own research into ERP systems, GL journals, writeback flows, and financial terminology</span></li>
           <li><span class="n">03.</span><span>Google Docs notes - questions, draft ideas, risks I spotted while reading the spec</span></li>
-          <li><span class="n">04.</span><span>Miro brainstorming board - unclear behaviors, edge cases, and missing rules</span></li>
+          <li><span class="n">04.</span><span>Miro brainstorming board - end-to-end flow (Excel - add-in - API - ERP - draft batch - result), unclear behaviors, edge cases, and missing rules</span></li>
           <li><span class="n">05.</span><span>AI-assisted explanations of how similar systems may work under the hood</span></li>
           <li><span class="n">06.</span><span>Manual QA thinking on Excel behavior, ERP side effects, financial risks, and integration edge cases</span></li>
         </ul>
@@ -419,22 +419,21 @@
       </div>
       <div class="ai-body">
         <p class="ai-para">
-          Honestly - AI saved me a lot of the mechanical first-draft work. I used it to get up to speed on a domain I didn't know well, to turn scattered notes into something readable, and to get a first version of test cases fast enough that I could actually critique it rather than stare at a blank page.
+          Honestly, AI saved me the mechanical first-draft work and let me start reacting to something concrete instead of a blank page. I leaned on it most for these things:
         </p>
         <div class="ai-accent-block ok" style="margin-bottom:16px;">
           <div class="ai-col-lbl" style="color:var(--green);font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:.22em;text-transform:uppercase;margin-bottom:10px;">What I asked AI to do</div>
           <ul class="ai-list" style="margin-bottom:0;">
-            <li><span class="n">01.</span><span>Explain ERP, GL journals, and financial terminology in plain language</span></li>
-            <li><span class="n">02.</span><span>Show how a writeback flow might work end-to-end under the hood</span></li>
-            <li><span class="n">03.</span><span>Brainstorm test categories and surface potential risks before I wrote anything</span></li>
-            <li><span class="n">04.</span><span>Find unclear or missing rules in the spec</span></li>
-            <li><span class="n">05.</span><span>Draft the first version of test cases - so manual review had something concrete to start from</span></li>
-            <li><span class="n">06.</span><span>Help merge near-duplicate cases and make the suite leaner</span></li>
-            <li><span class="n">07.</span><span>Improve wording, restructure gaps, and organize the final artifact</span></li>
+            <li><span class="n">01.</span><span>Getting up to speed on a domain I didn't know well - ERP, GL journals, ledgers, periods, debit/credit</span></li>
+            <li><span class="n">02.</span><span>Seeing the feature as an end-to-end flow (Excel - add-in - API - ERP - draft batch - result), not just a formula</span></li>
+            <li><span class="n">03.</span><span>Brainstorming test categories and surfacing early risks before I wrote anything</span></li>
+            <li><span class="n">04.</span><span>Drafting a first version of the cases and gap descriptions in bulk</span></li>
+            <li><span class="n">05.</span><span>Merging near-duplicates and making the suite leaner</span></li>
+            <li><span class="n">06.</span><span>Improving wording and turning raw notes into a readable artifact - including phrasing my thinking in clear English</span></li>
           </ul>
         </div>
         <p class="ai-para" style="margin-bottom:0;">
-          I didn't take AI output at face value. Every result was reviewed and either kept as-is, rewritten, or thrown out. The thinking had to be mine - AI just gave me something to react to.
+          I didn't take any output at face value: each result was kept, rewritten, or thrown out. AI just gave me something to react to. Concretely, it saved up to an hour of boilerplate - time that went into the parts that actually needed thinking.
         </p>
       </div>
     </div>
@@ -699,40 +698,12 @@ rules, defaults, limits. Add columns if needed.</pre>
       </div>
     </div>
 
-    <!-- 08 ─ Final QA Approach -->
+    <!-- 08 ─ Where AI Was Useful -->
     <div class="ai-section">
       <div class="ai-section-head">
         <div class="ai-num">08</div>
         <div class="ai-head-text">
           <div class="ai-tag">// SECTION 08</div>
-          <div class="ai-title">Final QA Approach</div>
-        </div>
-      </div>
-      <div class="ai-body">
-        <p class="ai-para">Before writing test cases, the requirement itself had to be checked - whether it was complete, clear, and actually testable.</p>
-        <ul class="ai-list">
-          <li><span class="n">01.</span><span>Understand the business domain before writing any test cases</span></li>
-          <li><span class="n">02.</span><span>Don't test only the happy path</span></li>
-          <li><span class="n">03.</span><span>Check whether each requirement is actually testable as written</span></li>
-          <li><span class="n">04.</span><span>Separate confirmed requirements from open assumptions</span></li>
-          <li><span class="n">05.</span><span>Convert unclear behavior into explicit gaps</span></li>
-          <li><span class="n">06.</span><span>Merge duplicates - a large suite is not the same as a good one</span></li>
-          <li><span class="n">07.</span><span>Use concrete test data - not "valid inputs" but actual values</span></li>
-          <li><span class="n">08.</span><span>Validate both Excel-side behavior and ERP-side effects</span></li>
-          <li><span class="n">09.</span><span>Check that failed validation is <strong>visible to the user in Excel</strong>, not just logged somewhere</span></li>
-          <li><span class="n">10.</span><span>Check that no invalid or partial data is written to ERP</span></li>
-          <li><span class="n">11.</span><span>Treat duplicate batch prevention as a <strong>critical financial risk</strong></span></li>
-          <li><span class="n">12.</span><span>Treat auditability and traceability as product quality requirements, not extras</span></li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- 09 ─ Where AI Was Useful -->
-    <div class="ai-section">
-      <div class="ai-section-head">
-        <div class="ai-num">09</div>
-        <div class="ai-head-text">
-          <div class="ai-tag">// SECTION 09</div>
           <div class="ai-title">Where AI Was Useful</div>
         </div>
       </div>
@@ -749,17 +720,17 @@ rules, defaults, limits. Add columns if needed.</pre>
           </ul>
         </div>
         <p class="ai-para" style="margin-bottom:0;">
-          Most concretely: AI saved around 30–40 minutes of boilerplate. That freed up time for the parts that actually needed thinking.
+          Most concretely: AI saved up to an hour of boilerplate. That freed up time for the parts that actually needed thinking.
         </p>
       </div>
     </div>
 
-    <!-- 10 ─ Where AI Was Not Enough -->
+    <!-- 09 ─ Where AI Was Not Enough -->
     <div class="ai-section">
       <div class="ai-section-head">
-        <div class="ai-num">10</div>
+        <div class="ai-num">09</div>
         <div class="ai-head-text">
-          <div class="ai-tag">// SECTION 10</div>
+          <div class="ai-tag">// SECTION 09</div>
           <div class="ai-title">Where AI Was Not Enough</div>
         </div>
       </div>
@@ -780,12 +751,12 @@ rules, defaults, limits. Add columns if needed.</pre>
       </div>
     </div>
 
-    <!-- 11 ─ Why a Website -->
+    <!-- 10 ─ Why a Website -->
     <div class="ai-section">
       <div class="ai-section-head">
-        <div class="ai-num">11</div>
+        <div class="ai-num">10</div>
         <div class="ai-head-text">
-          <div class="ai-tag">// SECTION 11</div>
+          <div class="ai-tag">// SECTION 10</div>
           <div class="ai-title">Why I Decided to Create a Website</div>
         </div>
       </div>
@@ -795,12 +766,12 @@ rules, defaults, limits. Add columns if needed.</pre>
       </div>
     </div>
 
-    <!-- 12 ─ Overall Assessment -->
+    <!-- 11 ─ Overall Assessment -->
     <div class="ai-section">
       <div class="ai-section-head">
-        <div class="ai-num">12</div>
+        <div class="ai-num">11</div>
         <div class="ai-head-text">
-          <div class="ai-tag">// SECTION 12</div>
+          <div class="ai-tag">// SECTION 11</div>
           <div class="ai-title">Overall Assessment</div>
         </div>
       </div>
@@ -814,7 +785,9 @@ rules, defaults, limits. Add columns if needed.</pre>
           <li><span class="n">05.</span><span>Separating confirmed behavior from open assumptions throughout</span></li>
           <li><span class="n">06.</span><span>Improving the artifact so it is useful for a real review, not just submitted</span></li>
         </ul>
-
+        <p class="ai-para" style="margin-bottom:0;">
+          Looking back now, there are things I would still rewrite with more time. Either way, I really enjoyed working in a new domain. Thank you.
+        </p>
       </div>
     </div>
 

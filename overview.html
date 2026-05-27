@@ -50,13 +50,17 @@
     </div>
 
     <div class="card">
-      <div class="card-title"><span class="icon">◈</span> Function Overview</div>
-      <p style="font-size:14px;color:var(--text-muted);line-height:1.75;margin-bottom:14px;">
-        <code>WRITEBACKJOURNALDRAFT</code> is a custom Excel function that creates <strong style="color:var(--text)">draft GL (General Ledger) journal batches</strong> in an ERP system directly from a spreadsheet. Each function call defines a single journal line. Multiple calls on the same worksheet together form one <strong style="color:var(--text)">batch</strong>. The function never posts - it always lands in <strong style="color:var(--accent)">On Hold</strong> status, requiring manual review inside the ERP.
+      <div class="card-title"><span class="icon">◈</span> User Story</div>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.75;margin-bottom:0;">
+        As an ERP user, I want to create draft GL journal entries from Excel so that I can prepare transactions for manual review and posting by an accountant.
       </p>
-      <div class="callout callout-info">
-        <strong>Key invariant:</strong> Total debits across all lines must equal total credits. An imbalanced batch is rejected before creation.
-      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">◈</span> Custom Function Description</div>
+      <p style="font-size:14px;color:var(--text-muted);line-height:1.75;margin-bottom:0;">
+        <code>WRITEBACKJOURNALDRAFT</code> is an Excel custom function for creating draft GL journal batches in the ERP directly from a spreadsheet range. Each function defines a single line. Several of those functions placed together on a worksheet can define one GL journal batch. The function never posts the batch - it always lands in the <strong style="color:var(--accent)">On Hold</strong> status, and must be reviewed and posted manually inside the ERP system.
+      </p>
     </div>
 
     <div class="card">
@@ -86,15 +90,15 @@
           <tbody>
             <tr><td><span class="param-name">connectionName</span></td><td>string</td><td><span class="badge badge-required">Yes</span></td><td>ERP connection name</td></tr>
             <tr><td><span class="param-name">transactionDate</span></td><td>date</td><td><span class="badge badge-required">Yes</span></td><td>Date of the journal batch</td></tr>
-            <tr><td><span class="param-name">postPeriod</span></td><td>string</td><td><span class="badge badge-required">Yes</span></td><td>Financial period, e.g. <code>"05-2026"</code></td></tr>
+            <tr><td><span class="param-name">postPeriod</span></td><td>string</td><td><span class="badge badge-required">Yes</span></td><td>Financial period (e.g. <code>"05-2026"</code>)</td></tr>
             <tr><td><span class="param-name">batchDescription</span></td><td>string</td><td><span class="badge badge-scripted">No</span></td><td>Batch-level description</td></tr>
             <tr><td><span class="param-name">branch</span></td><td>string</td><td><span class="badge badge-scripted">No</span></td><td>Branch identifier</td></tr>
-            <tr><td><span class="param-name">ledger</span></td><td>string</td><td><span class="badge badge-required">Yes</span></td><td>Target ledger in the ERP</td></tr>
+            <tr><td><span class="param-name">ledger</span></td><td>string</td><td><span class="badge badge-required">Yes</span></td><td>Target ledger</td></tr>
             <tr><td><span class="param-name">currency</span></td><td>string</td><td><span class="badge badge-scripted">No</span></td><td>Currency code; defaults to ledger currency</td></tr>
-            <tr><td><span class="param-name">account</span></td><td>string</td><td><span class="badge badge-required">Yes</span></td><td>GL account number for this line</td></tr>
-            <tr><td><span class="param-name">debit</span></td><td>number</td><td><span class="badge badge-scripted">No</span></td><td>Debit amount for this line</td></tr>
-            <tr><td><span class="param-name">credit</span></td><td>number</td><td><span class="badge badge-scripted">No</span></td><td>Credit amount for this line</td></tr>
-            <tr><td><span class="param-name">lineDescription</span></td><td>string</td><td><span class="badge badge-scripted">No</span></td><td>Description for this specific line</td></tr>
+            <tr><td><span class="param-name">account</span></td><td>string</td><td><span class="badge badge-required">Yes</span></td><td>GL account per line</td></tr>
+            <tr><td><span class="param-name">debit</span></td><td>number</td><td><span class="badge badge-scripted">No</span></td><td>Debit amount per line</td></tr>
+            <tr><td><span class="param-name">credit</span></td><td>number</td><td><span class="badge badge-scripted">No</span></td><td>Credit amount per line</td></tr>
+            <tr><td><span class="param-name">lineDescription</span></td><td>string</td><td><span class="badge badge-scripted">No</span></td><td>Line description</td></tr>
           </tbody>
         </table>
       </div>
@@ -104,20 +108,20 @@
       <div class="card-title"><span class="icon">◇</span> Acceptance Criteria</div>
       <div class="ac-grid">
         <div class="ac-item">
-          <div class="ac-title" style="color:var(--ok);">✓ On Hold Status</div>
-          <div class="ac-body">Created batch always has status <strong style="color:var(--text)">On Hold</strong> - no release or post action triggered.</div>
+          <div class="ac-title" style="color:var(--ok);">Batch created on hold</div>
+          <div class="ac-body">The resulting batch in the ERP always has status <strong style="color:var(--text)">On Hold</strong>; no release or post action is triggered.</div>
         </div>
         <div class="ac-item">
-          <div class="ac-title" style="color:var(--accent2);">⊖ Balance Validation</div>
-          <div class="ac-body">Total debits = total credits. Error: <code>"Journal is not balanced: debits X.XX ≠ credits Y.YY"</code></div>
+          <div class="ac-title" style="color:var(--accent2);">Balance validation</div>
+          <div class="ac-body">Total debits must equal total credits across all lines; imbalanced input returns <code>"Journal is not balanced: debits X.XX ≠ credits Y.YY"</code> error.</div>
         </div>
         <div class="ac-item">
-          <div class="ac-title" style="color:var(--yellow);">≥1 Line Required</div>
-          <div class="ac-body">Empty range returns <code>"At least one transaction line is required"</code>.</div>
+          <div class="ac-title" style="color:var(--yellow);">At least one line required</div>
+          <div class="ac-body">An empty line range returns <code>"At least one transaction line is required"</code>.</div>
         </div>
         <div class="ac-item">
-          <div class="ac-title" style="color:var(--purple);">↩ Return Value</div>
-          <div class="ac-body">On success: <code>"Draft batch #JE-00087 created"</code> (batch ID varies).</div>
+          <div class="ac-title" style="color:var(--purple);">Return value</div>
+          <div class="ac-body">Returns <code>"Draft batch #JE-00087 created"</code> on success.</div>
         </div>
       </div>
     </div>
@@ -126,11 +130,9 @@
       <div class="card-title"><span class="icon">◻</span> Glossary</div>
       <dl style="font-size:14px;line-height:1.8;">
         <dt>Batch</dt>
-        <dd>A group of journal lines sharing the same transaction date, ledger, and batch description.</dd>
+        <dd>A batch is a group of journal lines (transactions) that have the same transaction date, ledger, and batch description.</dd>
         <dt>Reporting Period</dt>
-        <dd>A predefined accounting period the transaction date falls within - e.g. "Month Ending 31 March 2027".</dd>
-        <dt>On Hold</dt>
-        <dd>A batch status - saved but not yet reviewed or posted. Posting is done manually inside the ERP.</dd>
+        <dd>A reporting period is a predefined accounting period where the transaction date belongs (i.e. "Month Ending 31 March 2027").</dd>
       </dl>
     </div>
 

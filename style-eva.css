@@ -3125,6 +3125,8 @@ body::before {
     border-color: var(--red);
     color: var(--red);
   }
+  /* Hide burger when drawer is open — backdrop is the close affordance */
+  body.menu-open .mobile-menu-toggle { display: none !important; }
 
   /* ───────── Sidebar = slide-in drawer ───────── */
   .sidebar {
@@ -3176,11 +3178,30 @@ body::before {
 
   /* Cards / code blocks */
   .card, .ai-block, .glossary-group { padding: 18px 18px; }
-  pre { font-size: 11px; overflow-x: auto; white-space: pre; }
+  /* Wrap pre/prompt text instead of horizontal scrolling */
+  pre,
+  .prompt-box pre {
+    font-size: 11.5px !important;
+    overflow-x: visible !important;
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    overflow-wrap: anywhere;
+  }
 
-  /* Stats grid */
-  .stats { gap: 10px; flex-wrap: wrap; }
-  .stat-card { flex: 1 1 calc(50% - 6px); min-width: 0; }
+  /* Stats — compact horizontal pills (number + label side by side) */
+  .stats { gap: 8px; flex-wrap: wrap; }
+  .stat-card {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 0;
+    padding: 10px 12px 9px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-height: 0;
+  }
+  .stat-num { font-size: 20px !important; line-height: 1; }
+  .stat-label { font-size: 8.5px !important; flex: 1; letter-spacing: .14em; margin-top: 0 !important; }
+  .stat-action { font-size: 13px !important; flex-shrink: 0; }
 
   /* Tables: horizontal scroll wrapper */
   .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -3209,9 +3230,10 @@ body::before {
     margin-left: 0 !important;
     flex-direction: column !important;
     height: auto !important;
-    min-height: calc(100vh - 56px);
+    min-height: auto !important;
     overflow: visible !important;
     display: block !important;
+    padding-top: 56px !important;  /* clear the fixed burger button */
   }
   .cases-page .list-panel {
     width: 100% !important;
@@ -3268,10 +3290,44 @@ body::before {
     background: rgba(25,180,184,0.06);
   }
 
-  /* Filter bar inside list-header */
-  .cases-page .filter-bar { gap: 8px; }
-  .cases-page .filter-bar .scenario-filter { flex-wrap: wrap; }
-  .cases-page .filter-bar .scenario-btn { flex: 1 1 calc(50% - 4px); }
+  /* Filter bar — Category + Tags in one row, Pos/Neg buttons compact */
+  .cases-page .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 8px;
+    align-items: center;
+  }
+  .cases-page .filter-label {
+    font-size: 8px !important;
+    letter-spacing: .15em;
+    flex: 0 0 100%;
+    margin-bottom: -2px;
+  }
+  .cases-page .cat-filter-wrap {
+    flex: 1 1 calc(50% - 4px) !important;
+    width: auto !important;
+    min-width: 0;
+  }
+  .cases-page .cat-filter-btn {
+    width: 100% !important;
+    padding: 7px 9px !important;
+    font-size: 10px !important;
+    min-height: 0;
+  }
+  .cases-page .cat-menu { width: 100%; left: 0; right: 0; }
+  .cases-page .scenario-filter {
+    flex: 1 1 100%;
+    display: flex;
+    gap: 4px;
+  }
+  .cases-page .scenario-btn {
+    flex: 1 1 0 !important;
+    padding: 6px 4px !important;
+    font-size: 9px !important;
+    min-width: 0;
+  }
+  .cases-page .list-title { font-size: 13px !important; }
+  .cases-page .list-count { font-size: 11px !important; }
 
   /* Case detail grid */
   .case-grid { grid-template-columns: 1fr !important; gap: 22px; }
@@ -3284,10 +3340,6 @@ body::before {
     gap: 18px !important;
   }
   .meta-block { flex: 1 1 calc(50% - 9px); min-width: 0 !important; }
-
-  /* Filter dropdowns full width */
-  .cat-filter-wrap, .cat-filter-btn { width: 100%; }
-  .cat-menu { width: 100%; left: 0; right: 0; }
 
   /* Glow softer on small screens */
   [data-theme="light"] body::after {
